@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Clean the environment
+reset
 if test -f "Makefile"; then
-    make clean && rm -qmake.stash OpenRGB Makeile
+    make clean && rm .qmake.stash OpenRGB Makefile
 fi
 
 # Make OpenRGB
