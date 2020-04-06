@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Clean the environment
+if test -f "Makefile"; then
+    make clean && rm -qmake.stash OpenRGB Makeile
+fi
+
+# Make OpenRGB
+git submodule update --init --recursive
+qmake OpenRGB.pro
+make -j24
+
+# Test before moving
+ ./OpenRGB
+
+echo "Does it work?"
+select ynq in "yes" "no" "quit"; do
+    case $ynq in
+	yes ) cp -f OpenRGB ~/bin;break;;
+	no ) echo "UhOh!" && exit;break;;
+	quit ) echo "Nothing done. Good Bye!";exit;;
+esac;
+done
+
+
