@@ -293,7 +293,9 @@ void DetectPatriotViperControllers(std::vector<i2c_smbus_interface*> &busses, st
 void DetectPolychromeControllers(std::vector<i2c_smbus_interface*>& busses, std::vector<RGBController*>& rgb_controllers);
 void DetectRGBFusionControllers(std::vector<i2c_smbus_interface*>& busses, std::vector<RGBController*>& rgb_controllers);
 void DetectRGBFusionGPUControllers(std::vector<i2c_smbus_interface*>& busses, std::vector<RGBController*>& rgb_controllers);
+void DetectMSIMysticLightControllers(std::vector<RGBController*> &rgb_controllers);
 void DetectMSIRGBControllers(std::vector<RGBController*> &rgb_controllers);
+void DetectAuraAddressableControllers(std::vector<RGBController*> &rgb_controllers);
 void DetectLEDStripControllers(std::vector<RGBController*> &rgb_controllers);
 void DetectHue2Controllers(std::vector<RGBController*> &rgb_controllers);
 void DetectHuePlusControllers(std::vector<RGBController*> &rgb_controllers);
@@ -309,6 +311,7 @@ void DetectHyperXKeyboardControllers(std::vector<RGBController*>& rgb_controller
 void DetectThermaltakeRiingControllers(std::vector<RGBController*>& rgb_controllers);
 void DetectRGBFusion2USBControllers(std::vector<RGBController*> &rgb_controllers);
 void DetectRedragonControllers(std::vector<RGBController*>& rgb_controllers);
+void DetectNZXTKrakenControllers(std::vector<RGBController*>& rgb_controllers);
 
 /******************************************************************************************\
 *                                                                                          *
@@ -333,8 +336,10 @@ void DetectRGBControllers(void)
     DetectRGBFusionGPUControllers(busses, rgb_controllers);
 
     DetectRGBFusionControllers(busses, rgb_controllers);
+    DetectMSIMysticLightControllers(rgb_controllers);
     DetectMSIRGBControllers(rgb_controllers);
 
+    DetectAuraAddressableControllers(rgb_controllers);
     DetectLEDStripControllers(rgb_controllers);
     DetectHue2Controllers(rgb_controllers);
     DetectHuePlusControllers(rgb_controllers);
@@ -348,6 +353,7 @@ void DetectRGBControllers(void)
     DetectThermaltakeRiingControllers(rgb_controllers);
     DetectRGBFusion2USBControllers(rgb_controllers);
     DetectRedragonControllers(rgb_controllers);
+    DetectNZXTKrakenControllers(rgb_controllers);
 
     DetectE131Controllers(rgb_controllers);
 

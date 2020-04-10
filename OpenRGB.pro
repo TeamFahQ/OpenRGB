@@ -31,6 +31,7 @@ INCLUDEPATH +=                                                          \
     serial_port/                                                        \
     super_io/                                                           \
     Controllers/AMDWraithPrismController/                               \
+    Controllers/AuraAddressableController/                              \
     Controllers/AuraGPUController/                                      \
     Controllers/AuraSMBusController/                                    \
     Controllers/CorsairPeripheralController/                            \
@@ -44,7 +45,9 @@ INCLUDEPATH +=                                                          \
     Controllers/HyperXKeyboardController/                               \
     Controllers/LEDStripController/                                     \
     Controllers/MSI3ZoneController/                                     \
+    Controllers/MSIMysticLightController/                               \
     Controllers/MSIRGBController/                                       \
+    Controllers/NZXTKrakenController/                                   \
     Controllers/PatriotViperController/                                 \
     Controllers/PolychromeController/                                   \
     Controllers/PoseidonZRGBController/                                 \
@@ -80,6 +83,8 @@ SOURCES +=                                                              \
     super_io/super_io.cpp                                               \
     Controllers/AMDWraithPrismController/AMDWraithPrismController.cpp   \
     Controllers/AMDWraithPrismController/AMDWraithPrismControllerDetect.cpp \
+    Controllers/AuraAddressableController/AuraAddressableController.cpp \
+    Controllers/AuraAddressableController/AuraAddressableControllerDetect.cpp \
     Controllers/AuraGPUController/AuraGPUController.cpp                 \
     Controllers/AuraGPUController/AuraGPUControllerDetect.cpp           \
     Controllers/AuraSMBusController/AuraSMBusController.cpp             \
@@ -106,8 +111,12 @@ SOURCES +=                                                              \
     Controllers/LEDStripController/LEDStripControllerDetect.cpp         \
     Controllers/MSI3ZoneController/MSI3ZoneController.cpp               \
     Controllers/MSI3ZoneController/MSI3ZoneControllerDetect.cpp         \
+    Controllers/MSIMysticLightController/MSIMysticLightController.cpp   \
+    Controllers/MSIMysticLightController/MSIMysticLightControllerDetect.cpp \
     Controllers/MSIRGBController/MSIRGBController.cpp                   \
     Controllers/MSIRGBController/MSIRGBControllerDetect.cpp             \
+    Controllers/NZXTKrakenController/NZXTKrakenController.cpp           \
+    Controllers/NZXTKrakenController/NZXTKrakenControllerDetect.cpp     \
     Controllers/PatriotViperController/PatriotViperController.cpp       \
     Controllers/PatriotViperController/PatriotViperControllerDetect.cpp \
     Controllers/PolychromeController/PolychromeController.cpp           \
@@ -128,6 +137,7 @@ SOURCES +=                                                              \
     RGBController/RGBController.cpp                                     \
     RGBController/E131ControllerDetect.cpp                              \
     RGBController/RGBController_AMDWraithPrism.cpp                      \
+    RGBController/RGBController_AuraAddressable.cpp                     \
     RGBController/RGBController_AuraGPU.cpp                             \
     RGBController/RGBController_AuraSMBus.cpp                           \
     RGBController/RGBController_CorsairLightingNode.cpp                 \
@@ -143,7 +153,9 @@ SOURCES +=                                                              \
     RGBController/RGBController_E131.cpp                                \
     RGBController/RGBController_LEDStrip.cpp                            \
     RGBController/RGBController_MSI3Zone.cpp                            \
+    RGBController/RGBController_MSIMysticLight.cpp                      \
     RGBController/RGBController_MSIRGB.cpp                              \
+    RGBController/RGBController_NZXTKraken.cpp                          \
     RGBController/RGBController_PatriotViper.cpp                        \
     RGBController/RGBController_Polychrome.cpp                          \
     RGBController/RGBController_PoseidonZRGB.cpp                        \
@@ -172,6 +184,7 @@ HEADERS +=                                                              \
     serial_port/serial_port.h                                           \
     super_io/super_io.h                                                 \
     Controllers/AMDWraithPrismController/AMDWraithPrismController.h     \
+    Controllers/AuraAddressableController/AuraAddressableController.h   \
     Controllers/AuraGPUController/AuraGPUController.h                   \
     Controllers/AuraSMBusController/AuraSMBusController.h               \
     Controllers/CorsairLightingNodeController/CorsairLightingNodeController.h \
@@ -185,6 +198,7 @@ HEADERS +=                                                              \
     Controllers/HyperXKeyboardController/HyperXKeyboardController.h     \
     Controllers/LEDStripController/LEDStripController.h                 \
     Controllers/MSI3ZoneController/MSI3ZoneController.h                 \
+    Controllers/MSIMysticLightController/MSIMysticLightController.h     \
     Controllers/MSIRGBController/MSIRGBController.h                     \
     Controllers/PatriotViperController/PatriotViperController.h         \
     Controllers/PolychromeController/PolychromeController.h             \
@@ -197,6 +211,7 @@ HEADERS +=                                                              \
     Controllers/ThermaltakeRiingController/ThermaltakeRiingController.h \
     RGBController/RGBController.h                                       \
     RGBController/RGBController_AMDWraithPrism.h                        \
+    RGBController/RGBController_AuraAddressable.h                       \
     RGBController/RGBController_AuraGPU.h                               \
     RGBController/RGBController_AuraSMBus.h                             \
     RGBController/RGBController_CorsairLightingNode.h                   \
@@ -212,6 +227,7 @@ HEADERS +=                                                              \
     RGBController/RGBController_HyperXKeyboard.h                        \
     RGBController/RGBController_LEDStrip.h                              \
     RGBController/RGBController_MSI3Zone.h                              \
+    RGBController/RGBController_MSIMysticLight.h                        \
     RGBController/RGBController_MSIRGB.h                                \
     RGBController/RGBController_PatriotViper.h                          \
     RGBController/RGBController_Polychrome.h                            \
