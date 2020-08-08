@@ -11,7 +11,7 @@
 
 #include <cstring>
 
-ThermaltakeRiingController::ThermaltakeRiingController(libusb_device_handle* dev_handle)
+ThermaltakeRiingController::ThermaltakeRiingController(hid_device* dev_handle)
 {
     dev = dev_handle;
 
@@ -52,8 +52,7 @@ void ThermaltakeRiingController::SetMode(unsigned char mode, unsigned char speed
 
 void ThermaltakeRiingController::SendInit()
 {
-    unsigned char usb_buf[64];
-    int           actual;
+    unsigned char usb_buf[65];
 
     /*-----------------------------------------------------*\
     | Zero out buffer                                       |
@@ -63,14 +62,15 @@ void ThermaltakeRiingController::SendInit()
     /*-----------------------------------------------------*\
     | Set up Init packet                                    |
     \*-----------------------------------------------------*/
-    usb_buf[0x00]   = 0xFE;
-    usb_buf[0x01]   = 0x33;
+    usb_buf[0x00]   = 0x00;
+    usb_buf[0x01]   = 0xFE;
+    usb_buf[0x02]   = 0x33;
 
     /*-----------------------------------------------------*\
     | Send packet                                           |
     \*-----------------------------------------------------*/
-    libusb_interrupt_transfer(dev, 0x01, usb_buf, 64, &actual, 0);
-    libusb_interrupt_transfer(dev, 0x81, usb_buf, 64, &actual, 0);
+    hid_write(dev, usb_buf, 65);
+    hid_read(dev, usb_buf, 65);
 }
 
 void ThermaltakeRiingController::SendRGB
@@ -82,8 +82,7 @@ void ThermaltakeRiingController::SendRGB
         unsigned char*      color_data
     )
 {
-    unsigned char usb_buf[64];
-    int           actual;
+    unsigned char usb_buf[65];
 
     /*-----------------------------------------------------*\
     | Zero out buffer                                       |
@@ -93,19 +92,20 @@ void ThermaltakeRiingController::SendRGB
     /*-----------------------------------------------------*\
     | Set up RGB packet                                     |
     \*-----------------------------------------------------*/
-    usb_buf[0x00]   = 0x32;
-    usb_buf[0x01]   = 0x52;
-    usb_buf[0x02]   = port;
-    usb_buf[0x03]   = mode + ( speed & 0x03 );
+    usb_buf[0x00]   = 0x00;
+    usb_buf[0x01]   = 0x32;
+    usb_buf[0x02]   = 0x52;
+    usb_buf[0x03]   = port;
+    usb_buf[0x04]   = mode + ( speed & 0x03 );
 
     /*-----------------------------------------------------*\
     | Copy in GRB color data                                |
     \*-----------------------------------------------------*/
-    memcpy(&usb_buf[0x04], color_data, (num_colors * 3));
+    memcpy(&usb_buf[0x05], color_data, (num_colors * 3));
 
     /*-----------------------------------------------------*\
     | Send packet                                           |
     \*-----------------------------------------------------*/
-    libusb_interrupt_transfer(dev, 0x01, usb_buf, 64, &actual, 0);
-    libusb_interrupt_transfer(dev, 0x81, usb_buf, 64, &actual, 0);
+    hid_write(dev, usb_buf, 65);
+    hid_read(dev, usb_buf, 65);
 }

@@ -25,12 +25,12 @@ RGBController_RGBFusion::RGBController_RGBFusion(RGBFusionController* rgb_fusion
 
     type = DEVICE_TYPE_MOTHERBOARD;
 
-    mode Static;
-    Static.name       = "Static";
-    Static.value      = RGB_FUSION_MODE_STATIC;
-    Static.flags      = MODE_FLAG_HAS_PER_LED_COLOR;
-    Static.color_mode = MODE_COLORS_PER_LED;
-    modes.push_back(Static);
+    mode Direct;
+    Direct.name       = "Direct";
+    Direct.value      = RGB_FUSION_MODE_STATIC;
+    Direct.flags      = MODE_FLAG_HAS_PER_LED_COLOR;
+    Direct.color_mode = MODE_COLORS_PER_LED;
+    modes.push_back(Direct);
 
     mode Breathing;
     Breathing.name       = "Breathing";
@@ -75,6 +75,7 @@ void RGBController_RGBFusion::SetupZones()
         new_zone->leds_min      = 1;
         new_zone->leds_max      = 1;
         new_zone->leds_count    = 1;
+        new_zone->matrix_map    = NULL;
 
         /*---------------------------------------------------------*\
         | Push new zone to zones vector                             |
@@ -107,7 +108,7 @@ void RGBController_RGBFusion::ResizeZone(int /*zone*/, int /*new_size*/)
     \*---------------------------------------------------------*/
 }
 
-void RGBController_RGBFusion::UpdateLEDs()
+void RGBController_RGBFusion::DeviceUpdateLEDs()
 {
     for (std::size_t led = 0; led < colors.size(); led++)
     {
@@ -155,7 +156,7 @@ void RGBController_RGBFusion::SetCustomMode()
     active_mode = 0;
 }
 
-void RGBController_RGBFusion::UpdateMode()
+void RGBController_RGBFusion::DeviceUpdateMode()
 {
     rgb_fusion->SetMode(modes[active_mode].value, modes[active_mode].speed);
 }

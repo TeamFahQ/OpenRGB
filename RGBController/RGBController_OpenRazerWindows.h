@@ -17,35 +17,58 @@
 
 typedef struct
 {
-    struct device_attribute *   device_type;
-    struct device_attribute *   device_serial;
-    struct device_attribute *   firmware_version;
+    struct device_attribute* device_type;
+    struct device_attribute* device_serial;
+    struct device_attribute* firmware_version;
 
-    struct device_attribute *   matrix_custom_frame;
-    struct device_attribute *   matrix_brightness;
+    struct device_attribute* matrix_custom_frame;
+    struct device_attribute* matrix_brightness;
 
-    struct device_attribute *   matrix_effect_custom;
-    struct device_attribute *   matrix_effect_none;
-    struct device_attribute *   matrix_effect_static;
-    struct device_attribute *   matrix_effect_breath;
-    struct device_attribute *   matrix_effect_spectrum;
-    struct device_attribute *   matrix_effect_reactive;
-    struct device_attribute *   matrix_effect_wave;
+    struct device_attribute* matrix_effect_custom;
+    struct device_attribute* matrix_effect_none;
+    struct device_attribute* matrix_effect_static;
+    struct device_attribute* matrix_effect_breath;
+    struct device_attribute* matrix_effect_spectrum;
+    struct device_attribute* matrix_effect_reactive;
+    struct device_attribute* matrix_effect_wave;
 
-    struct device_attribute *   logo_led_brightness;
-    struct device_attribute *   logo_matrix_effect_none;
-    struct device_attribute *   logo_matrix_effect_static;
-    struct device_attribute *   logo_matrix_effect_spectrum;
-    struct device_attribute *   logo_matrix_effect_reactive;
+    struct device_attribute* logo_led_brightness;
+    struct device_attribute* logo_matrix_effect_none;
+    struct device_attribute* logo_matrix_effect_static;
+    struct device_attribute* logo_matrix_effect_breath;
+    struct device_attribute* logo_matrix_effect_spectrum;
+    struct device_attribute* logo_matrix_effect_reactive;
 
-    struct device_attribute *   scroll_led_brightness;
-    struct device_attribute *   scroll_matrix_effect_none;
-    struct device_attribute *   scroll_matrix_effect_static;
-    struct device_attribute *   scroll_matrix_effect_spectrum;
-    struct device_attribute *   scroll_matrix_effect_reactive;
+    struct device_attribute* scroll_led_brightness;
+    struct device_attribute* scroll_matrix_effect_none;
+    struct device_attribute* scroll_matrix_effect_static;
+    struct device_attribute* scroll_matrix_effect_breath;
+    struct device_attribute* scroll_matrix_effect_spectrum;
+    struct device_attribute* scroll_matrix_effect_reactive;
 
-    struct device_attribute *   scroll_led_effect;
-    struct device_attribute *   scroll_led_rgb;
+    struct device_attribute* left_led_brightness;
+    struct device_attribute* left_matrix_effect_none;
+    struct device_attribute* left_matrix_effect_static;
+    struct device_attribute* left_matrix_effect_breath;
+    struct device_attribute* left_matrix_effect_spectrum;
+    struct device_attribute* left_matrix_effect_reactive;
+    struct device_attribute* left_matrix_effect_wave;
+
+    struct device_attribute* right_led_brightness;
+    struct device_attribute* right_matrix_effect_none;
+    struct device_attribute* right_matrix_effect_static;
+    struct device_attribute* right_matrix_effect_breath;
+    struct device_attribute* right_matrix_effect_spectrum;
+    struct device_attribute* right_matrix_effect_reactive;
+    struct device_attribute* right_matrix_effect_wave;
+
+    struct device_attribute* logo_led_effect;
+    struct device_attribute* logo_led_rgb;
+    struct device_attribute* logo_led_state;
+
+    struct device_attribute* scroll_led_effect;
+    struct device_attribute* scroll_led_rgb;
+    struct device_attribute* scroll_led_state;
 } device_fn_type;
 
 class RGBController_OpenRazer : public RGBController
@@ -60,6 +83,7 @@ public:
         RAZER_MODE_SPECTRUM_CYCLE,
         RAZER_MODE_WAVE,
         RAZER_MODE_REACTIVE,
+        RAZER_MODE_FLASHING,
         RAZER_NUM_MODES
     };
 
@@ -79,12 +103,12 @@ public:
 
     void        ResizeZone(int zone, int new_size);
 
-    void        UpdateLEDs();
+    void        DeviceUpdateLEDs();
     void        UpdateZoneLEDs(int zone);
     void        UpdateSingleLED(int led);
 
     void        SetCustomMode();
-    void        UpdateMode();
+    void        DeviceUpdateMode();
 
     int device_index;
 

@@ -1,3 +1,4 @@
+#include "Detector.h"
 #include "RGBController.h"
 #include "RGBController_E131.h"
 #include <vector>
@@ -170,3 +171,5 @@ void DetectE131Controllers(std::vector<RGBController*> &rgb_controllers)
     }
 
 }   /* DetectE131Controllers() */
+
+REGISTER_DETECTOR("E1.31", DetectE131Controllers);

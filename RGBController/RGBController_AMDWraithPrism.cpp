@@ -18,12 +18,12 @@ RGBController_AMDWraithPrism::RGBController_AMDWraithPrism(AMDWraithPrismControl
     description = "AMD Wraith Prism Device";
     version     = wraith->GetFirmwareVersionString();
 
-    mode Static;
-    Static.name       = "Static";
-    Static.value      = AMD_WRAITH_PRISM_EFFECT_CHANNEL_STATIC;
-    Static.flags      = MODE_FLAG_HAS_PER_LED_COLOR;
-    Static.color_mode = MODE_COLORS_PER_LED;
-    modes.push_back(Static);
+    mode Direct;
+    Direct.name       = "Direct";
+    Direct.value      = AMD_WRAITH_PRISM_EFFECT_CHANNEL_STATIC;
+    Direct.flags      = MODE_FLAG_HAS_PER_LED_COLOR;
+    Direct.color_mode = MODE_COLORS_PER_LED;
+    modes.push_back(Direct);
 
     mode Breathing;
     Breathing.name       = "Breathing";
@@ -104,6 +104,7 @@ void RGBController_AMDWraithPrism::SetupZones()
     logo_zone.leds_min      = 1;
     logo_zone.leds_max      = 1;
     logo_zone.leds_count    = 1;
+    logo_zone.matrix_map    = NULL;
     zones.push_back(logo_zone);
 
     zone fan_zone;
@@ -112,6 +113,7 @@ void RGBController_AMDWraithPrism::SetupZones()
     fan_zone.leds_min       = 1;
     fan_zone.leds_max       = 1;
     fan_zone.leds_count     = 1;
+    fan_zone.matrix_map     = NULL;
     zones.push_back(fan_zone);
 
     zone ring_zone;
@@ -120,6 +122,7 @@ void RGBController_AMDWraithPrism::SetupZones()
     ring_zone.leds_min      = 1;
     ring_zone.leds_max      = 1;
     ring_zone.leds_count    = 1;
+    ring_zone.matrix_map    = NULL;
     zones.push_back(ring_zone);
 
     /*---------------------------------------------------------*\
@@ -147,7 +150,7 @@ void RGBController_AMDWraithPrism::ResizeZone(int /*zone*/, int /*new_size*/)
     \*---------------------------------------------------------*/
 }
 
-void RGBController_AMDWraithPrism::UpdateLEDs()
+void RGBController_AMDWraithPrism::DeviceUpdateLEDs()
 {
     unsigned char red = RGBGetRValue(colors[0]);
     unsigned char grn = RGBGetGValue(colors[0]);
@@ -196,7 +199,7 @@ void RGBController_AMDWraithPrism::SetCustomMode()
     active_mode = 0;
 }
 
-void RGBController_AMDWraithPrism::UpdateMode()
+void RGBController_AMDWraithPrism::DeviceUpdateMode()
 {
     bool random = (modes[active_mode].color_mode == MODE_COLORS_RANDOM);
 
@@ -230,5 +233,5 @@ void RGBController_AMDWraithPrism::UpdateMode()
             break;
     }
 
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }

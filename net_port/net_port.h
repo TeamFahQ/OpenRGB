@@ -33,6 +33,7 @@
 #define WSACleanup()
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
+#define SD_RECEIVE SHUT_RD
 #endif
 
 //Network Port Class
@@ -54,8 +55,10 @@ public:
     bool tcp_client_connect();
 
     //Function to open a server
-    bool tcp_server(const char * port);
-    void tcp_server_listen();
+    bool        tcp_server(const char * port);
+    std::size_t tcp_server_num_clients();
+    SOCKET *    tcp_server_get_client(std::size_t client_idx);
+    SOCKET *    tcp_server_listen();
 
     int udp_listen(char * recv_data, int length);
     int tcp_listen(char * recv_data, int length);
@@ -68,12 +71,13 @@ public:
     void tcp_close();
 
     bool connected;
+    SOCKET sock;
 
 private:
 #ifdef WIN32
     WSADATA     wsa;
 #endif
-    SOCKET sock;
+
     std::vector<SOCKET *> clients;
 
     sockaddr addrDest;

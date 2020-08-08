@@ -1,3 +1,4 @@
+#include "Detector.h"
 #include "PatriotViperController.h"
 #include "RGBController.h"
 #include "RGBController_PatriotViper.h"
@@ -6,16 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-
-static void Sleep(unsigned int milliseconds)
-{
-    usleep(1000 * milliseconds);
-}
-#endif
+using namespace std::chrono_literals;
 
 /******************************************************************************************\
 *                                                                                          *
@@ -44,13 +36,13 @@ void DetectPatriotViperControllers(std::vector<i2c_smbus_interface*> &busses, st
             // Tests SPD addresses in order: 0x00, 0x40, 0x41, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68
             busses[bus]->i2c_smbus_write_byte_data(0x36, 0x00, 0xFF);
 
-            Sleep(1);
+            std::this_thread::sleep_for(1ms);
 
             if(busses[bus]->i2c_smbus_read_byte_data(slot_addr, 0x00) == 0x23)
             {
                 busses[bus]->i2c_smbus_write_byte_data(0x37, 0x00, 0xFF);
 
-                Sleep(1);
+                std::this_thread::sleep_for(1ms);
 
                 if((busses[bus]->i2c_smbus_read_byte_data(slot_addr, 0x40) == 0x85)
                  &&(busses[bus]->i2c_smbus_read_byte_data(slot_addr, 0x41) == 0x02)
@@ -67,7 +59,7 @@ void DetectPatriotViperControllers(std::vector<i2c_smbus_interface*> &busses, st
                 }
             }
 
-            Sleep(1);
+            std::this_thread::sleep_for(1ms);
         }
 
         if(slots_valid != 0)
@@ -79,3 +71,5 @@ void DetectPatriotViperControllers(std::vector<i2c_smbus_interface*> &busses, st
     }
 
 }   /* DetectPatriotViperControllers() */
+
+REGISTER_I2C_DETECTOR("Patriot Viper", DetectPatriotViperControllers);

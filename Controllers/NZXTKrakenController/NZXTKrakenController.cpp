@@ -10,9 +10,6 @@
 #include <sstream>
 #include <cstring>
 
-const int NZXT_KRAKEN_READ_ENDPOINT = 0x81;
-const int NZXT_KRAKEN_WRITE_ENDPOINT = 0x01;
-
 static void SetColor(const std::vector<RGBColor>& colors, unsigned char* color_data)
 {
     for (std::size_t idx = 0; idx < colors.size(); idx++)
@@ -30,7 +27,7 @@ static RGBColor ToLogoColor(RGBColor rgb)
     return ToRGBColor(RGBGetGValue(rgb), RGBGetRValue(rgb), RGBGetBValue(rgb));
 }
 
-NZXTKrakenController::NZXTKrakenController(libusb_device_handle* dev_handle)
+NZXTKrakenController::NZXTKrakenController(hid_device* dev_handle)
 {
     dev = dev_handle;
 
@@ -42,7 +39,7 @@ NZXTKrakenController::NZXTKrakenController(libusb_device_handle* dev_handle)
 
 NZXTKrakenController::~NZXTKrakenController()
 {
-
+    hid_close(dev);
 }
 
 std::string NZXTKrakenController::GetFirmwareVersion()
@@ -52,11 +49,17 @@ std::string NZXTKrakenController::GetFirmwareVersion()
 
 void NZXTKrakenController::UpdateStatus()
 {
-    int actual;
     unsigned char usb_buf[64];
+
+    /*-----------------------------------------------------*\
+    | Zero out buffer                                       |
+    \*-----------------------------------------------------*/
     memset(usb_buf, 0, sizeof(usb_buf));
 
-    libusb_interrupt_transfer(dev, NZXT_KRAKEN_READ_ENDPOINT, usb_buf, sizeof(usb_buf), &actual, 0);
+    /*-----------------------------------------------------*\
+    | Read packet                                           |
+    \*-----------------------------------------------------*/
+    hid_read(dev, usb_buf, 64);
 
     /*-----------------------------------------------------*\
     | Extract cooler information                            |
@@ -87,14 +90,28 @@ void NZXTKrakenController::UpdateEffect
     )
 {
     unsigned char color_data[9 * 3];
+
+    /*-----------------------------------------------------*\
+    | Zero out buffer                                       |
+    \*-----------------------------------------------------*/
     memset(color_data, 0, sizeof(color_data));
 
+    /*-----------------------------------------------------*\
+    | Fill in color data                                    |
+    \*-----------------------------------------------------*/
     if(!colors.empty() && channel != NZXT_KRAKEN_CHANNEL_RING)
     {
         colors[0] = ToLogoColor(colors[0]);
     }
 
+    /*-----------------------------------------------------*\
+    | Update color data                                     |
+    \*-----------------------------------------------------*/
     SetColor(colors, color_data);
+
+    /*-----------------------------------------------------*\
+    | Send update packet                                    |
+    \*-----------------------------------------------------*/
     SendEffect(channel, mode, direction, color_data, speed, false, seq);
 }
 
@@ -110,8 +127,7 @@ void NZXTKrakenController::SendEffect
     int             size /* = 0 */
     )
 {
-    int actual;
-    unsigned char usb_buf[65];
+    unsigned char usb_buf[64];
 
     /*-----------------------------------------------------*\
     | Zero out buffer                                       |
@@ -154,13 +170,5 @@ void NZXTKrakenController::SendEffect
     /*-----------------------------------------------------*\
     | Send effect                                           |
     \*-----------------------------------------------------*/
-    libusb_interrupt_transfer
-    (
-        dev,
-        NZXT_KRAKEN_WRITE_ENDPOINT,
-        usb_buf,
-        sizeof(usb_buf),
-        &actual,
-        0
-    );
+    hid_write(dev, usb_buf, 64);
 }

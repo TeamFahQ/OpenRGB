@@ -36,6 +36,7 @@ void RGBController_LEDStrip::SetupZones()
     led_zone.leds_min   = strip->num_leds;
     led_zone.leds_max   = strip->num_leds;
     led_zone.leds_count = strip->num_leds;
+    led_zone.matrix_map = NULL;
     zones.push_back(led_zone);
 
     for(int led_idx = 0; led_idx < strip->num_leds; led_idx++)
@@ -57,7 +58,7 @@ void RGBController_LEDStrip::ResizeZone(int /*zone*/, int /*new_size*/)
     \*---------------------------------------------------------*/
 }
 
-void RGBController_LEDStrip::UpdateLEDs()
+void RGBController_LEDStrip::DeviceUpdateLEDs()
 {
     strip->SetLEDs(colors);
 }
@@ -77,7 +78,7 @@ void RGBController_LEDStrip::SetCustomMode()
 
 }
 
-void RGBController_LEDStrip::UpdateMode()
+void RGBController_LEDStrip::DeviceUpdateMode()
 {
 
 }

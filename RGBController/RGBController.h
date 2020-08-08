@@ -9,8 +9,11 @@
 
 #pragma once
 
+#include <atomic>
 #include <vector>
 #include <string>
+#include <thread>
+#include <chrono>
 
 typedef unsigned int RGBColor;
 
@@ -110,10 +113,18 @@ enum
     DEVICE_TYPE_MOUSE,
     DEVICE_TYPE_MOUSEMAT,
     DEVICE_TYPE_HEADSET,
+    DEVICE_TYPE_HEADSET_STAND,
     DEVICE_TYPE_UNKNOWN
 };
 
 std::string device_type_to_str(device_type type);
+
+typedef struct
+{
+    unsigned int            height;
+    unsigned int            width;
+    unsigned int *          map;
+} matrix_map_type;
 
 typedef struct
 {
@@ -125,6 +136,7 @@ typedef struct
     unsigned int            leds_count;     /* Number of LEDs in zone   */
     unsigned int            leds_min;       /* Minimum number of LEDs   */
     unsigned int            leds_max;       /* Maximum number of LEDs   */
+    matrix_map_type *       matrix_map;     /* Matrix map pointer       */
 } zone;
 
 class RGBController
@@ -142,7 +154,11 @@ public:
     device_type             type;           /* device type              */
     int                     active_mode = 0;/* active mode              */
 
-    virtual ~RGBController() = default;
+    /*---------------------------------------------------------*\
+    | RGBController base class constructor                      |
+    \*---------------------------------------------------------*/
+    RGBController();
+    ~RGBController();
 
     /*---------------------------------------------------------*\
     | Generic functions implemented in RGBController.cpp        |
@@ -160,6 +176,26 @@ public:
     unsigned char *         GetDeviceDescription();
     void                    ReadDeviceDescription(unsigned char* data_buf);
 
+    unsigned char *         GetModeDescription(int mode);
+    void                    SetModeDescription(unsigned char* data_buf);
+
+    unsigned char *         GetColorDescription();
+    void                    SetColorDescription(unsigned char* data_buf);
+
+    unsigned char *         GetZoneColorDescription(int zone);
+    void                    SetZoneColorDescription(unsigned char* data_buf);
+
+    unsigned char *         GetSingleLEDColorDescription(int led);
+    void                    SetSingleLEDColorDescription(unsigned char* data_buf);
+
+    void                    UpdateLEDs();
+    //void                    UpdateZoneLEDs(int zone);
+    //void                    UpdateSingleLED(int led);
+
+    void                    UpdateMode();
+
+    void                    DeviceCallThreadFunction();
+
     /*---------------------------------------------------------*\
     | Functions to be implemented in device implementation      |
     \*---------------------------------------------------------*/
@@ -167,10 +203,20 @@ public:
 
     virtual void            ResizeZone(int zone, int new_size)          = 0;
 
-    virtual void            UpdateLEDs()                                = 0;
+    virtual void            DeviceUpdateLEDs()                          = 0;
     virtual void            UpdateZoneLEDs(int zone)                    = 0;
     virtual void            UpdateSingleLED(int led)                    = 0;
 
+    virtual void            DeviceUpdateMode()                          = 0;
+
     virtual void            SetCustomMode()                             = 0;
-    virtual void            UpdateMode()                                = 0;
+
+private:
+    std::thread*            DeviceCallThread;
+    std::atomic<bool>       CallFlag_UpdateLEDs;
+    std::atomic<bool>       CallFlag_UpdateMode;
+    std::atomic<bool>       DeviceThreadRunning;
+    //bool                    CallFlag_UpdateZoneLEDs                     = false;
+    //bool                    CallFlag_UpdateSingleLED                    = false;
+    //bool                    CallFlag_UpdateMode                         = false;
 };

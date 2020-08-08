@@ -79,6 +79,7 @@ void RGBController_E131::SetupZones()
         led_zone.leds_min       = devices[zone_idx].num_leds;
         led_zone.leds_max       = devices[zone_idx].num_leds;
         led_zone.leds_count     = devices[zone_idx].num_leds;
+        led_zone.matrix_map     = NULL;
 
         zones.push_back(led_zone);
     }
@@ -109,7 +110,7 @@ void RGBController_E131::ResizeZone(int /*zone*/, int /*new_size*/)
     \*---------------------------------------------------------*/
 }
 
-void RGBController_E131::UpdateLEDs()
+void RGBController_E131::DeviceUpdateLEDs()
 {
     int color_idx = 0;
 
@@ -172,12 +173,12 @@ void RGBController_E131::UpdateLEDs()
 
 void RGBController_E131::UpdateZoneLEDs(int /*zone*/)
 {
-	UpdateLEDs();
+	DeviceUpdateLEDs();
 }
 
 void RGBController_E131::UpdateSingleLED(int /*led*/)
 {
-	UpdateLEDs();
+	DeviceUpdateLEDs();
 }
 
 void RGBController_E131::SetCustomMode()
@@ -185,7 +186,7 @@ void RGBController_E131::SetCustomMode()
 
 }
 
-void RGBController_E131::UpdateMode()
+void RGBController_E131::DeviceUpdateMode()
 {
 
 }

@@ -26,16 +26,7 @@
 #define THREADRETURN return(NULL);
 #endif
 
-#ifdef WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-
-static void Sleep(unsigned int milliseconds)
-{
-    usleep(1000 * milliseconds);
-}
-#endif
+using namespace std::chrono_literals;
 
 THREAD keepalive_thread(void *param)
 {
@@ -44,6 +35,17 @@ THREAD keepalive_thread(void *param)
     THREADRETURN
 }
 
+//0xFFFFFFFF indicates an unused entry in matrix
+#define NA  0xFFFFFFFF
+
+static unsigned int matrix_map[6][23] =
+    { {   0,  NA,  16,  30,  44,  54,  NA,  65,  75,  84,  95,  NA,   8,  23 ,  38,   6 ,  22,  36,  49,  NA,  NA,  NA,  NA },
+      {   1,  17,  31,  45,  55,  66,  76,  85,  96,   9,  24,  NA,  39,   7 ,  37,  NA ,  60,  70,  80,  52,  63,  73,  82 },
+      {   2,  NA,  18,  32,  46,  56,  NA,  67,  77,  86,  97,  10,  25,  40 ,  90,  101,  50,  61,  71,  51,  62,  72,  93 },
+      {   3,  NA,  19,  33,  47,  57,  NA,  68,  78,  87,  98,  11,  26,  41 ,  28,  14 ,  NA,  NA,  NA,  92, 103,  53,  NA },
+      {   4,  20,  34,  48,  58,  69,  NA,  79,  NA,  88,  99,  12,  27,  42 ,  81,  NA ,  NA, 102,  NA,  64,  74,  83, 104 },
+      {   5,  21,  35,  NA,  NA,  NA,  NA,  59,  NA,  NA,  NA,  NA,  89,  100,  13,  91 ,  15,  29,  43,  94,  NA, 105,  NA } };
+
 static const char* zone_names[] =
 {
     "Keyboard",
@@ -51,14 +53,21 @@ static const char* zone_names[] =
     "Media Keys"
 };
 
+static zone_type zone_types[] =
+{
+    ZONE_TYPE_MATRIX,
+    ZONE_TYPE_LINEAR,
+    ZONE_TYPE_SINGLE
+};
+
 static const unsigned int zone_sizes[] =
 {
-    104,
+    106,
     18,
     4
 };
 
-static const char* led_names[] =
+static const char *led_names[] =
 {
     "Key: Escape",
     "Key: `",
@@ -74,11 +83,13 @@ static const char* led_names[] =
     "Key: L",
     "Key: ,",
     "Key: Context",
+    "Key: Enter (ISO)",
     "Key: Left Arrow",
     "Key: F1",
     "Key: 1",
     "Key: Q",
     "Key: A",
+    "Key: \\ (ISO)",
     "Key: Left Windows",
     "Key: Print Screen",
     "Key: F10",
@@ -159,7 +170,7 @@ static const char* led_names[] =
     "Key: K",
     "Key: M",
     "Key: Right Windows",
-    "Key: \\",
+    "Key: \\ (ANSI)",
     "Key: Up Arrow",
     "Key: Number Pad 5",
     "Key: Number Pad Enter",
@@ -182,10 +193,10 @@ static const char* led_names[] =
     "RGB Strip 16",
     "RGB Strip 17",
     "RGB Strip 18",
-    "Media Previous",
-    "Media Play/Pause",
-    "Media Next",
-    "Media Mute"
+    "Key: Media Previous",
+    "Key: Media Play/Pause",
+    "Key: Media Next",
+    "Key: Media Mute"
 };
 
 RGBController_HyperXKeyboard::RGBController_HyperXKeyboard(HyperXKeyboardController* hyperx_ptr)
@@ -264,10 +275,24 @@ void RGBController_HyperXKeyboard::SetupZones()
     for(unsigned int zone_idx = 0; zone_idx < 3; zone_idx++)
     {
         zone new_zone;
-        new_zone.name           = zone_names[zone_idx];
-        new_zone.leds_min       = zone_sizes[zone_idx];
-        new_zone.leds_max       = zone_sizes[zone_idx];
-        new_zone.leds_count     = zone_sizes[zone_idx];
+        new_zone.name                   = zone_names[zone_idx];
+        new_zone.type                   = zone_types[zone_idx];
+        new_zone.leds_min               = zone_sizes[zone_idx];
+        new_zone.leds_max               = zone_sizes[zone_idx];
+        new_zone.leds_count             = zone_sizes[zone_idx];
+
+        if(zone_types[zone_idx] == ZONE_TYPE_MATRIX)
+        {
+            new_zone.matrix_map         = new matrix_map_type;
+            new_zone.matrix_map->height = 6;
+            new_zone.matrix_map->width  = 23;
+            new_zone.matrix_map->map    = (unsigned int *)&matrix_map;
+        }
+        else
+        {
+            new_zone.matrix_map         = NULL;
+        }
+
         zones.push_back(new_zone);
 
         total_led_count += zone_sizes[zone_idx];
@@ -290,8 +315,10 @@ void RGBController_HyperXKeyboard::ResizeZone(int /*zone*/, int /*new_size*/)
     \*---------------------------------------------------------*/
 }
 
-void RGBController_HyperXKeyboard::UpdateLEDs()
+void RGBController_HyperXKeyboard::DeviceUpdateLEDs()
 {
+    last_update_time = std::chrono::steady_clock::now();
+
     if(active_mode == 0)
     {
         hyperx->SetLEDsDirect(colors);
@@ -304,12 +331,12 @@ void RGBController_HyperXKeyboard::UpdateLEDs()
 
 void RGBController_HyperXKeyboard::UpdateZoneLEDs(int /*zone*/)
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_HyperXKeyboard::UpdateSingleLED(int /*led*/)
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_HyperXKeyboard::SetCustomMode()
@@ -317,7 +344,7 @@ void RGBController_HyperXKeyboard::SetCustomMode()
     active_mode = 0;
 }
 
-void RGBController_HyperXKeyboard::UpdateMode()
+void RGBController_HyperXKeyboard::DeviceUpdateMode()
 {
     if(modes[active_mode].color_mode == MODE_COLORS_MODE_SPECIFIC)
     {
@@ -336,8 +363,11 @@ void RGBController_HyperXKeyboard::KeepaliveThread()
     {
         if(active_mode == 0)
         {
-            hyperx->SetLEDsDirect(colors);
+            if((std::chrono::steady_clock::now() - last_update_time) > std::chrono::milliseconds(50))
+            {
+                UpdateLEDs();
+            }
         }
-        Sleep(100);
+        std::this_thread::sleep_for(10ms);;
     }
 }

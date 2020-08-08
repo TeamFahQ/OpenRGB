@@ -9,16 +9,30 @@
 
 #include "RGBController_CorsairPeripheral.h"
 
+//0xFFFFFFFF indicates an unused entry in matrix
+#define NA  0xFFFFFFFF
+
+static unsigned int matrix_map[6][23] =
+    { {   0,  NA,  10,  18,  28,  36,  NA,  46,  55,  64,  74,  NA,  84,  93, 102,   6,  15,  24,  33,  26,  35,  44,  53 },
+      {   1,  11,  19,  29,  37,  47,  56,  65,  75,  85,  94,  NA, 103,   7,  25,  NA,  42,  51,  60,  62,  72,  82,  91 },
+      {   2,  NA,  12,  20,  30,  38,  NA,  48,  57,  66,  76,  86,  95, 104,  70,  80,  34,  43,  52,  9,   17,  27, 100 },
+      {   3,  NA,  13,  21,  31,  39,  NA,  49,  58,  67,  77,  87,  96, 105,  98,  NA,  NA,  NA,  NA,  45,  54,  63,  NA },
+      {   4,  NA,  22,  32,  40,  50,  NA,  59,  NA,  68,  78,  88,  97, 106,  61,  NA,  NA,  81,  NA,  73,  83,  92, 109 },
+      {   5,  14,  23,  NA,  NA,  NA,  NA,  41,  NA,  NA,  NA,  NA,  69,  79,  89,  71,  90,  99, 108, 101,  NA, 110,  NA } };
+
 static const char* zone_names[] =
 {
-    "Keyboard",
-    "Media Keys"
+    "Keyboard"
 };
 
 static const unsigned int zone_sizes[] =
 {
-    104,
-    7
+    111
+};
+
+static const zone_type zone_types[] =
+{
+    ZONE_TYPE_MATRIX
 };
 
 static const char* led_names[] =
@@ -39,7 +53,7 @@ static const char* led_names[] =
     "Key: A",               //15
     "Key: Left Windows",    //17
     "Key: Print Screen",    //18
-    "Media Mute",           //20
+    "Key: Media Mute",      //20
     "Key: Number Pad 8",    //21
     "Key: F2",              //24
     "Key: 2",               //25
@@ -49,7 +63,7 @@ static const char* led_names[] =
     "Key: Left Alt",        //29
     "Key: Scroll Lock",     //30
     "Key: Backspace",       //31
-    "Media Stop",           //32
+    "Key: Media Stop",      //32
     "Key: Number Pad 9",    //33
     "Key: F3",              //36
     "Key: 3",               //37
@@ -58,7 +72,7 @@ static const char* led_names[] =
     "Key: X",               //40
     "Key: Pause/Break",     //42
     "Key: Delete",          //43
-    "Media Previous",       //44
+    "Key: Media Previous",  //44
     "Key: F4",              //48
     "Key: 4",               //49
     "Key: R",               //50
@@ -67,7 +81,7 @@ static const char* led_names[] =
     "Key: Space",           //53
     "Key: Insert",          //54
     "Key: End",             //55
-    "Media Play/Pause",     //56
+    "Key: Media Play/Pause",//56
     "Key: Number Pad 4",    //57
     "Key: F5",              //60
     "Key: 5",               //61
@@ -76,7 +90,7 @@ static const char* led_names[] =
     "Key: V",               //64
     "Key: Home",            //66
     "Key: Page Down",       //67
-    "Media Next",           //68
+    "Key: Media Next",      //68
     "Key: Number Pad 5",    //69
     "Key: F6",              //72
     "Key: 6",               //73
@@ -103,7 +117,7 @@ static const char* led_names[] =
     "Key: K",               //99
     "Key: M",               //100
     "Key: Right Windows",   //101
-    "Key: \\",              //102
+    "Key: \\ (ANSI)",       //102
     "Key: Up Arrow",        //103
     "Key: Number Pad *",    //104
     "Key: Number Pad 2",    //105
@@ -134,7 +148,6 @@ static const char* led_names[] =
     "Key: Right Arrow",     //139
     "Key: Number Pad Enter",//140
     "Key: Number Pad .",    //141
-    "Key: F12"
 };
 
 RGBController_CorsairPeripheral::RGBController_CorsairPeripheral(CorsairPeripheralController* corsair_ptr)
@@ -172,12 +185,16 @@ void RGBController_CorsairPeripheral::SetupZones()
     switch(type)
     {
         case DEVICE_TYPE_KEYBOARD:
-            num_zones = 2;
+            num_zones = 1;
             break;
 
         case DEVICE_TYPE_MOUSE:
         case DEVICE_TYPE_MOUSEMAT:
             num_zones = 1;
+            break;
+
+        case DEVICE_TYPE_HEADSET_STAND:
+            num_zones = 2;
             break;
     }
 
@@ -191,18 +208,62 @@ void RGBController_CorsairPeripheral::SetupZones()
         switch(type)
         {
             case DEVICE_TYPE_KEYBOARD:
-                new_zone.name           = zone_names[zone_idx];
-                new_zone.leds_min       = zone_sizes[zone_idx];
-                new_zone.leds_max       = zone_sizes[zone_idx];
-                new_zone.leds_count     = zone_sizes[zone_idx];
+                new_zone.name                   = zone_names[zone_idx];
+                new_zone.type                   = zone_types[zone_idx];
+                new_zone.leds_min               = zone_sizes[zone_idx];
+                new_zone.leds_max               = zone_sizes[zone_idx];
+                new_zone.leds_count             = zone_sizes[zone_idx];
+                
+                if(zone_types[zone_idx] == ZONE_TYPE_MATRIX)
+                {
+                    new_zone.matrix_map         = new matrix_map_type;
+                    new_zone.matrix_map->height = 6;
+                    new_zone.matrix_map->width  = 23;
+                    new_zone.matrix_map->map    = (unsigned int *)&matrix_map;
+                }
+                else
+                {
+                    new_zone.matrix_map         = NULL;
+                }
                 break;
 
             case DEVICE_TYPE_MOUSE:
-            case DEVICE_TYPE_MOUSEMAT:
                 new_zone.name           = "Mousemat Zone";
+                new_zone.type           = ZONE_TYPE_SINGLE;
                 new_zone.leds_min       = 15;
                 new_zone.leds_max       = 15;
                 new_zone.leds_count     = 15;
+                new_zone.matrix_map     = NULL;
+                break;
+
+            case DEVICE_TYPE_MOUSEMAT:
+                new_zone.name           = "Mousemat Zone";
+                new_zone.type           = ZONE_TYPE_LINEAR;
+                new_zone.leds_min       = 15;
+                new_zone.leds_max       = 15;
+                new_zone.leds_count     = 15;
+                new_zone.matrix_map     = NULL;
+                break;
+
+            case DEVICE_TYPE_HEADSET_STAND:
+                if(zone_idx == 0)
+                {
+                    new_zone.name           = "Base LED Strip";
+                    new_zone.type           = ZONE_TYPE_LINEAR;
+                    new_zone.leds_min       = 8;
+                    new_zone.leds_max       = 8;
+                    new_zone.leds_count     = 8;
+                    new_zone.matrix_map     = NULL;
+                }
+                else
+                {
+                    new_zone.name           = "Logo";
+                    new_zone.type           = ZONE_TYPE_SINGLE;
+                    new_zone.leds_min       = 1;
+                    new_zone.leds_max       = 1;
+                    new_zone.leds_count     = 1;
+                    new_zone.matrix_map     = NULL;
+                }
                 break;
         }
 
@@ -223,6 +284,7 @@ void RGBController_CorsairPeripheral::SetupZones()
 
             case DEVICE_TYPE_MOUSE:
             case DEVICE_TYPE_MOUSEMAT:
+            case DEVICE_TYPE_HEADSET_STAND:
                 new_led.name = "Mousemat LED ";
                 new_led.name.append(std::to_string(led_idx + 1));
                 break;
@@ -241,7 +303,7 @@ void RGBController_CorsairPeripheral::ResizeZone(int /*zone*/, int /*new_size*/)
     \*---------------------------------------------------------*/
 }
 
-void RGBController_CorsairPeripheral::UpdateLEDs()
+void RGBController_CorsairPeripheral::DeviceUpdateLEDs()
 {
     corsair->SetLEDs(colors);
 }
@@ -261,7 +323,7 @@ void RGBController_CorsairPeripheral::SetCustomMode()
     active_mode = 0;
 }
 
-void RGBController_CorsairPeripheral::UpdateMode()
+void RGBController_CorsairPeripheral::DeviceUpdateMode()
 {
 
 }

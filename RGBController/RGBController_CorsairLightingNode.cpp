@@ -208,6 +208,8 @@ void RGBController_CorsairLightingNode::SetupZones()
             zones[channel_idx].leds_count = 0;
         }
 
+        zones[channel_idx].matrix_map = NULL;
+        
         for (unsigned int led_ch_idx = 0; led_ch_idx < zones[channel_idx].leds_count; led_ch_idx++)
         {
             char led_idx_string[4];
@@ -229,6 +231,11 @@ void RGBController_CorsairLightingNode::SetupZones()
 
 void RGBController_CorsairLightingNode::ResizeZone(int zone, int new_size)
 {
+    if((size_t) zone >= zones.size())
+    {
+        return;
+    }
+
     if(((unsigned int)new_size >= zones[zone].leds_min) && ((unsigned int)new_size <= zones[zone].leds_max))
     {
         zones[zone].leds_count = new_size;
@@ -237,7 +244,7 @@ void RGBController_CorsairLightingNode::ResizeZone(int zone, int new_size)
     }
 }
 
-void RGBController_CorsairLightingNode::UpdateLEDs()
+void RGBController_CorsairLightingNode::DeviceUpdateLEDs()
 {
     for(std::size_t zone_idx = 0; zone_idx < zones.size(); zone_idx++)
     {
@@ -262,11 +269,11 @@ void RGBController_CorsairLightingNode::SetCustomMode()
     active_mode = 0;
 }
 
-void RGBController_CorsairLightingNode::UpdateMode()
+void RGBController_CorsairLightingNode::DeviceUpdateMode()
 {
     if(modes[active_mode].value == 0xFFFF)
     {
-        UpdateLEDs();
+        DeviceUpdateLEDs();
     }
     else
     {

@@ -23,7 +23,7 @@ void RGBController_Dummy::ResizeZone(int /*zone*/, int /*new_size*/)
 
 }
 
-void RGBController_Dummy::UpdateLEDs()
+void RGBController_Dummy::DeviceUpdateLEDs()
 {
 
 }
@@ -43,7 +43,7 @@ void RGBController_Dummy::SetCustomMode()
 
 }
 
-void RGBController_Dummy::UpdateMode()
+void RGBController_Dummy::DeviceUpdateMode()
 {
     
 }

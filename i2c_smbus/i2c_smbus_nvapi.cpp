@@ -40,16 +40,10 @@ s32 i2c_smbus_nvapi::i2c_smbus_xfer(u8 addr, char read_write, u8 command, int si
 	i2c_data.i2c_speed_khz = NV_I2C_SPEED::NVAPI_I2C_SPEED_DEFAULT;
 
     // Load device address
-    i2c_data.i2c_dev_address = (addr << 1) | read_write;
+    i2c_data.i2c_dev_address = (addr << 1);
 
 	switch (size)
 	{
-	case I2C_SMBUS_QUICK:
-        // This is not supported by the driver it seems
-        i2c_data.reg_addr_size = 0;
-        i2c_data.size = 0;
-        break;
-
     case I2C_SMBUS_BYTE:
         // One byte of data with no register address
         i2c_data.reg_addr_size = 0;
@@ -71,6 +65,7 @@ s32 i2c_smbus_nvapi::i2c_smbus_xfer(u8 addr, char read_write, u8 command, int si
         break;
 
     // Not supported
+    case I2C_SMBUS_QUICK:
     case I2C_SMBUS_BLOCK_DATA:
         return -1;
         break;
@@ -100,3 +95,42 @@ s32 i2c_smbus_nvapi::i2c_smbus_xfer(u8 addr, char read_write, u8 command, int si
     
     return(ret);
 }
+
+#include "Detector.h"
+
+void i2c_smbus_nvapi_detect(std::vector<i2c_smbus_interface*> &busses)
+{
+    static NV_PHYSICAL_GPU_HANDLE   gpu_handles[64];
+    static NV_S32                   gpu_count = 0;
+    NV_U32                          device_id;
+    NV_U32                          ext_device_id;
+    NV_STATUS                       res;
+    NV_U32                          revision_id;
+    NV_U32                          sub_system_id;
+
+    NV_STATUS initialize = NvAPI_Initialize();
+
+    NvAPI_EnumPhysicalGPUs(gpu_handles, &gpu_count);
+
+    for(NV_S32 gpu_idx = 0; gpu_idx < gpu_count; gpu_idx++)
+    {
+        i2c_smbus_nvapi * nvapi_bus = new i2c_smbus_nvapi(gpu_handles[gpu_idx]);
+
+        sprintf(nvapi_bus->device_name, "NVidia NvAPI I2C on GPU %d", gpu_idx);
+
+        res = NvAPI_GPU_GetPCIIdentifiers(gpu_handles[gpu_idx], &device_id, &sub_system_id, &revision_id, &ext_device_id);
+
+        if (res == 0)
+        {
+            nvapi_bus->pci_device           = device_id >> 16;
+            nvapi_bus->pci_vendor           = device_id & 0xffff;
+            nvapi_bus->pci_subsystem_device = sub_system_id >> 16;
+            nvapi_bus->pci_subsystem_vendor = sub_system_id & 0xffff;
+            nvapi_bus->port_id              = 1;
+        }
+
+        busses.push_back(nvapi_bus);
+    }
+}   /* DetectNvAPII2CBusses() */
+
+REGISTER_I2C_BUS_DETECTOR(i2c_smbus_nvapi_detect);

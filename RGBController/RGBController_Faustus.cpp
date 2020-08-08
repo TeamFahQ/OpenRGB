@@ -1,5 +1,5 @@
 #include "RGBController_Faustus.h"
-
+#include "Detector.h"
 #include <dirent.h>
 #include <string.h>
 
@@ -68,6 +68,7 @@ void RGBController_Faustus::SetupZones()
     zones[0].leds_min       = 1;
     zones[0].leds_max       = 1;
     zones[0].leds_count     = 1;
+    zones[0].matrix_map     = NULL;
 
     /*---------------------------------------------------------*\
     | Set up LED                                                |
@@ -85,7 +86,7 @@ void RGBController_Faustus::ResizeZone(int /*zone*/, int /*new_size*/)
     \*---------------------------------------------------------*/
 }
 
-void RGBController_Faustus::UpdateLEDs()
+void RGBController_Faustus::DeviceUpdateLEDs()
 {
     int rv = uint8_t(RGBGetRValue(colors[0]));
     int gv = uint8_t(RGBGetGValue(colors[0]));
@@ -130,12 +131,12 @@ void RGBController_Faustus::UpdateLEDs()
 
 void RGBController_Faustus::UpdateZoneLEDs(int /*zone*/)
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_Faustus::UpdateSingleLED(int /*led*/)
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_Faustus::SetCustomMode()
@@ -143,9 +144,9 @@ void RGBController_Faustus::SetCustomMode()
     SetMode(0);
 }
 
-void RGBController_Faustus::UpdateMode()
+void RGBController_Faustus::DeviceUpdateMode()
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void DetectFaustusControllers(std::vector<RGBController*> &rgb_controllers)
@@ -169,4 +170,6 @@ void DetectFaustusControllers(std::vector<RGBController*> &rgb_controllers)
     closedir(dir);
     if(found != 6) return;
     rgb_controllers.push_back(new RGBController_Faustus(base_path));
-}
+}   /* DetectFaustusControllers() */
+
+REGISTER_DETECTOR("Faustus", DetectFaustusControllers);

@@ -19,12 +19,12 @@ RGBController_NZXTKraken::RGBController_NZXTKraken(NZXTKrakenController* nzxtkra
     description = "NZXT Kraken X42/X52/X62/X72";
     version     = nzxtkraken->GetFirmwareVersion();
 
-    mode Fixed;
-    Fixed.name       = "Fixed";
-    Fixed.value      = NZXT_KRAKEN_MODE_FIXED;
-    Fixed.flags      = MODE_FLAG_HAS_PER_LED_COLOR;
-    Fixed.color_mode = MODE_COLORS_PER_LED;
-    modes.push_back(Fixed);
+    mode Direct;
+    Direct.name       = "Direct";
+    Direct.value      = NZXT_KRAKEN_MODE_FIXED;
+    Direct.flags      = MODE_FLAG_HAS_PER_LED_COLOR;
+    Direct.color_mode = MODE_COLORS_PER_LED;
+    modes.push_back(Direct);
 
     mode Fading;
     Fading.name       = "Fading";
@@ -199,6 +199,7 @@ void RGBController_NZXTKraken::SetupZones()
     logo_zone.leds_min      = 1;
     logo_zone.leds_max      = 1;
     logo_zone.leds_count    = 1;
+    logo_zone.matrix_map    = NULL;
     zones.push_back(logo_zone);
 
     zone ring_zone;
@@ -207,6 +208,7 @@ void RGBController_NZXTKraken::SetupZones()
     ring_zone.leds_min      = 8;
     ring_zone.leds_max      = 8;
     ring_zone.leds_count    = 8;
+    ring_zone.matrix_map    = NULL;
     zones.push_back(ring_zone);
 
     /*---------------------------------------------------------*\
@@ -299,7 +301,7 @@ void RGBController_NZXTKraken::UpdateChannel(NZXTKrakenChannel_t channel, int zo
     }
 }
 
-void RGBController_NZXTKraken::UpdateLEDs()
+void RGBController_NZXTKraken::DeviceUpdateLEDs()
 {
     if(logo_modes.find(modes[active_mode].value) == logo_modes.end())
     {
@@ -342,7 +344,7 @@ void RGBController_NZXTKraken::SetCustomMode()
     active_mode = 0;
 }
 
-void RGBController_NZXTKraken::UpdateMode()
+void RGBController_NZXTKraken::DeviceUpdateMode()
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }

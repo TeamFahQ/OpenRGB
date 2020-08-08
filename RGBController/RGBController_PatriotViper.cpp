@@ -114,6 +114,7 @@ void RGBController_PatriotViper::SetupZones()
         new_zone->leds_min      = 5;
         new_zone->leds_max      = 5;
         new_zone->leds_count    = 5;
+        new_zone->matrix_map    = NULL;
         zones.push_back(*new_zone);
     }
 
@@ -139,7 +140,7 @@ void RGBController_PatriotViper::ResizeZone(int /*zone*/, int /*new_size*/)
     \*---------------------------------------------------------*/
 }
 
-void RGBController_PatriotViper::UpdateLEDs()
+void RGBController_PatriotViper::DeviceUpdateLEDs()
 {
     if(viper->direct == true)
     {
@@ -167,7 +168,7 @@ void RGBController_PatriotViper::UpdateLEDs()
 
 void RGBController_PatriotViper::UpdateZoneLEDs(int /*zone*/)
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_PatriotViper::UpdateSingleLED(int led)
@@ -192,7 +193,7 @@ void RGBController_PatriotViper::SetCustomMode()
     active_mode = 0;
 }
 
-void RGBController_PatriotViper::UpdateMode()
+void RGBController_PatriotViper::DeviceUpdateMode()
 {
     if(modes[active_mode].value == 0xFFFF)
     {

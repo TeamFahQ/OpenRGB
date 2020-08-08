@@ -13,9 +13,9 @@ RGBController_RedragonM711::RGBController_RedragonM711(RedragonM711Controller* r
 {
     redragon = redragon_ptr;
 
-    name        = "Redragon M711 Cobra";
+    name        = "Redragon Mouse Device";
     type        = DEVICE_TYPE_MOUSE;
-    description = "Redragon M711 Device";
+    description = "Redragon Mouse Device";
 
     mode Static;
     Static.name       = "Static";
@@ -63,6 +63,7 @@ void RGBController_RedragonM711::SetupZones()
     m711_zone.leds_min       = 1;
     m711_zone.leds_max       = 1;
     m711_zone.leds_count     = 1;
+    m711_zone.matrix_map     = NULL;
     zones.push_back(m711_zone);
 
     led m711_led;
@@ -79,7 +80,32 @@ void RGBController_RedragonM711::ResizeZone(int /*zone*/, int /*new_size*/)
     \*---------------------------------------------------------*/
 }
 
-void RGBController_RedragonM711::UpdateLEDs()
+void RGBController_RedragonM711::DeviceUpdateLEDs()
+{
+    unsigned char red = RGBGetRValue(colors[0]);
+    unsigned char grn = RGBGetGValue(colors[0]);
+    unsigned char blu = RGBGetBValue(colors[0]);
+
+    redragon->SendMouseColor(red, grn, blu);
+    redragon->SendMouseApply();
+}
+
+void RGBController_RedragonM711::UpdateZoneLEDs(int /*zone*/)
+{
+    DeviceUpdateLEDs();
+}
+
+void RGBController_RedragonM711::UpdateSingleLED(int /*led*/)
+{
+    DeviceUpdateLEDs();
+}
+
+void RGBController_RedragonM711::SetCustomMode()
+{
+    active_mode = 0;
+}
+
+void RGBController_RedragonM711::DeviceUpdateMode()
 {
     bool random       = (modes[active_mode].color_mode == MODE_COLORS_RANDOM);
     unsigned char red = RGBGetRValue(colors[0]);
@@ -94,26 +120,6 @@ void RGBController_RedragonM711::UpdateLEDs()
     {
         redragon->SendMouseMode(modes[active_mode].value, 0, red, grn, blu);
     }
-    
+
     redragon->SendMouseApply();
-}
-
-void RGBController_RedragonM711::UpdateZoneLEDs(int /*zone*/)
-{
-    UpdateLEDs();
-}
-
-void RGBController_RedragonM711::UpdateSingleLED(int /*led*/)
-{
-    UpdateLEDs();
-}
-
-void RGBController_RedragonM711::SetCustomMode()
-{
-
-}
-
-void RGBController_RedragonM711::UpdateMode()
-{
-    UpdateLEDs();
 }

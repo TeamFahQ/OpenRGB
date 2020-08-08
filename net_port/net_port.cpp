@@ -127,7 +127,8 @@ bool net_port::tcp_client(const char * client_name, const char * port)
 
 bool net_port::tcp_client_connect()
 {
-    if (!connected)
+    connected = false;
+
     {
         sock = socket(AF_INET, SOCK_STREAM, 0);
         if (sock == INVALID_SOCKET)
@@ -155,6 +156,11 @@ bool net_port::tcp_client_connect()
         tv.tv_sec =  4;
         tv.tv_usec = 0;
 
+        /*-------------------------------------------------*\
+        | Set socket options - no delay                     |
+        \*-------------------------------------------------*/
+        setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
+
         if (select(sock + 1, NULL, &fdset, NULL, &tv) == 1)
         {
             char so_error;
@@ -180,13 +186,16 @@ bool net_port::tcp_client_connect()
             closesocket(sock);
         }
     }
-    return(true);
+    return(connected);
 }
 
 bool net_port::tcp_server(const char * port)
 {
     sockaddr_in myAddress;
 
+    /*-------------------------------------------------*\
+    | Windows requires WSAStartup before using sockets  |
+    \*-------------------------------------------------*/
 #ifdef WIN32
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != NO_ERROR)
     {
@@ -195,6 +204,9 @@ bool net_port::tcp_server(const char * port)
     }
 #endif
 
+    /*-------------------------------------------------*\
+    | Create the server socket                          |
+    \*-------------------------------------------------*/
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == INVALID_SOCKET)
     {
@@ -202,32 +214,61 @@ bool net_port::tcp_server(const char * port)
         return false;
     }
 
+    /*-------------------------------------------------*\
+    | Fill in server address info with port value       |
+    \*-------------------------------------------------*/
     port = strtok((char *)port, "\r");
 
     myAddress.sin_family = AF_INET;
     myAddress.sin_addr.s_addr = inet_addr("0.0.0.0");
     myAddress.sin_port = htons(atoi(port));
 
+    /*-------------------------------------------------*\
+    | Bind the server socket                            |
+    \*-------------------------------------------------*/
     if (bind(sock, (sockaddr*)&myAddress, sizeof(myAddress)) == SOCKET_ERROR)
     {
         WSACleanup();
         return false;
     }
 
+    /*-------------------------------------------------*\
+    | Set socket options - no delay                     |
+    \*-------------------------------------------------*/
     setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
 
     return(true);
 }
 
-void net_port::tcp_server_listen()
+SOCKET * net_port::tcp_server_listen()
 {
+    /*-------------------------------------------------*\
+    | Create new socket for client connection           |
+    \*-------------------------------------------------*/
     SOCKET * client = new SOCKET();
+
+    /*-------------------------------------------------*\
+    | Listen for incoming client connection on the      |
+    | server socket.  This call blocks until a          |
+    | connection is established                         |
+    \*-------------------------------------------------*/
     listen(sock, 10);
+
+    /*-------------------------------------------------*\
+    | Accept the client connection                      |
+    \*-------------------------------------------------*/
     *client = accept(sock, NULL, NULL);
+
+    /*-------------------------------------------------*\
+    | Get the new client socket and store it in the     |
+    | clients vector                                    |
+    \*-------------------------------------------------*/
     u_long arg = 0;
     ioctlsocket(*client, FIONBIO, &arg);
     setsockopt(*client, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
     clients.push_back(client);
+
+    return client;
 }
 
 void net_port::tcp_close()
@@ -236,72 +277,9 @@ void net_port::tcp_close()
     connected = false;
 }
 
-int net_port::tcp_listen(char * recv_data, int /*length*/)
+int net_port::tcp_listen(char * recv_data, int length)
 {
-    int ret = 0;
-    int len = 0;
-    int tot = 0;
-    timeval waitd;
-
-    fd_set readfd;
-
-    FD_ZERO(&readfd);
-    FD_SET(sock, &readfd);
-
-    if (connected)
-    {
-        while(ret != sizeof(len))
-        {
-            waitd.tv_sec = 10;
-            waitd.tv_usec = 0;
-
-            if (select(sock + 1, &readfd, NULL, NULL, &waitd))
-            {
-                ret = recv(sock, (char *)&len, sizeof(len), 0);
-
-                if (ret == -1 || ret == 0)
-                {
-                    closesocket(sock);
-                    connected = false;
-                    return(0);
-                }
-            }
-            else
-            {
-                closesocket(sock);
-                connected = false;
-                return(0);
-            }
-        }
-
-        ret = 0;
-        while(tot != len)
-        {
-            waitd.tv_sec = 10;
-            waitd.tv_usec = 0;
-
-            if (select(sock + 1, &readfd, NULL, NULL, &waitd))
-            {
-                ret = recv(sock, recv_data + ret, len - ret, 0);
-
-                if (ret == -1 || ret == 0)
-                {
-                    closesocket(sock);
-                    connected = false;
-                    return(0);
-                }
-
-                tot += ret;
-            }
-            else
-            {
-                closesocket(sock);
-                connected = false;
-                return(0);
-            }
-        }
-    }
-    return(ret);
+    return(recv(sock, recv_data, length, 0));
 }
 
 int net_port::tcp_client_write(char * buffer, int length)

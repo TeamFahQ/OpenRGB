@@ -8,6 +8,8 @@
 \*-----------------------------------------*/
 
 #pragma once
+#include <chrono>
+
 #include "RGBController.h"
 #include "HyperXKeyboardController.h"
 
@@ -21,15 +23,17 @@ public:
 
     void        ResizeZone(int zone, int new_size);
     
-    void        UpdateLEDs();
+    void        DeviceUpdateLEDs();
     void        UpdateZoneLEDs(int zone);
     void        UpdateSingleLED(int led);
 
     void        SetCustomMode();
-    void        UpdateMode();
+    void        DeviceUpdateMode();
 
     void        KeepaliveThread();
     
 private:
     HyperXKeyboardController*   hyperx;
+
+    std::chrono::time_point<std::chrono::steady_clock>  last_update_time;
 };

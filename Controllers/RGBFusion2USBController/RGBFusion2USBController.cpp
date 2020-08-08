@@ -27,16 +27,17 @@ static LEDCount LedCountToEnum(unsigned int c)
     return(LEDS_1024);
 }
 
-RGBFusion2USBController::RGBFusion2USBController(hid_device* handle, const char *path) : dev(handle)
+RGBFusion2USBController::RGBFusion2USBController(hid_device* handle, const char *path, std::string mb_name) : dev(handle)
 {
-    int res = 0;
-    char text[64] {};
-    unsigned char buffer[64] {};
+    int res                     = 0;
+    char text[64]               = { 0x00 };
+    unsigned char buffer[64]    = { 0x00 };
 
-    if( dev ) {
-
+    if( dev )
+    {
         SetCalibration();
 
+        name = mb_name;
         // hid report read needs 0x60 packet or it gives IO error
         SendPacket(0x60, 0x00);
 
@@ -46,8 +47,8 @@ RGBFusion2USBController::RGBFusion2USBController(hid_device* handle, const char 
         {
             report = *reinterpret_cast<IT8297Report*>(buffer);
 
-            name = std::string(report.str_product, 32);
-            name.erase(std::find(name.begin(), name.end(), '\0'), name.end());
+            description = std::string(report.str_product, 32);
+            //description.erase(std::find(description.begin(), description.end(), '\0'), name.end());
 
             snprintf(text, 11, "0x%08X", report.fw_ver);
             version = text;
@@ -55,7 +56,6 @@ RGBFusion2USBController::RGBFusion2USBController(hid_device* handle, const char 
             snprintf(text, 11, "0x%08X", report.chip_id);
             chip_id = text;
         }
-
         loc = path;
 
         EnableBeat(false);
@@ -84,13 +84,13 @@ void RGBFusion2USBController::SetCalibration()
     buffer[0] = report_id;
     buffer[1] = 0x33;
 
-     // D_LED1 WS2812 GRB, 0x00RRGGBB to 0x00GGRRBB
+    // D_LED1 WS2812 GRB, 0x00RRGGBB to 0x00GGRRBB
     buffer[2] = 0x02; // B
     buffer[3] = 0x00; // G
     buffer[4] = 0x01; // R
     buffer[5] = 0x00;
 
-     // D_LED2 WS2812 GRB
+    // D_LED2 WS2812 GRB
     buffer[6] = 0x02;
     buffer[7] = 0x00;
     buffer[8] = 0x01;
@@ -101,6 +101,12 @@ void RGBFusion2USBController::SetCalibration()
     buffer[11] = 0x01;
     buffer[12] = 0x02;
     buffer[13] = 0x00;
+
+    // Spare set seen in some Motherboard models
+    buffer[14] = 0x00;
+    buffer[15] = 0x01;
+    buffer[16] = 0x02;
+    buffer[17] = 0x00;
 
     SendPacket(buffer);
 }
@@ -133,6 +139,11 @@ bool RGBFusion2USBController::EnableBeat(bool e)
 std::string RGBFusion2USBController::GetDeviceName()
 {
     return(name);
+}
+
+std::string RGBFusion2USBController::GetDeviceDescription()
+{
+    return(description);
 }
 
 std::string RGBFusion2USBController::GetFWVersion()

@@ -126,6 +126,7 @@ void RGBController_Crucial::SetupZones()
     new_zone.leds_min       = 8;
     new_zone.leds_max       = 8;
     new_zone.leds_count     = 8;
+    new_zone.matrix_map     = NULL;
     zones.push_back(new_zone);
 
     /*---------------------------------------------------------*\
@@ -149,7 +150,7 @@ void RGBController_Crucial::ResizeZone(int /*zone*/, int /*new_size*/)
     \*---------------------------------------------------------*/
 }
 
-void RGBController_Crucial::UpdateLEDs()
+void RGBController_Crucial::DeviceUpdateLEDs()
 {
     if(modes[active_mode].value == 0xFFFF)
     {
@@ -163,12 +164,12 @@ void RGBController_Crucial::UpdateLEDs()
 
 void RGBController_Crucial::UpdateZoneLEDs(int /*zone*/)
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_Crucial::UpdateSingleLED(int /*led*/)
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_Crucial::SetCustomMode()
@@ -176,7 +177,7 @@ void RGBController_Crucial::SetCustomMode()
     active_mode = 0;
 }
 
-void RGBController_Crucial::UpdateMode()
+void RGBController_Crucial::DeviceUpdateMode()
 {
     crucial->SetMode(modes[active_mode].value);
 }

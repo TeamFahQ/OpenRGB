@@ -19,12 +19,12 @@ RGBController_RGBFusionGPU::RGBController_RGBFusionGPU(RGBFusionGPUController* r
 
     type = DEVICE_TYPE_GPU;
 
-    mode Static;
-    Static.name       = "Static";
-    Static.value      = RGB_FUSION_GPU_MODE_STATIC;
-    Static.flags      = MODE_FLAG_HAS_PER_LED_COLOR;
-    Static.color_mode = MODE_COLORS_PER_LED;
-    modes.push_back(Static);
+    mode Direct;
+    Direct.name       = "Direct";
+    Direct.value      = RGB_FUSION_GPU_MODE_STATIC;
+    Direct.flags      = MODE_FLAG_HAS_PER_LED_COLOR;
+    Direct.color_mode = MODE_COLORS_PER_LED;
+    modes.push_back(Direct);
 
     mode Breathing;
     Breathing.name       = "Breathing";
@@ -86,6 +86,7 @@ void RGBController_RGBFusionGPU::SetupZones()
     new_zone->leds_min      = 1;
     new_zone->leds_max      = 1;
     new_zone->leds_count    = 1;
+    new_zone->matrix_map    = NULL;
 
     new_led->name           = "GPU LED";
 
@@ -105,7 +106,7 @@ void RGBController_RGBFusionGPU::ResizeZone(int /*zone*/, int /*new_size*/)
     \*---------------------------------------------------------*/
 }
 
-void RGBController_RGBFusionGPU::UpdateLEDs()
+void RGBController_RGBFusionGPU::DeviceUpdateLEDs()
 {
     RGBColor      color = colors[0];
     unsigned char red   = RGBGetRValue(color);
@@ -117,12 +118,12 @@ void RGBController_RGBFusionGPU::UpdateLEDs()
 
 void RGBController_RGBFusionGPU::UpdateZoneLEDs(int /*zone*/)
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_RGBFusionGPU::UpdateSingleLED(int /*led*/)
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_RGBFusionGPU::SetCustomMode()
@@ -130,7 +131,7 @@ void RGBController_RGBFusionGPU::SetCustomMode()
     active_mode = 0;
 }
 
-void RGBController_RGBFusionGPU::UpdateMode()
+void RGBController_RGBFusionGPU::DeviceUpdateMode()
 {
     rgb_fusion->SetMode((unsigned char)modes[(unsigned int)active_mode].value, (unsigned char)modes[(unsigned int)active_mode].speed);
 }

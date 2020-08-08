@@ -35,12 +35,12 @@ class RGBController_Faustus : public RGBController
 
         void        ResizeZone(int zone, int new_size);
         
-        void        UpdateLEDs();
+        void        DeviceUpdateLEDs();
         void        UpdateZoneLEDs(int zone);
         void        UpdateSingleLED(int led);
 
         void        SetCustomMode();
-        void        UpdateMode();
+        void        DeviceUpdateMode();
 };
 
 #endif // RGBCONTROLLER_FAUSTUS_H

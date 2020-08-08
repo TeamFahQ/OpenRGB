@@ -1,3 +1,4 @@
+#include "Detector.h"
 #include "AuraSMBusController.h"
 #include "RGBController.h"
 #include "RGBController_AuraSMBus.h"
@@ -6,21 +7,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-
-static void Sleep(unsigned int milliseconds)
-{
-    usleep(1000 * milliseconds);
-}
-#endif
+using namespace std::chrono_literals;
 
 /*----------------------------------------------------------------------*\
 | This list contains the available SMBus addresses for mapping Aura RAM  |
 \*----------------------------------------------------------------------*/
-#define AURA_RAM_ADDRESS_COUNT  22
+#define AURA_RAM_ADDRESS_COUNT  23
 
 static const unsigned char aura_ram_addresses[] =
 {
@@ -43,6 +35,7 @@ static const unsigned char aura_ram_addresses[] =
     0x66,
     0x67,
     0x39,
+    0x3A,
     0x3B,
     0x3C,
     0x3D
@@ -178,7 +171,7 @@ void DetectAuraSMBusControllers(std::vector<i2c_smbus_interface*> &busses, std::
                 rgb_controllers.push_back(new_controller);
             }
 
-            Sleep(1);
+            std::this_thread::sleep_for(1ms);
         }
 
         // Add Aura-enabled motherboard controllers
@@ -191,8 +184,10 @@ void DetectAuraSMBusControllers(std::vector<i2c_smbus_interface*> &busses, std::
                 rgb_controllers.push_back(new_controller);
             }
 
-            Sleep(1);
+            std::this_thread::sleep_for(1ms);
         }
     }
 
 }   /* DetectAuraSMBusControllers() */
+
+REGISTER_I2C_DETECTOR("ASUS Aura SMBus", DetectAuraSMBusControllers);

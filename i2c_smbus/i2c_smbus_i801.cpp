@@ -12,6 +12,8 @@
 #include <Windows.h>
 #include "inpout32.h"
 
+using namespace std::chrono_literals;
+
 /* Return negative errno on error. */
 s32 i2c_smbus_i801::i801_access(u16 addr, char read_write, u8 command, int size, i2c_smbus_data *data)
 {
@@ -299,7 +301,7 @@ int i2c_smbus_i801::i801_check_post(int status)
         /* try to stop the current command */
         Out32(SMBHSTCNT, Inp32(SMBHSTCNT) | SMBHSTCNT_KILL);
         //usleep_range(1000, 2000);
-		Sleep(1);
+		std::this_thread::sleep_for(1ms);
         Out32(SMBHSTCNT, Inp32(SMBHSTCNT) & (~SMBHSTCNT_KILL));
 
         Out32(SMBHSTSTS, STATUS_FLAGS);
@@ -437,13 +439,14 @@ int i2c_smbus_i801::i801_transaction(int xact)
 /* Wait for either BYTE_DONE or an error flag being set */
 int i2c_smbus_i801::i801_wait_byte_done()
 {
+
     int timeout = 0;
     int status;
 
     /* We will always wait for a fraction of a second! */
     do
     {
-		Sleep(1);
+		std::this_thread::sleep_for(1ms);
         //usleep_range(250, 500);
         status = Inp32(SMBHSTSTS);
     } while (!(status & (STATUS_ERROR_FLAGS | SMBHSTSTS_BYTE_DONE)) && (timeout++ < MAX_RETRIES));
@@ -479,3 +482,61 @@ s32 i2c_smbus_i801::i2c_smbus_xfer(u8 addr, char read_write, u8 command, int siz
 {
     return i801_access(addr, read_write, command, size, data);
 }
+
+#include "Detector.h"
+#include "wmi.h"
+
+void i2c_smbus_i801_detect(std::vector<i2c_smbus_interface*> &busses)
+{
+    i2c_smbus_interface * bus;
+    HRESULT hres;
+    Wmi wmi;
+    wmi.init();
+
+    // Query WMI for Win32_PnPSignedDriver entries with names matching "SMBUS" or "SM BUS"
+    // These devices may be browsed under Device Manager -> System Devices
+    std::vector<QueryObj> q_res_PnPSignedDriver;
+    hres = wmi.query("SELECT * FROM Win32_PnPSignedDriver WHERE Description LIKE '\%SMBUS\%' OR Description LIKE '\%SM BUS\%'", q_res_PnPSignedDriver);
+
+    if (hres)
+    {
+        return;
+    }
+
+    // For each detected SMBus adapter, try enumerating it as either AMD or Intel
+    for (QueryObj &i : q_res_PnPSignedDriver)
+    {
+        // Intel SMBus controllers do show I/O resources in Device Manager
+        // Analysis of many Intel boards has shown that Intel SMBus adapter I/O space varies between boards
+        // We can query Win32_PnPAllocatedResource entries and look up the PCI device ID to find the allocated I/O space
+        // Intel SMBus adapters use the i801 driver
+        if ((i["Manufacturer"].find("Intel") != std::string::npos)
+         || (i["Manufacturer"].find("INTEL") != std::string::npos))
+        {
+            std::string rgx1 = ".+" + q_res_PnPSignedDriver[0]["DeviceID"].substr(4, 33) + ".+";
+
+            AdditionalFilters filters;
+            filters.emplace("Dependent", rgx1);
+            filters.emplace("Antecedent", ".*Port.*");
+
+            std::vector<QueryObj> q_res_PNPAllocatedResource;
+            hres = wmi.query("SELECT * FROM Win32_PnPAllocatedResource", q_res_PNPAllocatedResource, &filters);
+
+            std::regex rgx2(".*StartingAddress=\"(\\d+)\".*");
+            std::smatch matches;
+
+            // Query the StartingAddress for the matching device ID and use it to enumerate the bus
+            if (std::regex_search(q_res_PNPAllocatedResource[0]["Antecedent"], matches, rgx2))
+            {
+                unsigned int IORangeStart = std::stoi(matches[1].str());
+
+                bus = new i2c_smbus_i801();
+                strcpy(bus->device_name, i["Description"].c_str());
+                ((i2c_smbus_i801 *)bus)->i801_smba = IORangeStart;
+                busses.push_back(bus);
+            }
+        }
+    }
+}
+
+REGISTER_I2C_BUS_DETECTOR(i2c_smbus_i801_detect);

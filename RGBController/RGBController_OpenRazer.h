@@ -26,6 +26,7 @@ public:
         RAZER_MODE_SPECTRUM_CYCLE,
         RAZER_MODE_WAVE,
         RAZER_MODE_REACTIVE,
+        RAZER_MODE_FLASHING,
         RAZER_NUM_MODES
     };
 
@@ -45,12 +46,12 @@ public:
 
     void        ResizeZone(int zone, int new_size);
 
-    void        UpdateLEDs();
+    void        DeviceUpdateLEDs();
     void        UpdateZoneLEDs(int zone);
     void        UpdateSingleLED(int led);
 
     void        SetCustomMode();
-    void        UpdateMode();
+    void        DeviceUpdateMode();
 
     int device_index;
 
@@ -82,15 +83,26 @@ private:
     std::ofstream logo_led_brightness;
     std::ofstream logo_matrix_effect_none;
     std::ofstream logo_matrix_effect_static;
+    std::ofstream logo_matrix_effect_breath;
     std::ofstream logo_matrix_effect_spectrum;
     std::ofstream logo_matrix_effect_reactive;
 
     std::ofstream scroll_led_brightness;
     std::ofstream scroll_matrix_effect_none;
     std::ofstream scroll_matrix_effect_static;
+    std::ofstream scroll_matrix_effect_breath;
     std::ofstream scroll_matrix_effect_spectrum;
     std::ofstream scroll_matrix_effect_reactive;
 
+    std::ofstream backlight_led_effect;
+    std::ofstream backlight_led_rgb;
+    std::ofstream backlight_led_state;
+    
+    std::ofstream logo_led_effect;
+    std::ofstream logo_led_rgb;
+    std::ofstream logo_led_state;
+    
     std::ofstream scroll_led_effect;
     std::ofstream scroll_led_rgb;
+    std::ofstream scroll_led_state;
 };

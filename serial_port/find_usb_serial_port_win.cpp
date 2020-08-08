@@ -24,27 +24,28 @@
 |                                                                       |
 \*---------------------------------------------------------------------*/
 
-std::string find_usb_serial_port(unsigned short vid, unsigned short pid)
+std::vector<std::string *> find_usb_serial_port(unsigned short vid, unsigned short pid)
 {
-    std::string     ret_str                 = "";
-    HDEVINFO        DeviceInfoSet;
-    DWORD           DeviceIndex             = 0;
-    SP_DEVINFO_DATA DeviceInfoData;
-    const char *    DevEnum                 = "USB";
-    char            ExpectedDeviceId[80]    = {0}; //Store hardware id
-    char            vid_pid[10]             = {0}; //Store VID/PID
-    BYTE            szBuffer[1024]          = {0};
-    DEVPROPTYPE     ulPropertyType;
-    DWORD           dwSize                  = 0;
+    std::vector<std::string *>  ret_vector;
+    std::string *               tmp_string;
+    HDEVINFO                    DeviceInfoSet;
+    DWORD                       DeviceIndex             = 0;
+    SP_DEVINFO_DATA             DeviceInfoData;
+    const char *                DevEnum                 = "USB";
+    char                        ExpectedDeviceId[80]    = {0};  //Store hardware id
+    char                        vid_pid[10]             = {0};  //Store VID/PID
+    char                        szBuffer[1024]          = {0};
+    DEVPROPTYPE                 ulPropertyType;
+    DWORD                       dwSize                  = 0;
 
     /*-----------------------------------------------------------------*\
     | Create device hardware id                                         |
     | "vid_ABCD&pid_CDEF"                                               |
     \*-----------------------------------------------------------------*/
-    strcpy(ExpectedDeviceId, "vid_");
+    strcpy(ExpectedDeviceId, "USB\\VID_");
     snprintf(vid_pid, 10, "%04X", vid);
     strcat(ExpectedDeviceId, vid_pid);
-    strcat(ExpectedDeviceId, "&pid_");
+    strcat(ExpectedDeviceId, "&PID_");
     snprintf(vid_pid, 10, "%04X", pid);
     strcat(ExpectedDeviceId, vid_pid);
 
@@ -55,7 +56,7 @@ std::string find_usb_serial_port(unsigned short vid, unsigned short pid)
 
     if (DeviceInfoSet == INVALID_HANDLE_VALUE)
     {
-        return false;
+        return ret_vector;
     }
 
     /*-----------------------------------------------------------------*\
@@ -78,34 +79,40 @@ std::string find_usb_serial_port(unsigned short vid, unsigned short pid)
         {
             HKEY hDeviceRegistryKey;
 
-            hDeviceRegistryKey = SetupDiOpenDevRegKey(DeviceInfoSet, &DeviceInfoData,DICS_FLAG_GLOBAL, 0,DIREG_DEV, KEY_READ);
-            if (hDeviceRegistryKey == INVALID_HANDLE_VALUE)
+            /*-----------------------------------------------------*\
+            | Check if the string for this device property matches  |
+            | our expected device string                            |
+            \*-----------------------------------------------------*/
+            if(strncmp(ExpectedDeviceId, szBuffer, 21) == 0)
             {
-                break;
-            }
-            else
-            {
-                char pszPortName[BUFF_LEN];
-                DWORD dwSize = sizeof(pszPortName);
-                DWORD dwType = 0;
-
-                /*-----------------------------------------------------*\
-                | Read in the name of the port                          |
-                \*-----------------------------------------------------*/
-                if( (RegQueryValueEx(hDeviceRegistryKey,"PortName", NULL, &dwType, (LPBYTE) pszPortName, &dwSize) == ERROR_SUCCESS) && (dwType == REG_SZ))
+                hDeviceRegistryKey = SetupDiOpenDevRegKey(DeviceInfoSet, &DeviceInfoData,DICS_FLAG_GLOBAL, 0,DIREG_DEV, KEY_READ);
+                if (hDeviceRegistryKey == INVALID_HANDLE_VALUE)
                 {
-                    if(strncmp(pszPortName, "COM", 3) == 0)
-                    {
-                        ret_str.append(pszPortName);
-                        return ret_str;
-                    }
+                    break;
                 }
+                else
+                {
+                    char pszPortName[BUFF_LEN];
+                    DWORD dwSize = sizeof(pszPortName);
+                    DWORD dwType = 0;
 
-                // Close the key now that we are finished with it
-                RegCloseKey(hDeviceRegistryKey);
+                    /*-----------------------------------------------------*\
+                    | Read in the name of the port                          |
+                    \*-----------------------------------------------------*/
+                    if( (RegQueryValueEx(hDeviceRegistryKey,"PortName", NULL, &dwType, (LPBYTE) pszPortName, &dwSize) == ERROR_SUCCESS) && (dwType == REG_SZ))
+                    {
+                        if(strncmp(pszPortName, "COM", 3) == 0)
+                        {
+                            tmp_string = new std::string(pszPortName);
+                            ret_vector.push_back(tmp_string);
+                        }
+                    }
+
+                    // Close the key now that we are finished with it
+                    RegCloseKey(hDeviceRegistryKey);
+                }
             }
-        } 
-
+        }
     }
 
     if (DeviceInfoSet) 
@@ -113,6 +120,6 @@ std::string find_usb_serial_port(unsigned short vid, unsigned short pid)
         SetupDiDestroyDeviceInfoList(DeviceInfoSet);
     }
 
-    return ret_str;
+    return ret_vector;
 
 }   /* find_usb_serial_port() */

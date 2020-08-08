@@ -6,6 +6,7 @@
 |  Jan Rettig (Klapstuhl) 14.02.2020        |
 \*-----------------------------------------*/
 
+#include "Detector.h"
 #include "AuraGPUController.h"
 #include "RGBController.h"
 #include "RGBController_AuraGPU.h"
@@ -14,16 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-
-static void Sleep(unsigned int milliseconds)
-{
-    usleep(1000 * milliseconds);
-}
-#endif
+using namespace std::chrono_literals;
 
 /*-------------------------------------------------------------*\
 | This list contains the available I2C addresses for Aura GPUs  |
@@ -88,7 +80,9 @@ void DetectAuraGPUControllers(std::vector<i2c_smbus_interface*> &busses, std::ve
                 rgb_controllers.push_back(new_controller);
             }
 
-            Sleep(1);
+            std::this_thread::sleep_for(1ms);
         }
     }
 } /* DetectAuraGPUControllers() */
+
+REGISTER_I2C_DETECTOR("ASUS Aura GPU", DetectAuraGPUControllers);

@@ -132,3 +132,10 @@ ui_OpenRGBProfileSaveDialog.h
 ui_OpenRGBSoftwareInfoPage.h
 ui_OpenRGBSystemInfoPage.h
 ui_OpenRGBZoneResizeDialog.h
+*.o
+ui_*
+moc_*
+qrc_*
+OpenRGB
+Makefile
+OpenRGB-x86_64.AppImage

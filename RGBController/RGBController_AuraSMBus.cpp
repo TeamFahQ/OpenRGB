@@ -56,7 +56,7 @@ int RGBController_AuraSMBus::GetDeviceMode()
     return(active_mode);
 }
 
-void RGBController_AuraSMBus::UpdateLEDs()
+void RGBController_AuraSMBus::DeviceUpdateLEDs()
 {
     for(std::size_t led = 0; led < colors.size(); led++)
     {
@@ -275,6 +275,8 @@ void RGBController_AuraSMBus::SetupZones()
                 new_zone->type = ZONE_TYPE_SINGLE;
             }
 
+            new_zone->matrix_map = NULL;
+            
             /*---------------------------------------------------------*\
             | Push new zone to zones vector                             |
             \*---------------------------------------------------------*/
@@ -328,7 +330,7 @@ void RGBController_AuraSMBus::SetCustomMode()
     active_mode = 0;
 }
 
-void RGBController_AuraSMBus::UpdateMode()
+void RGBController_AuraSMBus::DeviceUpdateMode()
 {
     if (modes[active_mode].value == 0xFFFF)
     {

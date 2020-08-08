@@ -1,9 +1,9 @@
+#include "Detector.h"
 #include "AMDWraithPrismController.h"
 #include "RGBController.h"
 #include "RGBController_AMDWraithPrism.h"
 #include <vector>
-#include <libusb-1.0/libusb.h>
-
+#include <hidapi/hidapi.h>
 #define AMD_WRAITH_PRISM_VID 0x2516
 #define AMD_WRAITH_PRISM_PID 0x0051
 
@@ -17,21 +17,38 @@
 
 void DetectAMDWraithPrismControllers(std::vector<RGBController*>& rgb_controllers)
 {
-    libusb_context * ctx;
-    libusb_init(&ctx);
+    hid_device_info* info;
+    hid_device* dev = NULL;
+
+    hid_init();
+
+    info = hid_enumerate(AMD_WRAITH_PRISM_VID, AMD_WRAITH_PRISM_PID);
 
     //Look for AMD Wraith Prism
-    libusb_device_handle * dev = libusb_open_device_with_vid_pid(ctx, AMD_WRAITH_PRISM_VID, AMD_WRAITH_PRISM_PID);
-
-    if( dev )
+    while(info)
     {
-        libusb_detach_kernel_driver(dev, 1);
-        libusb_claim_interface(dev, 1);
+        if((info->vendor_id == AMD_WRAITH_PRISM_VID)
+         &&(info->product_id == AMD_WRAITH_PRISM_PID)
+#if USE_HID_USAGE
+         &&(info->interface_number == 1)
+         &&(info->usage_page == 0xFF00))
+#else
+         &&(info->interface_number == 1))
+#endif
+        {
+            dev = hid_open_path(info->path);
+        
+            if( dev )
+            {
+                AMDWraithPrismController* controller = new AMDWraithPrismController(dev);
 
-        AMDWraithPrismController* controller = new AMDWraithPrismController(dev);
+                RGBController_AMDWraithPrism* rgb_controller = new RGBController_AMDWraithPrism(controller);
 
-        RGBController_AMDWraithPrism* rgb_controller = new RGBController_AMDWraithPrism(controller);
-
-        rgb_controllers.push_back(rgb_controller);
+                rgb_controllers.push_back(rgb_controller);
+            }
+        }
+        info = info->next;
     }
 }
+
+REGISTER_DETECTOR("AMD Wraith Prism", DetectAMDWraithPrismControllers);

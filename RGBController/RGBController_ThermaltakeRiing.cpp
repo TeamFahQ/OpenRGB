@@ -18,6 +18,29 @@ RGBController_ThermaltakeRiing::RGBController_ThermaltakeRiing(ThermaltakeRiingC
     type        = DEVICE_TYPE_COOLER;
     description = "Thermaltake Riing Device";
 
+    mode Direct;
+    Direct.name       = "Direct";
+    Direct.value      = THERMALTAKE_MODE_PER_LED;
+    Direct.flags      = MODE_FLAG_HAS_PER_LED_COLOR;
+    Direct.speed_min  = 0;
+    Direct.speed_max  = 0;
+    Direct.speed      = 0;
+    Direct.color_mode = MODE_COLORS_PER_LED;
+    modes.push_back(Direct);
+
+    mode Static;
+    Static.name       = "Static";
+    Static.value      = THERMALTAKE_MODE_FULL;
+    Static.flags      = MODE_FLAG_HAS_MODE_SPECIFIC_COLOR;
+    Static.colors_min = 1;
+    Static.colors_max = 1;
+    Static.speed_min  = 0;
+    Static.speed_max  = 0;
+    Static.speed      = 0;
+    Static.color_mode = MODE_COLORS_MODE_SPECIFIC;
+    Static.colors.resize(1);
+    modes.push_back(Static);
+
     mode Flow;
     Flow.name       = "Flow";
     Flow.value      = THERMALTAKE_MODE_FLOW;
@@ -78,29 +101,6 @@ RGBController_ThermaltakeRiing::RGBController_ThermaltakeRiing(ThermaltakeRiingC
     Wave.color_mode = MODE_COLORS_PER_LED;
     modes.push_back(Wave);
 
-    mode Direct;
-    Direct.name       = "Direct";
-    Direct.value      = THERMALTAKE_MODE_PER_LED;
-    Direct.flags      = MODE_FLAG_HAS_PER_LED_COLOR;
-    Direct.speed_min  = 0;
-    Direct.speed_max  = 0;
-    Direct.speed      = 0;
-    Direct.color_mode = MODE_COLORS_PER_LED;
-    modes.push_back(Direct);
-
-    mode Static;
-    Static.name       = "Static";
-    Static.value      = THERMALTAKE_MODE_FULL;
-    Static.flags      = MODE_FLAG_HAS_MODE_SPECIFIC_COLOR;
-    Static.colors_min = 1;
-    Static.colors_max = 1;
-    Static.speed_min  = 0;
-    Static.speed_max  = 0;
-    Static.speed      = 0;
-    Static.color_mode = MODE_COLORS_MODE_SPECIFIC;
-    Static.colors.resize(1);
-    modes.push_back(Static);
-
     SetupZones();
 }
 
@@ -147,6 +147,8 @@ void RGBController_ThermaltakeRiing::SetupZones()
             zones[channel_idx].leds_count = 0;
         }
 
+        zones[channel_idx].matrix_map = NULL;
+        
         for (unsigned int led_ch_idx = 0; led_ch_idx < zones[channel_idx].leds_count; led_ch_idx++)
         {
             char led_idx_string[3];
@@ -168,6 +170,11 @@ void RGBController_ThermaltakeRiing::SetupZones()
 
 void RGBController_ThermaltakeRiing::ResizeZone(int zone, int new_size)
 {
+    if((size_t) zone >= zones.size())
+    {
+        return;
+    }
+
     if(((unsigned int)new_size >= zones[zone].leds_min) && ((unsigned int)new_size <= zones[zone].leds_max))
     {
         zones[zone].leds_count = new_size;
@@ -176,7 +183,7 @@ void RGBController_ThermaltakeRiing::ResizeZone(int zone, int new_size)
     }
 }
 
-void RGBController_ThermaltakeRiing::UpdateLEDs()
+void RGBController_ThermaltakeRiing::DeviceUpdateLEDs()
 {
     for(std::size_t zone_idx = 0; zone_idx < zones.size(); zone_idx++)
     {
@@ -198,10 +205,10 @@ void RGBController_ThermaltakeRiing::UpdateSingleLED(int led)
 
 void RGBController_ThermaltakeRiing::SetCustomMode()
 {
-    active_mode = 6;
+    active_mode = 0;
 }
 
-void RGBController_ThermaltakeRiing::UpdateMode()
+void RGBController_ThermaltakeRiing::DeviceUpdateMode()
 {
     for(std::size_t zone_idx = 0; zone_idx < zones.size(); zone_idx++)
     {

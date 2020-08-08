@@ -16,16 +16,6 @@ typedef unsigned char	polychrome_dev_id;
 
 enum
 {
-    FIRMWARE_VER_1_PT_10            = 0x010A,   /* Firmware nu51_1.10                   */
-    FIRMWARE_VER_2_PT_00            = 0x0200,   /* Firmware nu51_2.00                   */
-    FIRMWARE_VER_2_PT_08            = 0x0208,   /* Firmware nu51_2.08                   */
-    FIRMWARE_VER_2_PT_10            = 0x020A,   /* Firmware nu51_2.10                   */
-    FIRMWARE_VER_3_PT_00            = 0x0300,   /* Firmware nu51_3.00                   */
-    FIRMWARE_VER_3_PT_04            = 0x0304,   /* Firmware nu51_3.04                   */
-};
-
-enum
-{
     ASRLED_REG_FIRMWARE_VER         = 0x00,     /* Firmware version Major.Minor         */
     ASRLED_REG_MODE                 = 0x30,     /* Mode selection register              */
 };
@@ -42,6 +32,13 @@ enum
     ASRLED_MODE_RANDOM              = 0x15,     /* Random effect mode                   */
     ASRLED_MODE_MUSIC               = 0x17,     /* Music effect mode                    */
     ASRLED_MODE_WAVE                = 0x18,     /* Wave effect mode                     */
+};
+
+enum
+{
+    ASRLED_SPEED_MIN                = 0x05,     /* Slowest speed                        */
+    ASRLED_SPEED_DEFAULT            = 0x03,     /* Default speed                        */
+    ASRLED_SPEED_MAX                = 0x00,     /* Fastest speed                        */
 };
 
 enum
@@ -71,6 +68,13 @@ enum
     POLYCHROME_MODE_RAINBOW         = 0x1E,     /* Rainbow effect mode                  */
 };
 
+enum
+{
+    POLYCHROME_SPEED_MIN            = 0x05,     /* Slowest speed                        */
+    POLYCHROME_SPEED_DEFAULT        = 0x03,     /* Default speed                        */
+    POLYCHROME_SPEED_MAX            = 0x00,     /* Fastest speed                        */
+};
+
 class PolychromeController
 {
 public:
@@ -81,7 +85,7 @@ public:
     unsigned int    GetLEDCount();
     unsigned int    GetMode();
     bool            IsAsrLed();
-    void            SetColor(unsigned char red, unsigned char green, unsigned char blue);
+    void            SetColorsAndSpeed(unsigned char red, unsigned char green, unsigned char blue, unsigned char speed);
     void            SetMode(unsigned char mode);
     unsigned short  GetFirmwareVersion();
 

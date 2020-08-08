@@ -3,10 +3,16 @@
 
 #include "ui_OpenRGBDialog2.h"
 
+#include "OpenRGBClientInfoPage.h"
+#include "OpenRGBSoftwareInfoPage.h"
+#include "OpenRGBSystemInfoPage.h"
+
 #include <vector>
 #include "i2c_smbus.h"
 #include "RGBController.h"
 #include "ProfileManager.h"
+#include "NetworkClient.h"
+#include "NetworkServer.h"
 
 #include <QMainWindow>
 #include <QTimer>
@@ -23,22 +29,48 @@ class Ui::OpenRGBDialog2 : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit OpenRGBDialog2(std::vector<i2c_smbus_interface *>& bus, std::vector<RGBController *>& control, ProfileManager& manager, QWidget *parent = 0);
+    explicit OpenRGBDialog2(std::vector<i2c_smbus_interface *>& bus, std::vector<RGBController *>& control, ProfileManager* manager, QWidget *parent = 0);
     ~OpenRGBDialog2();
 
-    void show();
+    void AddClient(NetworkClient* new_client);
+    void AddClientTab();
+    void AddI2CToolsPage();
+    void AddServerTab(NetworkServer* network_server);
+
     void setMode(unsigned char mode_val);
 
 protected:
     std::vector<i2c_smbus_interface *>& busses;
     std::vector<RGBController *>&       controllers;
-    ProfileManager&                     profile_manager;
+    ProfileManager*                     profile_manager;
 
 private:
-    Ui::OpenRGBDialog2Ui *ui;
+    /*-------------------------------------*\
+    | Page pointers                         |
+    \*-------------------------------------*/
+    OpenRGBClientInfoPage *ClientInfoPage;
+    OpenRGBSystemInfoPage *SMBusToolsPage;
+    OpenRGBSoftwareInfoPage *SoftInfoPage;
+
+    bool ShowI2CTools = false;
+
+    /*-------------------------------------*\
+    | System tray icon and menu             |
+    \*-------------------------------------*/
     QSystemTrayIcon* trayIcon;
     QMenu* profileMenu;
-    void RefreshProfileList();
+
+    /*-------------------------------------*\
+    | User interface                        |
+    \*-------------------------------------*/
+    Ui::OpenRGBDialog2Ui *ui;
+
+    void AddSoftwareInfoPage();
+
+    void ClearDevicesList();
+    void UpdateDevicesList();
+    void UpdateProfileList();
+    void closeEvent(QCloseEvent *event);
 
 private slots:
     void on_Exit();
@@ -50,6 +82,7 @@ private slots:
     void on_QuickBlue();
     void on_QuickMagenta();
     void on_QuickWhite();
+    void on_ClientListUpdated();
     void on_SetAllDevices(unsigned char red, unsigned char green, unsigned char blue);
     void on_SaveSizeProfile();
     void on_ShowHide();

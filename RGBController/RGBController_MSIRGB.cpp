@@ -39,6 +39,7 @@ void RGBController_MSIRGB::SetupZones()
     msi_zone.leds_min       = 1;
     msi_zone.leds_max       = 1;
     msi_zone.leds_count     = 1;
+    msi_zone.matrix_map     = NULL;
     zones.push_back(msi_zone);
 
     led msi_led;
@@ -53,7 +54,7 @@ void RGBController_MSIRGB::ResizeZone(int /*zone*/, int /*new_size*/)
 
 }
 
-void RGBController_MSIRGB::UpdateLEDs()
+void RGBController_MSIRGB::DeviceUpdateLEDs()
 {
     RGBColor      color = colors[0];
     unsigned char red   = RGBGetRValue(color);
@@ -65,12 +66,12 @@ void RGBController_MSIRGB::UpdateLEDs()
 
 void RGBController_MSIRGB::UpdateZoneLEDs(int /*zone*/)
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_MSIRGB::UpdateSingleLED(int /*led*/)
 {
-    UpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_MSIRGB::SetCustomMode()
@@ -78,7 +79,7 @@ void RGBController_MSIRGB::SetCustomMode()
 
 }
 
-void RGBController_MSIRGB::UpdateMode()
+void RGBController_MSIRGB::DeviceUpdateMode()
 {
 
 }

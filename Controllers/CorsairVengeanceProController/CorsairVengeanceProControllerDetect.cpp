@@ -1,3 +1,4 @@
+#include "Detector.h"
 #include "CorsairVengeanceProController.h"
 #include "RGBController.h"
 #include "RGBController_CorsairVengeancePro.h"
@@ -6,16 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-
-static void Sleep(unsigned int milliseconds)
-{
-    usleep(1000 * milliseconds);
-}
-#endif
+using namespace std::chrono_literals;
 
 /******************************************************************************************\
 *                                                                                          *
@@ -50,7 +42,7 @@ bool TestForCorsairVengeanceProController(i2c_smbus_interface* bus, unsigned cha
         }
     }
 
-    Sleep(10);
+    std::this_thread::sleep_for(10ms);
     
     return(pass);
 
@@ -140,3 +132,5 @@ void DetectCorsairVengeanceProControllers(std::vector<i2c_smbus_interface*> &bus
     }
 
 }   /* DetectCorsairVengeanceProControllers() */
+
+REGISTER_I2C_DETECTOR("Corsair Vengeance Pro", DetectCorsairVengeanceProControllers);
