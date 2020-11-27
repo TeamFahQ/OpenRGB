@@ -29,20 +29,21 @@ class Ui::OpenRGBDialog2 : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit OpenRGBDialog2(std::vector<i2c_smbus_interface *>& bus, std::vector<RGBController *>& control, ProfileManager* manager, QWidget *parent = 0);
+    explicit OpenRGBDialog2(std::vector<i2c_smbus_interface *>& bus, std::vector<RGBController *>& control, QWidget *parent = 0);
     ~OpenRGBDialog2();
 
     void AddClient(NetworkClient* new_client);
     void AddClientTab();
     void AddI2CToolsPage();
-    void AddServerTab(NetworkServer* network_server);
+    void AddServerTab();
 
     void setMode(unsigned char mode_val);
+
+    static bool IsDarkTheme();
 
 protected:
     std::vector<i2c_smbus_interface *>& busses;
     std::vector<RGBController *>&       controllers;
-    ProfileManager*                     profile_manager;
 
 private:
     /*-------------------------------------*\
@@ -72,6 +73,10 @@ private:
     void UpdateProfileList();
     void closeEvent(QCloseEvent *event);
 
+    void SetDetectionViewState(bool detection_showing);
+
+    bool device_view_showing = false;
+
 private slots:
     void on_Exit();
     void on_LightsOff();
@@ -83,6 +88,8 @@ private slots:
     void on_QuickMagenta();
     void on_QuickWhite();
     void on_ClientListUpdated();
+    void onDeviceListUpdated();
+    void onDetectionProgressUpdated();
     void on_SetAllDevices(unsigned char red, unsigned char green, unsigned char blue);
     void on_SaveSizeProfile();
     void on_ShowHide();
@@ -90,6 +97,9 @@ private slots:
     void on_ButtonSaveProfile_clicked();
     void on_ButtonLoadProfile_clicked();
     void on_ButtonDeleteProfile_clicked();
+    void on_ButtonToggleDeviceView_clicked();
+    void on_ButtonStopDetection_clicked();
+    void on_ButtonRescan_clicked();
 };
 
 #endif // OPENRGBDIALOG2_H

@@ -22,7 +22,6 @@
 using namespace std::chrono_literals;
 
 static ProfileManager*             profile_manager;
-static NetworkServer*              network_server;
 static std::string                 profile_save_filename = "";
 
 enum
@@ -532,7 +531,7 @@ bool OptionDevice(int *current_device, std::string argument, Options *options, s
     }
 }
 
-bool OptionZone(int *current_device, int *current_zone, std::string argument, Options *options, std::vector<RGBController *> &rgb_controllers)
+bool OptionZone(int *current_device, int *current_zone, std::string argument, Options */*options*/, std::vector<RGBController *> &rgb_controllers)
 {
     ResourceManager::get()->WaitForDeviceDetection();
 
@@ -557,7 +556,7 @@ bool OptionZone(int *current_device, int *current_zone, std::string argument, Op
     }
 }
 
-bool OptionColor(int *currentDev, int *current_zone, std::string argument, Options *options)
+bool OptionColor(int *currentDev, int */*current_zone*/, std::string argument, Options *options)
 {
     DeviceOptions* currentDevOpts = GetDeviceOptionsForDevID(options, *currentDev);
 
@@ -587,7 +586,7 @@ bool OptionMode(int *currentDev, std::string argument, Options *options)
     return true;
 }
 
-bool OptionSize(int *current_device, int *current_zone, std::string argument, Options *options, std::vector<RGBController *> &rgb_controllers)
+bool OptionSize(int *current_device, int *current_zone, std::string argument, Options */*options*/, std::vector<RGBController *> &rgb_controllers)
 {
     const unsigned int new_size = std::stoi(argument);
 
@@ -667,7 +666,7 @@ bool OptionSaveProfile(std::string argument)
     return(true);
 }
 
-int ProcessOptions(int argc, char *argv[], Options *options, std::vector<NetworkClient*> &clients, std::vector<RGBController *> &rgb_controllers)
+int ProcessOptions(int argc, char *argv[], Options *options, std::vector<RGBController *> &rgb_controllers)
 {
     unsigned int ret_flags  = 0;
     int arg_index           = 1;
@@ -700,7 +699,7 @@ int ProcessOptions(int argc, char *argv[], Options *options, std::vector<Network
             std::string ip = argument.substr(0, pos);
             unsigned short port_val;
 
-            if(pos == -1)
+            if(pos == argument.npos)
             {
                 port_val = OPENRGB_SDK_PORT;
             }
@@ -728,7 +727,7 @@ int ProcessOptions(int argc, char *argv[], Options *options, std::vector<Network
                 std::this_thread::sleep_for(10ms);
             }
             
-            clients.push_back(client);
+            ResourceManager::get()->GetClients().push_back(client);
 
             arg_index++;
         }
@@ -748,14 +747,22 @@ int ProcessOptions(int argc, char *argv[], Options *options, std::vector<Network
         {
             if (argument != "")
             {
-                unsigned short port = std::stoi(argument);
-                if (port >= 1024 && port <= 65535)
+                try
                 {
-                    options->servOpts.port = port;
-                } 
-                else
+                    int port = std::stoi(argument);
+                    if (port >= 1024 && port <= 65535)
+                    {
+                        options->servOpts.port = port;
+                    }
+                    else
+                    {
+                        std::cout << "Error: Port out of range: " << port << " (1024-65535)" << std::endl;
+                        return RET_FLAG_PRINT_HELP;
+                    }
+                }
+                catch(std::invalid_argument& e)
                 {
-                    std::cout << "Error: port out of range: " << port << " (1024-65535)" << std::endl;
+                    std::cout << "Error: Invalid data in --server-port argument (expected a number in range 1024-65535)" << std::endl;
                     return RET_FLAG_PRINT_HELP;
                 }
             }
@@ -1016,32 +1023,31 @@ void ApplyOptions(DeviceOptions& options, std::vector<RGBController *> &rgb_cont
 
 void WaitWhileServerOnline(NetworkServer* srv)
 {
-    while (network_server->GetOnline())
+    while (srv->GetOnline())
     {
         std::this_thread::sleep_for(1s);
     };
 }
 
-unsigned int cli_main(int argc, char *argv[], std::vector<RGBController *> &rgb_controllers, ProfileManager* profile_manager_in, NetworkServer* network_server_in, std::vector<NetworkClient*> &clients)
+unsigned int cli_main(int argc, char *argv[], std::vector<RGBController *> &rgb_controllers, ProfileManager* profile_manager_in)
 {
     profile_manager = profile_manager_in;
-    network_server  = network_server_in;
 
     /*---------------------------------------------------------*\
     | Process the argument options                              |
     \*---------------------------------------------------------*/
     Options options;
-    unsigned int ret_flags = ProcessOptions(argc, argv, &options, clients, rgb_controllers);
+    unsigned int ret_flags = ProcessOptions(argc, argv, &options, rgb_controllers);
 
     /*---------------------------------------------------------*\
     | If the server was told to start, start it before returning|
     \*---------------------------------------------------------*/
     if(options.servOpts.start)
     {
-        network_server->SetPort(options.servOpts.port);
-        network_server->StartServer();
+        ResourceManager::get()->GetServer()->SetPort(options.servOpts.port);
+        ResourceManager::get()->GetServer()->StartServer();
 
-        if(network_server->GetOnline()) 
+        if(ResourceManager::get()->GetServer()->GetOnline()) 
         {
             /*---------------------------------------------------------*\
             | If the GUI has been started, return from cli_main.        |
@@ -1050,7 +1056,7 @@ unsigned int cli_main(int argc, char *argv[], std::vector<RGBController *> &rgb_
             \*---------------------------------------------------------*/
             if((ret_flags & RET_FLAG_START_GUI) == 0)
             {
-                WaitWhileServerOnline(network_server);
+                WaitWhileServerOnline(ResourceManager::get()->GetServer());
             }
         }
         else

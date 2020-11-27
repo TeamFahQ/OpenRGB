@@ -12,6 +12,7 @@ One of the biggest complaints about RGB is the software ecosystem surrounding it
 * Can operate standalone or in a client/headless server configuration
 * View device information
 * No official/manufacturer software required
+* Graphical view of device LEDs makes creating custom patterns easy
 
 ## Supported Devices
 
@@ -24,10 +25,10 @@ This project interacts directly with hardware using reverse engineered protocols
 There have been two instances of hardware damage in OpenRGB's development and we've taken precautions to prevent it from happening again.
 
   * The MSI Mystic Light code reportedly bricked the RGB on certain MSI boards when sending certain modes.  This code has been disabled and MSI Mystic Light motherboards will not work with OpenRGB at this time.
-  * There were reports of bricked Gigabyte Aorus Z390 motherboards caused by dumping SMBus address 0x68 in an attempt to reverse engineer the RGB.  Due to this, the SMBus Tools page on OpenRGB is hidden by default now as it has no real use to non-developers.  Additionally, the RGB Fusion 2 SMBus code is disabled by default because, although it works on boards it is meant for, probing this address (0x68) could damage Gigabyte Z390 boards.
-  * To enable the MSI Mystic Light or Gigabyte RGB Fusion 2 SMBus code, you must uncomment the functions in main.cpp and recompile.
+  * There were reports of bricked Gigabyte Aorus Z390 motherboards caused by dumping SMBus address 0x68 in an attempt to reverse engineer the RGB.  Due to this, the SMBus Tools page on OpenRGB is hidden by default now as it has no real use to non-developers.
+  * To enable the MSI Mystic Light code, you must uncomment the detection macro in the Mystic Light controller detection code and recompile.
 
-![OpenRGB_0.11](https://gitlab.com/CalcProgrammer1/OpenRGB/-/wikis/uploads/0ef8eb3936fe715217e7e3430c0aae18/OpenRGB_new_icons.PNG)
+![OpenRGB_Device_View](https://gitlab.com/CalcProgrammer1/OpenRGB/-/wikis/uploads/e1d8d4603ecdd04f1acbcf6b2314fc66/OpenRGB_0.31_Device_View.PNG)
 
 ## Windows
 
@@ -42,11 +43,11 @@ There have been two instances of hardware damage in OpenRGB's development and we
 
 ### USB Access
 
-  *  Previous versions of OpenRGB used the WinUSB driver, installed using Zadig.  This is no longer required, and you need to uninstall the WinUSB driver if you previously installed it.  You can uninstall the WinUSB driver by following [this guide](https://gitlab.com/CalcProgrammer1/OpenRGB/-/wikis/Frequently-Asked-Questions#i-installed-the-winusb-driver-for-a-device-and-i-wish-to-uninstall-it).
+  *  Early versions of OpenRGB used the WinUSB driver, installed using Zadig.  This is no longer required, and you need to uninstall the WinUSB driver if you previously installed it.  You can uninstall the WinUSB driver by following [this guide](https://gitlab.com/CalcProgrammer1/OpenRGB/-/wikis/Frequently-Asked-Questions#i-installed-the-winusb-driver-for-a-device-and-i-wish-to-uninstall-it).
 
 ## Linux
 
-  *  Pre-built binaries are not currently available for Linux
+  *  Pre-built binaries in AppImage format are available under the Releases section on GitLab.
   *  You can build the project using Qt Creator or on the command line.
       1.  Install build dependencies
           - Debian: sudo apt install build-essential qtcreator qt5-default libusb-1.0-0-dev libhidapi-dev pkgconf
@@ -56,6 +57,7 @@ There have been two instances of hardware damage in OpenRGB's development and we
       4.  qmake OpenRGB.pro
       5.  make -j8
   *  Run the application with ./OpenRGB
+  *  You can also build a Debian package (.deb) from this source code with dpkg-buildpackage -us -B
      
 ### SMBus Access
 
@@ -88,17 +90,54 @@ There have been two instances of hardware damage in OpenRGB's development and we
       - Copy the 60-openrgb.rules file to /etc/udev/rules.d/
       - Reload rules with `sudo udevadm control --reload-rules && sudo udevadm trigger`
 
+## Join Our Discord
+
+* https://discord.gg/AQwjJPY
+
+## Visit Our Subreddit
+
+* https://www.reddit.com/r/OpenRGB
+
+## How-Tos and FAQs
+
+* [Windows Setup and Usage](OpenRGB-Windows-Setup-and-Usage)
+* [Frequently Asked Questions](Frequently-Asked-Questions)
+
+## Support OpenRGB
+
+* OpenRGB is a project I created to solve a problem I had with the RGB ecosystem.  My goal isn't to make money off of this project.  That said, people have requested to donate, and donations allow me to buy more RGB stuff to reverse engineer.
+* [Donate via PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=4VPTFMD3G4QVG&item_name=OpenRGB+Development&currency_code=USD&source=url)
+* [Become a Patron](https://www.patreon.com/CalcProgrammer1) (I'm not doing any Patreon-exclusive content, it's purely for donation)
+* Donate via Bitcoin: 1N83YPu7btXYadPS1neB9zX7X1QTdpyZQ
+
+## History of OpenRGB
+
+* OpenRGB is a continuation of OpenAuraSDK, which itself was created out of reverse engineering work done on the Keyboard Visualizer project.  For a complete history of the RGB projects that led to OpenRGB's creation, see the [History page](History-of-OpenRGB).
+
+## Contributing
+
+* Want to contribute support for a new device?  Check out the [RGBController API](The-RGBController-API) page for documentation of how OpenRGB implements device control.
+
 ## OpenRGB SDK
 
 OpenRGB provides a network interface for controlling supported RGB devices from other software.  These projects implement the OpenRGB SDK and provide additional ways for you to control your lighting setup.
 
-  * Keyboard Visualizer (by me): https://gitlab.com/CalcProgrammer1/KeyboardVisualizer
   * OpenRGB Python Client (by bahorn): https://github.com/bahorn/OpenRGB-PyClient
   * OpenRGB Python Client (by jath03): https://github.com/jath03/openrgb-python
   * OpenRGB Node.js Client (by vlakreeh): https://github.com/vlakreeh/openrgb
   * D-Bus Connector for OpenRGB (by Vinno97): https://github.com/Vinno97/OpenRGB-DBus-Connector
-  * OpenRGB E1.31 Receiver (by me): https://gitlab.com/CalcProgrammer1/OpenRGBE131Receiver
   * OpenRGB.NET - C# OpenRGB Client (by diogotr7): https://github.com/diogotr7/OpenRGB.NET
+
+## Applications Supporting OpenRGB SDK
+
+While OpenRGB itself only provides control over the lighting effects built into hardware, several open source applications can use the OpenRGB SDK to provide synchronized lighting effects for your devices.
+
+  * Keyboard Visualizer (by me): https://gitlab.com/CalcProgrammer1/KeyboardVisualizer
+  * OpenRGB E1.31 Receiver (by me): https://gitlab.com/CalcProgrammer1/OpenRGBE131Receiver
+  * Project Aurora (support added by diogotr7 in dev branch): https://github.com/antonpup/Aurora
+  * Artemis 2 (support added by diogotr7 as a plugin): https://github.com/Artemis-RGB/Artemis
+  * RemoteLight (by Drumber, need OpenRGB plugin): https://github.com/Drumber/RemoteLight
+  * OpenRGB-python-FX (by herosilas12): https://github.com/herosilas12/OpenRGB-python-FX
 
 ## Projects Used
 

@@ -22,20 +22,24 @@ enum
     LOGITECH_G_PRO_WIRELESS_MODE_BREATHING         = 0x03,
 };
 
+/*---------------------------------------------------------------------------------------------*\
+| Speed is 1000 for fast and 20000 for slow.                                                    |
+| Values are multiplied by 100 later to give lots of GUI steps.                                 |
+\*---------------------------------------------------------------------------------------------*/
 enum
-{
-    LOGITECH_G_PRO_WIRELESS_SPEED_SLOWEST          = 0x00,   /* Slowest speed                */
-    LOGITECH_G_PRO_WIRELESS_SPEED_SLOW             = 0x01,   /* Slow speed                   */
-    LOGITECH_G_PRO_WIRELESS_SPEED_NORMAL           = 0x02,   /* Normal speed                 */
-    LOGITECH_G_PRO_WIRELESS_SPEED_FAST             = 0x03,   /* Fast speed                   */
-    LOGITECH_G_PRO_WIRELESS_SPEED_FASTEST          = 0x04,   /* Fastest speed                */
+{   
+    LOGITECH_G_PRO_WIRELESS_SPEED_SLOWEST          = 0xC8,  /* Slowest speed                   */
+    LOGITECH_G_PRO_WIRELESS_SPEED_NORMAL           = 0x32,  /* Normal speed                    */
+    LOGITECH_G_PRO_WIRELESS_SPEED_FASTEST          = 0x0A,  /* Fastest speed                   */
 };
 
 class LogitechGProWirelessController
 {
 public:
-    LogitechGProWirelessController(hid_device* dev_handle);
+    LogitechGProWirelessController(hid_device* dev_handle, const char* path);
     ~LogitechGProWirelessController();
+
+    std::string GetDeviceLocation();
 
     void        SendMouseMode
                    (
@@ -50,4 +54,5 @@ public:
 
 private:
     hid_device*             dev;
+    std::string             location;
 };

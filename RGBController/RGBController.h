@@ -14,6 +14,7 @@
 #include <string>
 #include <thread>
 #include <chrono>
+#include <mutex>
 
 typedef unsigned int RGBColor;
 
@@ -114,6 +115,8 @@ enum
     DEVICE_TYPE_MOUSEMAT,
     DEVICE_TYPE_HEADSET,
     DEVICE_TYPE_HEADSET_STAND,
+    DEVICE_TYPE_GAMEPAD,
+    DEVICE_TYPE_LIGHT,
     DEVICE_TYPE_UNKNOWN
 };
 
@@ -139,6 +142,8 @@ typedef struct
     matrix_map_type *       matrix_map;     /* Matrix map pointer       */
 } zone;
 
+typedef void (*RGBControllerCallback)(void *);
+
 class RGBController
 {
 public:
@@ -158,7 +163,7 @@ public:
     | RGBController base class constructor                      |
     \*---------------------------------------------------------*/
     RGBController();
-    ~RGBController();
+    virtual ~RGBController();
 
     /*---------------------------------------------------------*\
     | Generic functions implemented in RGBController.cpp        |
@@ -187,6 +192,10 @@ public:
 
     unsigned char *         GetSingleLEDColorDescription(int led);
     void                    SetSingleLEDColorDescription(unsigned char* data_buf);
+
+    void                    RegisterUpdateCallback(RGBControllerCallback new_callback, void * new_callback_arg);
+    void                    UnregisterUpdateCallback(void * callback_arg);
+    void                    SignalUpdate();
 
     void                    UpdateLEDs();
     //void                    UpdateZoneLEDs(int zone);
@@ -219,4 +228,8 @@ private:
     //bool                    CallFlag_UpdateZoneLEDs                     = false;
     //bool                    CallFlag_UpdateSingleLED                    = false;
     //bool                    CallFlag_UpdateMode                         = false;
+
+    std::mutex                          UpdateMutex;
+    std::vector<RGBControllerCallback>  UpdateCallbacks;
+    std::vector<void *>                 UpdateCallbackArgs;
 };

@@ -20,7 +20,7 @@ typedef struct NetPacketHeader
     unsigned int        pkt_dev_idx;                /* Device index                                         */
     unsigned int        pkt_id;                     /* Packet ID                                            */
     unsigned int        pkt_size;                   /* Packet size                                          */
-};
+} NetPacketHeader;
 
 enum
 {
@@ -29,8 +29,10 @@ enum
     \*----------------------------------------------------------------------------------------------------------*/
     NET_PACKET_ID_REQUEST_CONTROLLER_COUNT      = 0,    /* Request RGBController device count from server       */
     NET_PACKET_ID_REQUEST_CONTROLLER_DATA       = 1,    /* Request RGBController data block                     */
+
     NET_PACKET_ID_SET_CLIENT_NAME               = 50,   /* Send client name string to server                    */
 
+    NET_PACKET_ID_DEVICE_LIST_UPDATED           = 100,  /* Indicate to clients that device list has updated     */
     /*----------------------------------------------------------------------------------------------------------*\
     | RGBController class functions                                                                              |
     \*----------------------------------------------------------------------------------------------------------*/

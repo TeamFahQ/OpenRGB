@@ -11,9 +11,10 @@
 #include <string>
 #include <cstring>
 
-NZXTHue2Controller::NZXTHue2Controller(hid_device* dev_handle, unsigned int rgb_channels, unsigned int fan_channels)
+NZXTHue2Controller::NZXTHue2Controller(hid_device* dev_handle, unsigned int rgb_channels, unsigned int fan_channels, const char* path)
 {
-    dev = dev_handle;
+    dev         = dev_handle;
+    location    = path;
 
     num_fan_channels = fan_channels;
     num_rgb_channels = rgb_channels;
@@ -47,6 +48,11 @@ unsigned short NZXTHue2Controller::GetFanRPM
     return(fan_rpm[fan_channel]);
 }
 
+std::string NZXTHue2Controller::GetLocation()
+{
+    return(location);
+}
+
 unsigned int NZXTHue2Controller::GetNumFanChannels()
 {
     return(num_fan_channels);
@@ -65,7 +71,7 @@ std::string NZXTHue2Controller::GetFirmwareVersion()
 void NZXTHue2Controller::SendFan
     (
         unsigned char       port,
-        unsigned char       mode,
+        unsigned char       /*mode*/,
         unsigned char       speed
     )
 {
@@ -120,12 +126,17 @@ void NZXTHue2Controller::UpdateDeviceList()
         ret_val = hid_read(dev, usb_buf, sizeof(usb_buf));
     } while( (ret_val != 64) || (usb_buf[0] != 0x21) || (usb_buf[1] != 0x03) );
 
-    for(int chan = 0; chan < num_rgb_channels; chan++)
+    for(unsigned int chan = 0; chan < num_rgb_channels; chan++)
     {
         unsigned int start = 0x0F + (6 * chan);
         unsigned int num_leds_on_channel = 0;
+
+        printf("NZXT Hue 2 Devices: ");
+
         for(int dev = 0; dev < 6; dev++)
         {
+            printf("%02X, ", usb_buf[start + dev]);
+
             switch(usb_buf[start + dev])
             {
             case 0x01: //Hue 1 strip
@@ -136,8 +147,16 @@ void NZXTHue2Controller::UpdateDeviceList()
                 num_leds_on_channel += 8;
                 break;
 
-            case 0x04: //Hue 2 strip
+            case 0x04: //Hue 2 strip (10 LEDs)
                 num_leds_on_channel += 10;
+                break;
+
+            case 0x05: //Hue 2 strip (8 LEDs)
+                num_leds_on_channel += 8;
+                break;
+            
+            case 0x06: //Hue 2 strip (6 LEDs)
+                num_leds_on_channel += 6;
                 break;
             
             case 0x0B: //Aer 2 fan (120mm)
@@ -148,10 +167,21 @@ void NZXTHue2Controller::UpdateDeviceList()
                 num_leds_on_channel += 8;
                 break;
 
+            case 0x10: //Kraken X3 ring
+                num_leds_on_channel += 8;
+                break;
+            
+            case 0x11: //Kraken X3 logo
+                num_leds_on_channel += 1;
+                break;
+
             default:
                 break;
             }
         }
+
+        printf("\r\n");
+
         channel_leds[chan] = num_leds_on_channel;
     }
 }
@@ -179,7 +209,7 @@ void NZXTHue2Controller::UpdateStatus()
         /*-----------------------------------------------------*\
         | Extract fan information                               |
         \*-----------------------------------------------------*/
-        for(int fan_idx = 0; fan_idx < num_fan_channels; fan_idx++)
+        for(unsigned int fan_idx = 0; fan_idx < num_fan_channels; fan_idx++)
         {
             unsigned char  cmd;
             unsigned short rpm;

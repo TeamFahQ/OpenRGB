@@ -20,6 +20,11 @@ KERNEL=="hidraw*", SUBSYSTEM=="hidraw", TAG+="uaccess"
 SUBSYSTEMS=="usb", ATTR{idVendor}=="2516", ATTR{idProduct}=="0051", TAG+="uaccess"
 
 #---------------------------------------------------------------#
+#  Aorus Devices                                                #
+#---------------------------------------------------------------#
+SUBSYSTEMS=="usb", ATTR{idVendor}=="1044", ATTR{idProduct}=="7a42", TAG+="uaccess"
+
+#---------------------------------------------------------------#
 #  ASUS Aura Core Devices                                       #
 #---------------------------------------------------------------#
 SUBSYSTEMS=="usb", ATTR{idVendor}=="0b05", ATTR{idProduct}=="1854", TAG+="uaccess"
@@ -44,6 +49,17 @@ SUBSYSTEMS=="usb", ATTR{idVendor}=="0b05", ATTR{idProduct}=="18f3", TAG+="uacces
 SUBSYSTEMS=="usb", ATTR{idVendor}=="2516", ATTR{idProduct}=="0109", TAG+="uaccess"
 
 #---------------------------------------------------------------#
+#  Corsair Hydro Series Devices                                 #
+#                                                               #
+#       Corsair H100i Pro RGB                                   #
+#       Corsair H115i Pro RGB                                   #
+#       Corsair H150i Pro RGB                                   #
+#---------------------------------------------------------------#
+SUBSYSTEMS=="usb", ATTR{idVendor}=="1b1c", ATTR{idProduct}=="0c15", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="1b1c", ATTR{idProduct}=="0c13", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="1b1c", ATTR{idProduct}=="0c12", TAG+="uaccess"
+
+#---------------------------------------------------------------#
 #  Corsair Lighting Node Devices                                #
 #                                                               #
 #       Corsair Lighting Node Core                              #
@@ -52,6 +68,7 @@ SUBSYSTEMS=="usb", ATTR{idVendor}=="2516", ATTR{idProduct}=="0109", TAG+="uacces
 #       Corsair LS100                                           #
 #       Corsair 1000D Obsidian                                  #
 #       Corsair Spec Omega RGB                                  #
+#       Corsair LT100                                           #
 #---------------------------------------------------------------#
 SUBSYSTEMS=="usb", ATTR{idVendor}=="1b1c", ATTR{idProduct}=="0c1a", TAG+="uaccess"
 SUBSYSTEMS=="usb", ATTR{idVendor}=="1b1c", ATTR{idProduct}=="0c0b", TAG+="uaccess"
@@ -59,6 +76,7 @@ SUBSYSTEMS=="usb", ATTR{idVendor}=="1b1c", ATTR{idProduct}=="0c10", TAG+="uacces
 SUBSYSTEMS=="usb", ATTR{idVendor}=="1b1c", ATTR{idProduct}=="0c1e", TAG+="uaccess"
 SUBSYSTEMS=="usb", ATTR{idVendor}=="1b1c", ATTR{idProduct}=="1d00", TAG+="uaccess"
 SUBSYSTEMS=="usb", ATTR{idVendor}=="1b1c", ATTR{idProduct}=="1d04", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="1b1c", ATTR{idProduct}=="0a32", TAG+="uaccess"
 
 #---------------------------------------------------------------#
 #  Corsair Peripheral Devices                                   #
@@ -118,30 +136,58 @@ SUBSYSTEMS=="usb", ATTR{idVendor}=="1b1c", ATTR{idProduct}=="0a34", TAG+="uacces
 #                                                               #
 #  Keyboards:                                                   #
 #       HyperX Alloy Elite                                      #
+#                                                               #
+#  Mice:                                                        #
+#       HyperX Pulsefire Surge                                  #
+#                                                               #
+#  Mousemats:                                                   #
+#       HyperX Fury Ultra                                       #
 #---------------------------------------------------------------#
 SUBSYSTEMS=="usb", ATTR{idVendor}=="0951", ATTR{idProduct}=="16be", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="0951", ATTR{idProduct}=="16d3", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="0951", ATTR{idProduct}=="1705", TAG+="uaccess"
 
 #---------------------------------------------------------------#
 #  Logitech Peripheral Devices                                  #
 #                                                               #
+#   Keyboards:                                                  #
+#       Logitech G213                                           #
+#       Logitech G512                                           #
+#       Logitech G512 RGB                                       #
+#       Logitech G610                                           #
+#       Logitech G810 #1                                        #
+#       Logitech G810 #2                                        #
+#                                                               #
 #  Mice:                                                        #
 #       Logitech G203 Prodigy                                   #
+#       Logitech G203 Lightsync                                 #
 #       Logitech G403 Prodigy                                   #
 #       Logitech G403 Hero                                      #
 #       Logitech G502 Proteus Spectrum                          #
-#                                                               #
-#   Keyboards:                                                  #
-#       Logitech G512 RGB                                       #
-#       Logitech G Pro Wireless Gaming Mouse Lightspeed         #
+#       Logitech G Lightspeed Wireless Gaming Mouse             #
 #       Logitech G Pro Wireless Gaming Mouse (Wired)            #
+#                                                               #
+#  Mousemats:                                                   #
+#       Logitech G Powerplay Mousepad with Lightspeed           #
+#                                                               #
 #---------------------------------------------------------------#
+SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c336", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c342", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c33c", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c333", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c331", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c337", TAG+="uaccess"
+
 SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c084", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c092", TAG+="uaccess"
 SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c083", TAG+="uaccess"
 SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c08f", TAG+="uaccess"
 SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c332", TAG+="uaccess"
-SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c33c", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c08b", TAG+="uaccess"
 SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c539", TAG+="uaccess"
 SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c088", TAG+="uaccess"
+
+SUBSYSTEMS=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c53a", TAG+="uaccess"
 
 #---------------------------------------------------------------#
 #  MSI Mysticlight                                              #
@@ -227,12 +273,23 @@ SUBSYSTEMS=="usb", ATTR{idVendor}=="0c45", ATTR{idProduct}=="652f", TAG+="uacces
 
 SUBSYSTEMS=="usb", ATTR{idVendor}=="04d9", ATTR{idProduct}=="fc30", TAG+="uaccess"
 SUBSYSTEMS=="usb", ATTR{idVendor}=="04d9", ATTR{idProduct}=="fc39", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="04d9", ATTR{idProduct}=="fc4d", TAG+="uaccess"
 
 #---------------------------------------------------------------#
 #  Gigabyte/Aorus RGB Fusion 2 USB                              #
 #---------------------------------------------------------------#
 SUBSYSTEMS=="usb", ATTR{idVendor}=="048d", ATTR{idProduct}=="8297", TAG+="uaccess"
 SUBSYSTEMS=="usb", ATTR{idVendor}=="048d", ATTR{idProduct}=="5702", TAG+="uaccess"
+
+#---------------------------------------------------------------#
+#  Sinowealth USB                                               #
+#  Glorious Model O / O-                                        #
+#  Glorious Model D / D-                                        #
+#  Everest GT-100 RGB                                           #
+#---------------------------------------------------------------#
+SUBSYSTEMS=="usb", ATTR{idVendor}=="258a", ATTR{idProduct}=="0036", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="258a", ATTR{idProduct}=="0033", TAG+="uaccess"
+SUBSYSTEMS=="usb", ATTR{idVendor}=="258a", ATTR{idProduct}=="0029", TAG+="uaccess"
 
 #---------------------------------------------------------------#
 #  SteelSeries Peripheral Devices                               #

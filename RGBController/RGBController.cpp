@@ -13,22 +13,7 @@ RGBController::~RGBController()
 {
     DeviceThreadRunning = false;
     DeviceCallThread->join();
-
-    /*---------------------------------------------------------*\
-    | Delete the matrix map                                     |
-    \*---------------------------------------------------------*/
-    for(int zone_index = 0; zone_index < zones.size(); zone_index++)
-    {
-        if(zones[zone_index].matrix_map != NULL)
-        {
-            if(zones[zone_index].matrix_map->map != NULL)
-            {
-                delete[] zones[zone_index].matrix_map->map;
-            }
-
-            delete zones[zone_index].matrix_map;
-        }
-    }
+    delete DeviceCallThread;
 }
 
 unsigned char * RGBController::GetDeviceDescription()
@@ -356,7 +341,7 @@ unsigned char * RGBController::GetDeviceDescription()
             /*---------------------------------------------------------*\
             | Copy in matrix map                                        |
             \*---------------------------------------------------------*/
-            for(int matrix_idx = 0; matrix_idx < (zones[zone_index].matrix_map->height * zones[zone_index].matrix_map->width); matrix_idx++)
+            for(unsigned int matrix_idx = 0; matrix_idx < (zones[zone_index].matrix_map->height * zones[zone_index].matrix_map->width); matrix_idx++)
             {
                 memcpy(&data_buf[data_ptr], &zones[zone_index].matrix_map->map[matrix_idx], sizeof(zones[zone_index].matrix_map->map[matrix_idx]));
                 data_ptr += sizeof(zones[zone_index].matrix_map->map[matrix_idx]);
@@ -676,7 +661,7 @@ void RGBController::ReadDeviceDescription(unsigned char* data_buf)
             \*---------------------------------------------------------*/
             new_map->map = new unsigned int[new_map->height * new_map->width];
 
-            for(int matrix_idx = 0; matrix_idx < (new_map->height * new_map->width); matrix_idx++)
+            for(unsigned int matrix_idx = 0; matrix_idx < (new_map->height * new_map->width); matrix_idx++)
             {
                 memcpy(&new_map->map[matrix_idx], &data_buf[data_ptr], sizeof(new_map->map[matrix_idx]));
                 data_ptr += sizeof(new_map->map[matrix_idx]);
@@ -1327,9 +1312,45 @@ void RGBController::SetMode(int mode)
     UpdateMode();
 }
 
+void RGBController::RegisterUpdateCallback(RGBControllerCallback new_callback, void * new_callback_arg)
+{
+    UpdateCallbacks.push_back(new_callback);
+    UpdateCallbackArgs.push_back(new_callback_arg);
+}
+
+void RGBController::UnregisterUpdateCallback(void * callback_arg)
+{
+    for(unsigned int callback_idx = 0; callback_idx < UpdateCallbackArgs.size(); callback_idx++ )
+    {
+        if(UpdateCallbackArgs[callback_idx] == callback_arg)
+        {
+            UpdateCallbackArgs.erase(UpdateCallbackArgs.begin() + callback_idx);
+            UpdateCallbacks.erase(UpdateCallbacks.begin() + callback_idx);
+
+            break;
+        }
+    }
+}
+
+void RGBController::SignalUpdate()
+{
+    UpdateMutex.lock();
+
+    /*-------------------------------------------------*\
+    | Client info has changed, call the callbacks       |
+    \*-------------------------------------------------*/
+    for(unsigned int callback_idx = 0; callback_idx < UpdateCallbacks.size(); callback_idx++)
+    {
+        UpdateCallbacks[callback_idx](UpdateCallbackArgs[callback_idx]);
+    }
+
+    UpdateMutex.unlock();
+}
 void RGBController::UpdateLEDs()
 {
     CallFlag_UpdateLEDs = true;
+
+    SignalUpdate();
 }
 
 void RGBController::UpdateMode()
@@ -1395,6 +1416,10 @@ std::string device_type_to_str(device_type type)
         return "Headset";
     case DEVICE_TYPE_HEADSET_STAND:
         return "Headset Stand";
+    case DEVICE_TYPE_GAMEPAD:
+        return "Gamepad";
+    case DEVICE_TYPE_LIGHT:
+        return "Light";
     default:
         return "Unknown";
     }

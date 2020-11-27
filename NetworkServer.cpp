@@ -37,6 +37,12 @@ NetworkServer::NetworkServer(std::vector<RGBController *>& control) : controller
 {
     port_num      = OPENRGB_SDK_PORT;
     server_online = false;
+    ConnectionThread = nullptr;
+}
+
+NetworkServer::~NetworkServer()
+{
+    StopServer();
 }
 
 void NetworkServer::ClientInfoChanged()
@@ -52,6 +58,18 @@ void NetworkServer::ClientInfoChanged()
     }
 
     ClientInfoChangeMutex.unlock();
+}
+
+void NetworkServer::DeviceListChanged()
+{
+    /*-------------------------------------------------*\
+    | Indicate to the clients that the controller list  |
+    | has changed                                       |
+    \*-------------------------------------------------*/
+    for(unsigned int client_idx = 0; client_idx < ServerClients.size(); client_idx++)
+    {
+        SendRequest_DeviceListChanged(ServerClients[client_idx]->client_sock);
+    }
 }
 
 unsigned short NetworkServer::GetPort()
@@ -201,6 +219,13 @@ void NetworkServer::StopServer()
 
     ServerClients.clear();
     ServerClientsMutex.unlock();
+
+    if(ConnectionThread)
+    {
+        ConnectionThread->join();
+        delete ConnectionThread;
+        ConnectionThread = nullptr;
+    }
 
     /*-------------------------------------------------*\
     | Client info has changed, call the callbacks       |
@@ -438,7 +463,7 @@ void NetworkServer::ListenThreadFunction(NetworkClientInfo * client_info)
             {
                 int tmp_bytes_read = 0;
 
-                tmp_bytes_read = recv_select(client_sock, &data[bytes_read], header.pkt_size - bytes_read, 0);
+                tmp_bytes_read = recv_select(client_sock, &data[(unsigned int)bytes_read], header.pkt_size - bytes_read, 0);
 
                 if(tmp_bytes_read <= 0)
                 {
@@ -446,7 +471,7 @@ void NetworkServer::ListenThreadFunction(NetworkClientInfo * client_info)
                 }
                 bytes_read += tmp_bytes_read;
 
-            } while (bytes_read < header.pkt_size);
+            } while ((unsigned int)bytes_read < header.pkt_size);
         }
 
         //Entire request received, select functionality based on request ID
@@ -584,7 +609,7 @@ listen_done:
     ClientInfoChanged();
 }
 
-void NetworkServer::ProcessRequest_ClientString(SOCKET client_sock, unsigned int data_size, char * data)
+void NetworkServer::ProcessRequest_ClientString(SOCKET client_sock, unsigned int /*data_size*/, char * data)
 {
     ServerClientsMutex.lock();
     for(unsigned int this_idx = 0; this_idx < ServerClients.size(); this_idx++)
@@ -645,4 +670,20 @@ void NetworkServer::SendReply_ControllerData(SOCKET client_sock, unsigned int de
         send(client_sock, (const char *)&reply_hdr, sizeof(NetPacketHeader), 0);
         send(client_sock, (const char *)reply_data, reply_size, 0);
     }
+}
+
+void NetworkServer::SendRequest_DeviceListChanged(SOCKET client_sock)
+{
+    NetPacketHeader pkt_hdr;
+
+    pkt_hdr.pkt_magic[0] = 'O';
+    pkt_hdr.pkt_magic[1] = 'R';
+    pkt_hdr.pkt_magic[2] = 'G';
+    pkt_hdr.pkt_magic[3] = 'B';
+
+    pkt_hdr.pkt_dev_idx  = 0;
+    pkt_hdr.pkt_id       = NET_PACKET_ID_DEVICE_LIST_UPDATED;
+    pkt_hdr.pkt_size     = 0;
+
+    send(client_sock, (char *)&pkt_hdr, sizeof(NetPacketHeader), 0);
 }

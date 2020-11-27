@@ -1,5 +1,6 @@
 #include <QSignalMapper>
 #include "OpenRGBClientInfoPage.h"
+#include "ResourceManager.h"
 
 using namespace Ui;
 
@@ -18,7 +19,6 @@ public:
 
 OpenRGBClientInfoPage::OpenRGBClientInfoPage(std::vector<RGBController *>& control, QWidget *parent) :
     QFrame(parent),
-    controllers(control),
     ui(new Ui::OpenRGBClientInfoPageUi)
 {
     /*-----------------------------------------------------*\
@@ -27,6 +27,14 @@ OpenRGBClientInfoPage::OpenRGBClientInfoPage(std::vector<RGBController *>& contr
     ui->setupUi(this);
     ui->ClientIPValue->setText("127.0.0.1");
     ui->ClientPortValue->setText(QString::number(OPENRGB_SDK_PORT));
+
+    /*-----------------------------------------------------*\
+    | Register callbacks for existing clients               |
+    \*-----------------------------------------------------*/
+    for(unsigned int client_idx = 0; client_idx < ResourceManager::get()->GetClients().size(); client_idx++)
+    {
+        ResourceManager::get()->GetClients()[client_idx]->RegisterClientInfoChangeCallback(UpdateInfoCallback, this);
+    }
 
     /*-----------------------------------------------------*\
     | Update the information view                           |
@@ -48,7 +56,7 @@ void OpenRGBClientInfoPage::AddClient(NetworkClient* new_client)
     \*-----------------------------------------------------*/
     if(new_client != NULL)
     {
-        rgb_clients.push_back(new_client);
+        ResourceManager::get()->GetClients().push_back(new_client);
         new_client->RegisterClientInfoChangeCallback(UpdateInfoCallback, this);
 
         UpdateInfo();
@@ -75,19 +83,19 @@ void OpenRGBClientInfoPage::UpdateInfo()
     | Set up a signal mapper to handle disconnect buttons   |
     \*-----------------------------------------------------*/
     QSignalMapper* signalMapper = new QSignalMapper(this);
-    connect(signalMapper, SIGNAL(mapped(QObject *)), this, SLOT(on_ClientDisconnectButton_clicked(QObject *)));
+    connect(signalMapper, SIGNAL(mapped(QObject *)), this, SLOT(onClientDisconnectButton_clicked(QObject *)));
 
     /*-----------------------------------------------------*\
     | Loop through all clients in list and display them     |
     \*-----------------------------------------------------*/
-    for(int client_idx = 0; client_idx < rgb_clients.size(); client_idx++)
+    for(std::size_t client_idx = 0; client_idx < ResourceManager::get()->GetClients().size(); client_idx++)
     {
         /*-----------------------------------------------------*\
         | Create the top level tree widget items and display the|
         | client IP addresses in them                           |
         \*-----------------------------------------------------*/
         QTreeWidgetItem* new_top_item = new QTreeWidgetItem(ui->ClientTree);
-        new_top_item->setText(0, QString::fromStdString(rgb_clients[client_idx]->GetIP()));
+        new_top_item->setText(0, QString::fromStdString(ResourceManager::get()->GetClients()[client_idx]->GetIP()));
 
         /*-----------------------------------------------------*\
         | Create the disconnect buttons and connect them to the |
@@ -99,26 +107,26 @@ void OpenRGBClientInfoPage::UpdateInfo()
         connect(new_button, SIGNAL(clicked()), signalMapper, SLOT(map()));
 
         NetworkClientPointer * new_arg = new NetworkClientPointer();
-        new_arg->net_client = rgb_clients[client_idx];
+        new_arg->net_client = ResourceManager::get()->GetClients()[client_idx];
 
         signalMapper->setMapping(new_button, new_arg);
 
         /*-----------------------------------------------------*\
         | Add child items for each device in the client         |
         \*-----------------------------------------------------*/
-        for(int dev_idx = 0; dev_idx < rgb_clients[client_idx]->server_controllers.size(); dev_idx++)
+        for(std::size_t dev_idx = 0; dev_idx < ResourceManager::get()->GetClients()[client_idx]->server_controllers.size(); dev_idx++)
         {
             /*-----------------------------------------------------*\
             | Create child tree widget items and display the device |
             | names in them                                         |
             \*-----------------------------------------------------*/
             QTreeWidgetItem* new_item = new QTreeWidgetItem(new_top_item);
-            new_item->setText(0, QString::fromStdString(rgb_clients[client_idx]->server_controllers[dev_idx]->name));
+            new_item->setText(0, QString::fromStdString(ResourceManager::get()->GetClients()[client_idx]->server_controllers[dev_idx]->name));
 
             /*-----------------------------------------------------*\
             | Add child items for each zone in the device           |
             \*-----------------------------------------------------*/
-            for(int zone_idx = 0; zone_idx < rgb_clients[client_idx]->server_controllers[dev_idx]->zones.size(); zone_idx++)
+            for(std::size_t zone_idx = 0; zone_idx < ResourceManager::get()->GetClients()[client_idx]->server_controllers[dev_idx]->zones.size(); zone_idx++)
             {
                 /*-----------------------------------------------------*\
                 | Create child tree widget items and display the zone   |
@@ -126,11 +134,11 @@ void OpenRGBClientInfoPage::UpdateInfo()
                 \*-----------------------------------------------------*/
                 QTreeWidgetItem* new_child = new QTreeWidgetItem();
 
-                std::string zone_str = rgb_clients[client_idx]->server_controllers[dev_idx]->zones[zone_idx].name + ", ";
-                zone_str.append(std::to_string(rgb_clients[client_idx]->server_controllers[dev_idx]->zones[zone_idx].leds_count));
+                std::string zone_str = ResourceManager::get()->GetClients()[client_idx]->server_controllers[dev_idx]->zones[zone_idx].name + ", ";
+                zone_str.append(std::to_string(ResourceManager::get()->GetClients()[client_idx]->server_controllers[dev_idx]->zones[zone_idx].leds_count));
                 zone_str.append(" LEDs, ");
 
-                switch(rgb_clients[client_idx]->server_controllers[dev_idx]->zones[zone_idx].type)
+                switch(ResourceManager::get()->GetClients()[client_idx]->server_controllers[dev_idx]->zones[zone_idx].type)
                 {
                     case ZONE_TYPE_SINGLE:
                         zone_str.append("Single");
@@ -169,7 +177,7 @@ void Ui::OpenRGBClientInfoPage::on_ClientConnectButton_clicked()
     /*-----------------------------------------------------*\
     | Create a new client and set name, IP, and port values |
     \*-----------------------------------------------------*/
-    NetworkClient * rgb_client = new NetworkClient(controllers);
+    NetworkClient * rgb_client = new NetworkClient(ResourceManager::get()->GetRGBControllers());
 
     std::string titleString = "OpenRGB ";
     titleString.append(VERSION_STRING);
@@ -183,12 +191,12 @@ void Ui::OpenRGBClientInfoPage::on_ClientConnectButton_clicked()
     /*-----------------------------------------------------*\
     | Add new client to list and register update callback   |
     \*-----------------------------------------------------*/
-    rgb_clients.push_back(rgb_client);
+    ResourceManager::get()->GetClients().push_back(rgb_client);
 
     rgb_client->RegisterClientInfoChangeCallback(UpdateInfoCallback, this);
 }
 
-void Ui::OpenRGBClientInfoPage::on_ClientDisconnectButton_clicked(QObject * arg)
+void Ui::OpenRGBClientInfoPage::onClientDisconnectButton_clicked(QObject * arg)
 {
     /*-----------------------------------------------------*\
     | Get the pointer to the disconnecting client from args |
@@ -203,11 +211,11 @@ void Ui::OpenRGBClientInfoPage::on_ClientDisconnectButton_clicked(QObject * arg)
     /*-----------------------------------------------------*\
     | Remove disconnecting client from list                 |
     \*-----------------------------------------------------*/
-    for(unsigned int client_idx = 0; client_idx < rgb_clients.size(); client_idx++)
+    for(unsigned int client_idx = 0; client_idx < ResourceManager::get()->GetClients().size(); client_idx++)
     {
-        if(disconnect_client == rgb_clients[client_idx])
+        if(disconnect_client == ResourceManager::get()->GetClients()[client_idx])
         {
-            rgb_clients.erase(rgb_clients.begin() + client_idx);
+            ResourceManager::get()->GetClients().erase(ResourceManager::get()->GetClients().begin() + client_idx);
             break;
         }
     }

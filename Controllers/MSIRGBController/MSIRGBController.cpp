@@ -10,11 +10,45 @@
 \*-----------------------------------------*/
 
 #include "MSIRGBController.h"
+#include "dependencies/dmiinfo.h"
 #include "super_io.h"
+
+#define NUM_INVERTED_DEVICES (sizeof(inverted_devices) / sizeof(inverted_devices[0]))
+
+/*-------------------------------------------------------------------------*\
+| This is a list of DMI info for boards which need the  inversion flag set  |
+\*-------------------------------------------------------------------------*/
+static const char * inverted_devices[21] =
+{
+    "7B89",
+    "7B90",
+    "7B19",
+    "7C02",
+    "7B75",
+    "7B22",
+    "7B23",
+    "7B24",
+    "7B27",
+    "7B30",
+    "7B31",
+    "7B51",
+    "7C04",
+    "7C00",
+    "7B98",
+    "7C22",
+    "7C24",
+    "7C01",
+    "7C39",
+    "7B86",
+    "7B87"
+};
 
 MSIRGBController::MSIRGBController(int sioaddr)
 {
     msi_sioaddr = sioaddr;
+    DMIInfo board;
+
+    std::string board_dmi = board.getMainboard();
 
     /*-----------------------------------------------------*\
     | This setup step isn't well documented                 |
@@ -42,7 +76,7 @@ MSIRGBController::MSIRGBController(int sioaddr)
 
     if((enable & MSI_SIO_RGB_ENABLE_MASK) != MSI_SIO_RGB_ENABLE_MASK)
     {
-        superio_outb(msi_sioaddr, MSI_SIO_RGB_REG_ENABLE, MSI_SIO_RGB_ENABLE_MASK & (enable & !MSI_SIO_RGB_ENABLE_MASK));
+        superio_outb(msi_sioaddr, MSI_SIO_RGB_REG_ENABLE, 0xE0);
     }
 
     /*-----------------------------------------------------*\
@@ -50,10 +84,25 @@ MSIRGBController::MSIRGBController(int sioaddr)
     \*-----------------------------------------------------*/
     superio_outb(msi_sioaddr, MSI_SIO_RGB_REG_CFG_1, 0x00);
 
-    /*-----------------------------------------------------*\
-    | Lighting enabled, RGB non-inverted, header on         |
-    \*-----------------------------------------------------*/
-    superio_outb(msi_sioaddr, MSI_SIO_RGB_REG_CFG_3, 0xE2);
+    /*--------------------------------------------------------------*\
+    | Header on, pulse deactivated, colors inverted depending on DMI |
+    \*--------------------------------------------------------------*/
+    unsigned char ff_val = 0b11100010;
+
+    for(unsigned int i = 0; i < NUM_INVERTED_DEVICES; i++)
+    {
+        if (board_dmi.find(std::string(inverted_devices[i])) != std::string::npos)
+        {
+            ff_val |= 0b00011100;
+            break;
+        }
+    }
+    superio_outb(msi_sioaddr, MSI_SIO_RGB_REG_CFG_3, ff_val);
+    
+    /*-----------------------------------------------------------*\
+    | This seems to be related to some rainbow mode. Deactivated  |
+    \*-----------------------------------------------------------*/
+    superio_outb(msi_sioaddr, 0xFD, 0x00);
 }
 
 MSIRGBController::~MSIRGBController()

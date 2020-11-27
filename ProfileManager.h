@@ -5,7 +5,7 @@
 class ProfileManager
 {
 public:
-    ProfileManager(std::vector<RGBController *>& control);
+    ProfileManager(std::vector<RGBController *>& control, std::string config_dir);
     ~ProfileManager();
 
     bool SaveProfile(std::string profile_name);
@@ -14,11 +14,27 @@ public:
     void DeleteProfile(std::string profile_name);
 
     std::vector<std::string> profile_list;
-    
+
+    bool LoadDeviceFromListWithOptions
+        (
+        std::vector<RGBController*>&    temp_controllers,
+        std::vector<bool>&              temp_controller_used,
+        RGBController*                  load_controller,
+        bool                            load_size,
+        bool                            load_settings
+        );
+
+    std::vector<RGBController*> LoadProfileToList
+        (
+        std::string     profile_name
+        );
+
 protected:
     std::vector<RGBController *>& controllers;
 
 private:
+    std::string                         configuration_directory;
+
     void UpdateProfileList();
     bool LoadProfileWithOptions
             (

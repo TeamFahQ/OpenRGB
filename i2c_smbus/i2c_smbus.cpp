@@ -24,7 +24,17 @@ i2c_smbus_interface::i2c_smbus_interface()
     this->pci_vendor           = -1;
     this->pci_subsystem_device = -1;
     this->pci_subsystem_vendor = -1;
+    i2c_smbus_thread_running   = true;
     i2c_smbus_thread           = new std::thread(&i2c_smbus_interface::i2c_smbus_thread_function, this);
+}
+
+i2c_smbus_interface::~i2c_smbus_interface()
+{
+    i2c_smbus_thread_running = false;
+    i2c_smbus_start = true;
+    i2c_smbus_start_cv.notify_all();
+    i2c_smbus_thread->join();
+    delete i2c_smbus_thread;
 }
 
 s32 i2c_smbus_interface::i2c_smbus_write_quick(u8 addr, u8 value)
@@ -149,8 +159,6 @@ s32 i2c_smbus_interface::i2c_smbus_write_i2c_block_data(u8 addr, u8 command, u8 
 
 s32 i2c_smbus_interface::i2c_smbus_xfer_call(u8 addr, char read_write, u8 command, int size, i2c_smbus_data* data)
 {
-    s32 ret_val = 0;
-
     i2c_smbus_xfer_mutex.lock();
 
     i2c_addr        = addr;
@@ -169,8 +177,6 @@ s32 i2c_smbus_interface::i2c_smbus_xfer_call(u8 addr, char read_write, u8 comman
     i2c_smbus_done_cv.wait(done_lock, [this]{ return i2c_smbus_done.load(); });
     i2c_smbus_done  = false;
 
-    ret_val         = i2c_ret;
-
     i2c_smbus_xfer_mutex.unlock();
 
     return(i2c_ret);
@@ -184,6 +190,11 @@ void i2c_smbus_interface::i2c_smbus_thread_function()
 
         i2c_smbus_start_cv.wait(start_lock, [this]{ return i2c_smbus_start.load(); });
         i2c_smbus_start = false;
+
+        if (!i2c_smbus_thread_running.load())
+        {
+            break;
+        }
 
         i2c_ret = i2c_smbus_xfer(i2c_addr, i2c_read_write, i2c_command, i2c_size, i2c_data);
 

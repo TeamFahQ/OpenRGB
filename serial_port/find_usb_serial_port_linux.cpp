@@ -122,6 +122,8 @@ std::vector<std::string *> find_usb_serial_port(unsigned short vid, unsigned sho
         ent = readdir(dir);
     }
 
+
+    closedir(dir);
     return ret_vector;
 
 }   /* find_usb_serial_port() */

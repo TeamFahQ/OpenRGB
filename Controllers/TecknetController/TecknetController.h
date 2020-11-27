@@ -29,7 +29,7 @@ enum
 enum
 {
     TECKNET_MODE_OFF            = 0xFF,                     //LEDs Off
-    TECKNET_MODE_STATIC         = 0x00,                     //Static Mode
+    TECKNET_MODE_DIRECT         = 0x00,                     //Direct Mode
     TECKNET_MODE_BREATHING      = 0x01,                     //Breathing Mode
 };
 
@@ -39,18 +39,6 @@ enum
     TECKNET_BRIGHTNESS_LOW      = 0x01,
     TECKNET_BRIGHTNESS_MED      = 0x02,
     TECKNET_BRIGHTNESS_HIGH     = 0x03
-};
-
-static unsigned char tecknet_colour_mode_data[][16] =
-{
-    { 0x02, 0x04, 0x00, 0x00, 0x00, 0x03, 0x00 },           // Static
-    { 0x02, 0x04, 0x00, 0x00, 0x00, 0x03, 0x00 },           // Breathing
-};
-
-static unsigned char tecknet_speed_mode_data[][9] =
-{
-    { 0x00, 0x00, 0x00, 0x00 },                             // Static
-    { 0x00, 0x06, 0x03, 0x01 },                             // Breathing
 };
 
 enum

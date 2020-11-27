@@ -21,6 +21,7 @@ class NetworkClient
 {
 public:
     NetworkClient(std::vector<RGBController *>& control);
+    ~NetworkClient();
 
     void            ClientInfoChanged();
 
@@ -45,7 +46,8 @@ public:
     
     void        ProcessReply_ControllerCount(unsigned int data_size, char * data);
     void        ProcessReply_ControllerData(unsigned int data_size, char * data, unsigned int dev_idx);
-    
+    void        ProcessRequest_DeviceListChanged();
+
     void        SendData_ClientString();
 
     void        SendRequest_ControllerCount();
@@ -63,6 +65,8 @@ public:
 
     std::vector<RGBController *>  server_controllers;
 
+    std::mutex                          ControllerListMutex;
+
 protected:
     std::vector<RGBController *>& controllers;
 
@@ -78,6 +82,8 @@ private:
     bool            server_connected;
     bool            server_initialized;
     unsigned int    server_controller_count;
+    bool            server_controller_count_received;
+    bool            change_in_progress;
 
     std::thread *   ConnectionThread;
     std::thread *   ListenThread;

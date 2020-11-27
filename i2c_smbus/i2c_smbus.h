@@ -21,7 +21,7 @@ typedef unsigned short  u16;
 typedef unsigned int    u32;
 typedef int             s32;
 
-#ifdef WIN32
+#ifdef _WIN32
 
 //Data for SMBus Messages
 #define I2C_SMBUS_BLOCK_MAX     32
@@ -33,11 +33,27 @@ union i2c_smbus_data
     u8          block[I2C_SMBUS_BLOCK_MAX + 2];
 };
 
-#else /* WIN32 */
+#endif /* _WIN32 */
+
+#ifdef __linux__
 
 #include <linux/i2c.h>
 
-#endif  /* WIN32 */
+#endif  /* __linux__ */
+
+#ifdef __APPLE__
+
+//Data for SMBus Messages
+#define I2C_SMBUS_BLOCK_MAX     32
+
+union i2c_smbus_data
+{
+    u8          byte;
+    u16         word;
+    u8          block[I2C_SMBUS_BLOCK_MAX + 2];
+};
+
+#endif /* __APPLE__ */
 
 // i2c_smbus_xfer read or write markers
 #define I2C_SMBUS_READ  1
@@ -66,7 +82,7 @@ public:
     int pci_subsystem_vendor;
 
     i2c_smbus_interface();
-    virtual ~i2c_smbus_interface() = default;
+    virtual ~i2c_smbus_interface();
 
     void i2c_smbus_thread_function();
 
@@ -89,7 +105,8 @@ public:
     virtual s32 i2c_smbus_xfer(u8 addr, char read_write, u8 command, int size, i2c_smbus_data* data) = 0;
 
 private:
-    std::thread *       i2c_smbus_thread;
+    std::thread *           i2c_smbus_thread;
+    std::atomic<bool>       i2c_smbus_thread_running;
 
     std::atomic<bool>       i2c_smbus_start;
     std::condition_variable i2c_smbus_start_cv;

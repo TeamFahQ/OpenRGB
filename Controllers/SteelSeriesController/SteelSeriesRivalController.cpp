@@ -30,16 +30,23 @@ static void send_usb_msg(hid_device* dev, char * data_pkt, unsigned int size)
 SteelSeriesRivalController::SteelSeriesRivalController
     (
     hid_device*         dev_handle,
-    steelseries_type    proto_type
+    steelseries_type    proto_type,
+    const char*         path
     )
 {
-    dev = dev_handle;
-    proto = proto_type;
+    dev         = dev_handle;
+    location    = path;
+    proto       = proto_type;
 }
 
 SteelSeriesRivalController::~SteelSeriesRivalController()
 {
 
+}
+
+std::string SteelSeriesRivalController::GetDeviceLocation()
+{
+    return(location);
 }
 
 char* SteelSeriesRivalController::GetDeviceName()
@@ -70,14 +77,19 @@ void SteelSeriesRivalController::SetLightEffect
 {
     char usb_buf[9];
     memset(usb_buf, 0x00, sizeof(usb_buf));
-    switch (proto) {
+    switch (proto)
+    {
         case RIVAL_100:
             usb_buf[0x00]       = 0x07;
             usb_buf[0x01]       = 0x00;
             break;
+
         case RIVAL_300:
             usb_buf[0x00]       = 0x07;
             usb_buf[0x01]       = zone_id + 1;
+            break;
+
+        default:
             break;
     }
     usb_buf[0x02]       = effect;
@@ -100,8 +112,10 @@ void SteelSeriesRivalController::SetLightEffectAll
             SetLightEffect(0, effect);
             SetLightEffect(1, effect);
             break;
+        
+        default:
+            break;
     }
-
 }
 
 
@@ -126,7 +140,11 @@ void SteelSeriesRivalController::SetColor
             usb_buf[0x00]       = 0x08;
             usb_buf[0x01]       = zone_id + 1;
             break;
+
+        default:
+            break;
     }
+
     usb_buf[0x02]       = red;
     usb_buf[0x03]       = green;
     usb_buf[0x04]       = blue;
@@ -150,6 +168,9 @@ void SteelSeriesRivalController::SetColorAll
         case RIVAL_300:
             SetColor(0, red, green, blue);
             SetColor(1, red, green, blue);
+            break;
+
+        default:
             break;
     }
 }

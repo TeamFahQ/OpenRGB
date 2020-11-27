@@ -22,12 +22,10 @@
 
 using namespace std::chrono_literals;
 
-std::vector<NetworkClient*> clients;
-
 /*-------------------------------------------------------------*\
 | Command line functionality and return flags                   |
 \*-------------------------------------------------------------*/
-extern unsigned int cli_main(int argc, char *argv[], std::vector<RGBController *> &rgb_controllers, ProfileManager* profile_manager_in, NetworkServer* network_server_in, std::vector<NetworkClient*> &clients);
+extern unsigned int cli_main(int argc, char *argv[], std::vector<RGBController *> &rgb_controllers, ProfileManager* profile_manager_in);
 
 enum
 {
@@ -108,7 +106,7 @@ bool AttemptLocalConnection(std::vector<RGBController*> &rgb_controllers)
     }
     else
     {
-        clients.push_back(client);
+        ResourceManager::get()->GetClients().push_back(client);
 
         success = true;
     }
@@ -148,9 +146,6 @@ int main(int argc, char* argv[])
 
     std::vector<i2c_smbus_interface*> &busses    = ResourceManager::get()->GetI2CBusses();
     std::vector<RGBController*> &rgb_controllers = ResourceManager::get()->GetRGBControllers();
-
-    ProfileManager profile_manager(rgb_controllers);
-    NetworkServer server(rgb_controllers);
     
     if(!AttemptLocalConnection(rgb_controllers))
     {
@@ -163,7 +158,7 @@ int main(int argc, char* argv[])
     unsigned int ret_flags = RET_FLAG_START_GUI;
     if(argc > 1)
     {
-        ret_flags = cli_main(argc, argv, rgb_controllers, &profile_manager, &server, clients);
+        ret_flags = cli_main(argc, argv, rgb_controllers, ResourceManager::get()->GetProfileManager());
     }
 
     /*---------------------------------------------------------*\
@@ -176,24 +171,14 @@ int main(int argc, char* argv[])
         QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         QApplication a(argc, argv);
 
-        Ui::OpenRGBDialog2 dlg(busses, rgb_controllers, &profile_manager);
+        Ui::OpenRGBDialog2 dlg(busses, rgb_controllers);
 
         if(ret_flags & RET_FLAG_I2C_TOOLS)
         {
             dlg.AddI2CToolsPage();
         }
 
-        if(clients.size() == 0)
-        {
-            dlg.AddServerTab(&server);
-        }
-
         dlg.AddClientTab();
-
-        for(int client_idx = 0; client_idx < clients.size(); client_idx++)
-        {
-            dlg.AddClient(clients[client_idx]);
-        }
         
         if(ret_flags & RET_FLAG_START_MINIMIZED)
         {

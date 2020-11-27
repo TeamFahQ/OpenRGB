@@ -14,14 +14,20 @@
 // Skip these indices in the color output
 static unsigned int skip_idx[] = { 6, 23, 29, 41, 47, 59, 70, 71, 75, 76, 87, 88, 93, 99, 100, 102, 108, 113, 114, 120, 123, 124 };
 
-HyperXAlloyOriginsController::HyperXAlloyOriginsController(hid_device* dev_handle)
+HyperXAlloyOriginsController::HyperXAlloyOriginsController(hid_device* dev_handle, const char* path)
 {
-    dev = dev_handle;
+    dev         = dev_handle;
+    location    = path;
 }
 
 HyperXAlloyOriginsController::~HyperXAlloyOriginsController()
 {
 
+}
+
+std::string HyperXAlloyOriginsController::GetDeviceLocation()
+{
+    return(location);
 }
 
 void HyperXAlloyOriginsController::SetLEDsDirect(std::vector<RGBColor> colors)
@@ -116,7 +122,7 @@ void HyperXAlloyOriginsController::SendDirectColorPacket
     /*-----------------------------------------------------*\
     | Copy in color data                                    |
     \*-----------------------------------------------------*/
-    for(int color_idx = 0; color_idx < color_count; color_idx++)
+    for(unsigned int color_idx = 0; color_idx < color_count; color_idx++)
     {
         buf[(color_idx * 4) + 1] = 0x81;
         buf[(color_idx * 4) + 2] = RGBGetRValue(color_data[color_idx]);
