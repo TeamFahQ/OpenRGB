@@ -48,6 +48,7 @@ typedef struct
 
 typedef void (*DeviceListChangeCallback)(void *);
 typedef void (*DetectionProgressCallback)(void *);
+typedef void (*I2CBusListChangeCallback)(void *);
 
 class ResourceManager
 {
@@ -77,6 +78,7 @@ public:
     
     void RegisterDeviceListChangeCallback(DeviceListChangeCallback new_callback, void * new_callback_arg);
     void RegisterDetectionProgressCallback(DetectionProgressCallback new_callback, void * new_callback_arg);
+    void RegisterI2CBusListChangeCallback(I2CBusListChangeCallback new_callback, void * new_callback_arg);
 
     unsigned int GetDetectionPercent();
     const char*  GetDetectionString();
@@ -89,8 +91,11 @@ public:
     ProfileManager*                 GetProfileManager();
     SettingsManager*                GetSettingsManager();
 
+    void                            SetConfigurationDirectory(std::string directory);
+
     void DeviceListChanged();
     void DetectionProgressChanged();
+    void I2CBusListChanged();
 
     void Cleanup();
 
@@ -169,6 +174,13 @@ private:
     | Detection Progress Callback                                                           |
     \*-------------------------------------------------------------------------------------*/
     std::mutex                                  DetectionProgressMutex;
-    std::vector<DeviceListChangeCallback>       DetectionProgressCallbacks;
+    std::vector<DetectionProgressCallback>      DetectionProgressCallbacks;
     std::vector<void *>                         DetectionProgressCallbackArgs;
+
+    /*-------------------------------------------------------------------------------------*\
+    | I2C/SMBus Adapter List Changed Callback                                               |
+    \*-------------------------------------------------------------------------------------*/
+    std::mutex                                  I2CBusListChangeMutex;
+    std::vector<I2CBusListChangeCallback>       I2CBusListChangeCallbacks;
+    std::vector<void *>                         I2CBusListChangeCallbackArgs;
 };

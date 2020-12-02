@@ -148,6 +148,7 @@ class RGBController
 {
 public:
     std::string             name;           /* controller name          */
+    std::string             vendor;         /* controller vendor        */
     std::string             description;    /* controller description   */
     std::string             version;        /* controller version       */
     std::string             serial;         /* controller serial number */
@@ -178,8 +179,8 @@ public:
     int                     GetMode();
     void                    SetMode(int mode);
 
-    unsigned char *         GetDeviceDescription();
-    void                    ReadDeviceDescription(unsigned char* data_buf);
+    unsigned char *         GetDeviceDescription(unsigned int protocol_version);
+    void                    ReadDeviceDescription(unsigned char* data_buf, unsigned int protocol_version);
 
     unsigned char *         GetModeDescription(int mode);
     void                    SetModeDescription(unsigned char* data_buf);
