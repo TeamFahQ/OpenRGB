@@ -31,12 +31,23 @@ SinowealthController::~SinowealthController()
 
 std::string SinowealthController::GetLocation()
 {
-    return(location);
+    return("HID: " + location);
 }
 
 unsigned int SinowealthController::GetLEDCount()
 {
     return(led_count);
+}
+
+std::string SinowealthController::GetSerialString()
+{
+    wchar_t serial_string[128];
+    hid_get_serial_number_string(dev_report_id_4, serial_string, 128);
+
+    std::wstring return_wstring = serial_string;
+    std::string return_string(return_wstring.begin(), return_wstring.end());
+
+    return(return_string);
 }
 
 void SinowealthController::SetLEDColor

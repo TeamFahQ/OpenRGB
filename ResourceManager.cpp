@@ -37,6 +37,7 @@ ResourceManager::ResourceManager()
     /*-------------------------------------------------------------------------*\
     | Initialize Detection Variables                                            |
     \*-------------------------------------------------------------------------*/
+    detection_enabled     = true;
     detection_percent     = 100;
     detection_string      = "";
     detection_is_required = false;
@@ -50,7 +51,7 @@ ResourceManager::ResourceManager()
     /*-------------------------------------------------------------------------*\
     | Load sizes list from file                                                 |
     \*-------------------------------------------------------------------------*/
-    profile_manager         = new ProfileManager(rgb_controllers, GetConfigurationDirectory());
+    profile_manager         = new ProfileManager(GetConfigurationDirectory());
     rgb_controllers_sizes   = profile_manager->LoadProfileToList("sizes.ors");
 
     /*-------------------------------------------------------------------------*\
@@ -78,6 +79,7 @@ std::vector<i2c_smbus_interface*> & ResourceManager::GetI2CBusses()
 void ResourceManager::RegisterRGBController(RGBController *rgb_controller)
 {
     rgb_controllers_hw.push_back(rgb_controller);
+
     DeviceListChanged();
 }
 
@@ -309,6 +311,9 @@ void ResourceManager::SetConfigurationDirectory(std::string directory)
 {
     settings_manager->LoadSettings(directory + "OpenRGB.json");
     profile_manager->SetConfigurationDirectory(directory);
+
+    rgb_controllers_sizes.clear();
+    rgb_controllers_sizes   = profile_manager->LoadProfileToList("sizes.ors");
 }
 
 void ResourceManager::Cleanup()
@@ -355,38 +360,54 @@ void ResourceManager::Cleanup()
 
 void ResourceManager::DetectDevices()
 {
-    /*-------------------------------------------------*\
-    | Do nothing is it is already detecting devices     |
-    \*-------------------------------------------------*/
-    if(detection_is_required.load())
+    if(detection_enabled)
     {
-        return;
+        /*-------------------------------------------------*\
+        | Do nothing is it is already detecting devices     |
+        \*-------------------------------------------------*/
+        if(detection_is_required.load())
+        {
+            return;
+        }
+
+        /*-------------------------------------------------*\
+        | If there's anything left from the last time,      |
+        | we shall remove it first                          |
+        \*-------------------------------------------------*/
+        detection_percent = 0;
+        detection_string  = "";
+
+        DetectionProgressChanged();
+
+        Cleanup();
+
+        DeviceListChanged();
+
+        /*-------------------------------------------------*\
+        | Start the device detection thread                 |
+        \*-------------------------------------------------*/
+        detection_is_required = true;
+        DetectDevicesThread = new std::thread(&ResourceManager::DetectDevicesThreadFunction, this);
+
+        /*-------------------------------------------------*\
+        | Release the current thread to allow detection     |
+        | thread to start                                   |
+        \*-------------------------------------------------*/
+        std::this_thread::sleep_for(1ms);
     }
+    else
+    {
+        /*-------------------------------------------------*\
+        | Signal that detection is complete                 |
+        \*-------------------------------------------------*/
+        detection_percent     = 100;
+        DetectionProgressChanged();
+    }
+}
 
-    /*-------------------------------------------------*\
-    | If there's anything left from the last time,      |
-    | we shall remove it first                          |
-    \*-------------------------------------------------*/
-    detection_percent = 0;
-    detection_string  = "";
-
-    DetectionProgressChanged();
-
-    Cleanup();
-
-    DeviceListChanged();
-
-    /*-------------------------------------------------*\
-    | Start the device detection thread                 |
-    \*-------------------------------------------------*/
-    detection_is_required = true;
-    DetectDevicesThread = new std::thread(&ResourceManager::DetectDevicesThreadFunction, this);
-
-    /*-------------------------------------------------*\
-    | Release the current thread to allow detection     |
-    | thread to start                                   |
-    \*-------------------------------------------------*/
-    std::this_thread::sleep_for(1ms);
+void ResourceManager::DisableDetection()
+{
+    detection_enabled = false;
 }
 
 void ResourceManager::DetectDevicesThreadFunction()
@@ -415,7 +436,7 @@ void ResourceManager::DetectDevicesThreadFunction()
     | Open device disable list and read in disabled     |
     | device strings                                    |
     \*-------------------------------------------------*/
-    detector_settings = settings_manager->GetSettings("Setting_Detectors");
+    detector_settings = settings_manager->GetSettings("Detectors");
 
     /*-------------------------------------------------*\
     | Check HID safe mode setting                       |
@@ -501,7 +522,7 @@ void ResourceManager::DetectDevicesThreadFunction()
             /*-------------------------------------------------*\
             | First, load sizes for the new controllers         |
             \*-------------------------------------------------*/
-            for(unsigned int controller_size_idx = prev_count - 1; controller_size_idx < rgb_controllers_hw.size(); controller_size_idx++)
+            for(unsigned int controller_size_idx = prev_count; controller_size_idx < rgb_controllers_hw.size(); controller_size_idx++)
             {
                 profile_manager->LoadDeviceFromListWithOptions(rgb_controllers_sizes, size_used, rgb_controllers_hw[controller_size_idx], true, false);
             }
@@ -584,6 +605,24 @@ void ResourceManager::DetectDevicesThreadFunction()
                         DetectionProgressChanged();
 
                         hid_device_detectors[hid_detector_idx].function(current_hid_device, hid_device_detectors[hid_detector_idx].name);
+
+                        /*-------------------------------------------------*\
+                        | If the device list size has changed, call the     |
+                        | device list changed callbacks                     |
+                        \*-------------------------------------------------*/
+                        if(rgb_controllers_hw.size() != prev_count)
+                        {
+                            /*-------------------------------------------------*\
+                            | First, load sizes for the new controllers         |
+                            \*-------------------------------------------------*/
+                            for(unsigned int controller_size_idx = prev_count; controller_size_idx < rgb_controllers_hw.size(); controller_size_idx++)
+                            {
+                                profile_manager->LoadDeviceFromListWithOptions(rgb_controllers_sizes, size_used, rgb_controllers_hw[controller_size_idx], true, false);
+                            }
+
+                            DeviceListChanged();
+                        }
+                        prev_count = rgb_controllers_hw.size();
                     }
                 }
 
@@ -705,7 +744,7 @@ void ResourceManager::DetectDevicesThreadFunction()
             /*-------------------------------------------------*\
             | First, load sizes for the new controllers         |
             \*-------------------------------------------------*/
-            for(unsigned int controller_size_idx = prev_count - 1; controller_size_idx < rgb_controllers_hw.size(); controller_size_idx++)
+            for(unsigned int controller_size_idx = prev_count; controller_size_idx < rgb_controllers_hw.size(); controller_size_idx++)
             {
                 profile_manager->LoadDeviceFromListWithOptions(rgb_controllers_sizes, size_used, rgb_controllers_hw[controller_size_idx], true, false);
             }
@@ -737,7 +776,7 @@ void ResourceManager::DetectDevicesThreadFunction()
 
     if(save_settings)
     {
-        settings_manager->SetSettings("Setting_Detectors", detector_settings);
+        settings_manager->SetSettings("Detectors", detector_settings);
 
         settings_manager->SaveSettings();
     }

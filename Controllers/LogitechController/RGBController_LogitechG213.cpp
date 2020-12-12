@@ -36,6 +36,8 @@ RGBController_LogitechG213::RGBController_LogitechG213(LogitechG213Controller* l
     vendor      = "Logitech";
     type        = DEVICE_TYPE_KEYBOARD;
     description = "Logitech G213 Keyboard Device";
+    location    = logitechG213->GetDeviceLocation();
+    serial      = logitechG213->GetSerialString();
 
     mode Direct;
     Direct.name                     = "Direct";

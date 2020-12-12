@@ -14,7 +14,7 @@ RGBController_HyperXDRAM::RGBController_HyperXDRAM(HyperXDRAMController* hyperx_
 {
     hyperx = hyperx_ptr;
 
-    name        = hyperx->GetDeviceName();
+    name        = "HyperX DRAM";
     vendor      = "HyperX";
     type        = DEVICE_TYPE_DRAM;
     description = "HyperX DRAM Device";
@@ -181,6 +181,7 @@ void RGBController_HyperXDRAM::DeviceUpdateLEDs()
             unsigned char blu = RGBGetBValue(color);
             hyperx->SetLEDColor(led_idx, red, grn, blu);
         }
+        hyperx->SendApply();
     }
     else
     {
@@ -204,6 +205,7 @@ void RGBController_HyperXDRAM::UpdateZoneLEDs(int zone)
             unsigned char blu = RGBGetBValue(color);
             hyperx->SetLEDColor(led, red, grn, blu);
         }
+        hyperx->SendApply();
     }
     else
     {
@@ -229,6 +231,7 @@ void RGBController_HyperXDRAM::UpdateSingleLED(int led)
     {
         hyperx->SetEffectColor(red, grn, blu);
     }
+    hyperx->SendApply();
 }
 
 void RGBController_HyperXDRAM::SetCustomMode()

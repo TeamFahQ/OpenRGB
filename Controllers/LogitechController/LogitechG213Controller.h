@@ -16,8 +16,11 @@
 class LogitechG213Controller
 {
 public:
-    LogitechG213Controller(hid_device* dev_handle);
+    LogitechG213Controller(hid_device* dev_handle, const char* path);
     ~LogitechG213Controller();
+
+    std::string GetDeviceLocation();
+    std::string GetSerialString();
 
     void        SetDirect
                     (
@@ -29,5 +32,6 @@ public:
 
 private:
     hid_device* dev;
+    std::string location;
 
 };

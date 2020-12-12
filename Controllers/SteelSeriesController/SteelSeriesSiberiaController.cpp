@@ -49,12 +49,23 @@ SteelSeriesSiberiaController::~SteelSeriesSiberiaController()
 
 std::string SteelSeriesSiberiaController::GetDeviceLocation()
 {
-    return(location);
+    return("HID: " + location);
 }
 
 char* SteelSeriesSiberiaController::GetDeviceName()
 {
     return device_name;
+}
+
+std::string SteelSeriesSiberiaController::GetSerialString()
+{
+    wchar_t serial_string[128];
+    hid_get_serial_number_string(dev, serial_string, 128);
+
+    std::wstring return_wstring = serial_string;
+    std::string return_string(return_wstring.begin(), return_wstring.end());
+
+    return(return_string);
 }
 
 void SteelSeriesSiberiaController::SetColor

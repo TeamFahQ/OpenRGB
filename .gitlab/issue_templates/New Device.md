@@ -17,19 +17,22 @@ Please link us to the manufacturer's product page beneath this line
 
 
 ### Please select what type of device/interface the device uses:
+<!-- Please select from one of the following
+ This determines how the device connects to the PC -->
 
-- [ ] Motherboard (SMBus)
-- [ ] Motherboard (USB)
-- [ ] RAM (SMBus)
-- [ ] GPU (I2C)
-- [ ] External USB (Peripheral, lighting controller, etc)
-- [ ] Internal USB (lighting controller, cooler, fan hub, etc)
-- [ ] I don't know (we can help you determine this)
+~"DeviceType::IDK" <!-- I Don't know -->
+~"DeviceType::USB" <!-- The device connects to an internal header or external usb port -->
+~"DeviceType::GPU::AMD" <!-- The device is an AMD GPU -->
+~"DeviceType::GPU::NVidia" <!-- The device is a NVidia GPU -->
+~"DeviceType::SMBus" <!-- The device is connected to the SMBus eg. RAM -->
+~"DeviceType::WMI"  <!-- The device is controlled thru Windows Management Instrumentation -->
+
+<!-- Please delete any lines that are not relevant -->
 
 ### ID information:
 <!--
 For PCI (GPU) devices we will need the Vendor ID, Device ID, Sub-Vendor ID and Sub-Device IDs
-In Windows this can be found under the device manager and on Linux this can be found wit lspci -vv
+In Windows this can be found under the device manager and on Linux this can be found with lspci -vv
 For USB devices we will need the USB VID and PID
 -->
 
@@ -41,6 +44,29 @@ Screenshots of the official control software should show lists of supported mode
 
 
 ### Please attach device captures here:
-<!--
-For information on how to capture device packets please see https://gitlab.com/Dr_No/OpenRGB/-/wikis/OpenRGB-doesn%27t-have-my-device
+<!-- If you have code examples from other projects please link them here or alternatively
+for information on how to capture device packets please refer to the wiki article
+https://gitlab.com/Dr_No/OpenRGB/-/wikis/OpenRGB-doesn%27t-have-my-device
 -->
+
+
+
+
+
+
+
+
+
+<!-- For admin purposes: Please leave this section as is -->
+/assign me
+/label ~"Issue Type - New Device"
+/label ~"NewDevice::Step0 - Unconfirmed"
+
+# Checklist for Step2
+- [ ] Name of device
+- [ ] A link to the vendors product page has been included
+- [ ] The transport bus has been identified and the appropriate label added to the issue.
+- [ ] The device ID's have been included for [USB](https://gitlab.com/Dr_No/OpenRGB/-/wikis/USB-Vendor-Identification-and-Product-Identification) or PCI
+- [ ] Screenshots of the OEM Application are included
+- [ ] There is either, appropriate code examples linked or suitable device captures attached
+<!-- For admin purposes: Please leave this section as is -->

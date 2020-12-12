@@ -56,7 +56,18 @@ std::string CorsairLightingNodeController::GetFirmwareString()
 
 std::string CorsairLightingNodeController::GetLocationString()
 {
-    return(location);
+    return("HID: " + location);
+}
+
+std::string CorsairLightingNodeController::GetSerialString()
+{
+    wchar_t serial_string[128];
+    hid_get_serial_number_string(dev, serial_string, 128);
+
+    std::wstring return_wstring = serial_string;
+    std::string return_string(return_wstring.begin(), return_wstring.end());
+
+    return(return_string);
 }
 
 void CorsairLightingNodeController::SetChannelEffect(unsigned char channel,

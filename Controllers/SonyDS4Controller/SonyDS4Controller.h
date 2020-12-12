@@ -8,19 +8,22 @@
 
 #include <hidapi/hidapi.h>
 
+#include <string>
+
 class SonyDS4Controller
 {
 public:
     SonyDS4Controller(hid_device * device_handle, const char * device_path);
     
-    const char* GetLocation();
+    std::string GetLocation();
+    std::string GetSerialString();
 
     void SetColors(unsigned char red, unsigned char green, unsigned char blue);
 
 private:
     hid_device*     device_handle;
     bool            is_bluetooth = false;
-    const char*     location;
+    std::string     location;
 
     void sendReportUSB(unsigned char red, unsigned char green, unsigned char blue);
     void sendReportBT(unsigned char red, unsigned char green, unsigned char blue);

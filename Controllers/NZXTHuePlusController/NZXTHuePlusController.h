@@ -62,6 +62,7 @@ enum
     HUE_PLUS_MODE_CANDLELIGHT   = 0x09, /* Candlelight mode             */
     HUE_PLUS_MODE_WINGS         = 0x0C, /* Wings mode                   */
     HUE_PLUS_MODE_WAVE          = 0x0D, /* Wave mode                    */
+    HUE_PLUS_MODE_DIRECT        = 0x0E, /* Direct mode                  */
 };
 
 class HuePlusController
@@ -71,7 +72,7 @@ public:
     ~HuePlusController();
 
     void            Initialize(char* port);
-    char*           GetLocation();
+    std::string     GetLocation();
     unsigned int    GetLEDsOnChannel(unsigned int channel);
 
     void            SetChannelEffect
@@ -94,7 +95,7 @@ public:
     unsigned int    channel_leds[HUE_PLUS_NUM_CHANNELS];
 
 private:
-    char            port_name[128];
+    std::string     port_name;
     serial_port     *serialport;
 
     void            SendPacket

@@ -30,7 +30,7 @@ void DetectE131Controllers(std::vector<RGBController*> &rgb_controllers)
     /*-------------------------------------------------*\
     | Get E1.31 settings from settings manager          |
     \*-------------------------------------------------*/
-    e131_settings = ResourceManager::get()->GetSettingsManager()->GetSettings("Setting_E131Devices");
+    e131_settings = ResourceManager::get()->GetSettingsManager()->GetSettings("E131Devices");
 
     /*-------------------------------------------------*\
     | If the E1.31 settings contains devices, process   |
@@ -43,6 +43,7 @@ void DetectE131Controllers(std::vector<RGBController*> &rgb_controllers)
             | Clear E1.31 device data                           |
             \*-------------------------------------------------*/
             dev.name           = "";
+            dev.ip             = "";
             dev.type           = ZONE_TYPE_SINGLE;
             dev.num_leds       = 0;
             dev.rgb_order      = E131_RGB_ORDER_RBG;
@@ -55,6 +56,11 @@ void DetectE131Controllers(std::vector<RGBController*> &rgb_controllers)
             if(e131_settings["devices"][device_idx].contains("name"))
             {
                 dev.name = e131_settings["devices"][device_idx]["name"];
+            }
+
+            if(e131_settings["devices"][device_idx].contains("ip"))
+            {
+                dev.ip = e131_settings["devices"][device_idx]["ip"];
             }
 
             if(e131_settings["devices"][device_idx].contains("num_leds"))
@@ -188,40 +194,70 @@ void DetectE131Controllers(std::vector<RGBController*> &rgb_controllers)
             \*---------------------------------------------------------*/
             bool device_added_to_existing_list = false;
 
-            for(unsigned int list_idx = 0; list_idx < device_lists.size(); list_idx++)
+            /*---------------------------------------------------------*\
+            | Only track grouping for multicast controllers.  Unicast   |
+            | controllers are currently not grouped.                    |
+            \*---------------------------------------------------------*/
+            if(dev.ip == "")
             {
-                for(unsigned int device_idx = 0; device_idx < device_lists[list_idx].size(); device_idx++)
+                for(unsigned int list_idx = 0; list_idx < device_lists.size(); list_idx++)
                 {
-                    /*---------------------------------------------------------*\
-                    | Check if any universes used by this new device exist in   |
-                    | the existing device.  If so, add the new device to the    |
-                    | existing list.                                            |
-                    \*---------------------------------------------------------*/
-                    if(dev.start_universe == device_lists[list_idx][device_idx].start_universe)
+                    for(unsigned int device_idx = 0; device_idx < device_lists[list_idx].size(); device_idx++)
                     {
-                        device_lists[list_idx].push_back(dev);
-                        device_added_to_existing_list = true;
+                        /*---------------------------------------------------------*\
+                        | Determine if there is any overlap between this device and |
+                        | any existing device list                                  |
+                        | Offset the end by two - one because the range is 1-512    |
+                        | rather than 0-511, and one because the start channel is   |
+                        | included in the first set of 3 channels.                  |
+                        \*---------------------------------------------------------*/
+                        unsigned int dev_start  = dev.start_universe;
+                        unsigned int list_start = device_lists[list_idx][device_idx].start_universe;
+                        unsigned int dev_end    = dev.start_universe + ((dev.start_channel + (3 * dev.num_leds) - 2) / 512);
+                        unsigned int list_end   = device_lists[list_idx][device_idx].start_universe + ((device_lists[list_idx][device_idx].start_channel + (3 * device_lists[list_idx][device_idx].num_leds) - 2) / 512);
+
+                        bool overlap = !(dev_end < list_start || list_end < dev_start);
+
+                        /*---------------------------------------------------------*\
+                        | Check if any universes used by this new device exist in   |
+                        | the existing device.  If so, add the new device to the    |
+                        | existing list.                                            |
+                        \*---------------------------------------------------------*/
+                        if(overlap)
+                        {
+                            device_lists[list_idx].push_back(dev);
+                            device_added_to_existing_list = true;
+                            break;
+                        }
+                    }
+
+                    if(device_added_to_existing_list)
+                    {
                         break;
                     }
                 }
 
-                if(device_added_to_existing_list)
+                /*---------------------------------------------------------*\
+                | If the device did not overlap with existing devices,      |
+                | create a new list for it                                  |
+                \*---------------------------------------------------------*/
+                if(!device_added_to_existing_list)
                 {
-                    break;
+                    std::vector<E131Device> new_list;
+
+                    new_list.push_back(dev);
+
+                    device_lists.push_back(new_list);
                 }
             }
-
-            /*---------------------------------------------------------*\
-            | If the device did not overlap with existing devices,      |
-            | create a new list for it                                  |
-            \*---------------------------------------------------------*/
-            if(!device_added_to_existing_list)
+            else
             {
-                std::vector<E131Device> new_list;
+                std::vector<E131Device> tmp_device_list;
+                tmp_device_list.push_back(dev);
 
-                new_list.push_back(dev);
-
-                device_lists.push_back(new_list);
+                RGBController_E131* rgb_controller;
+                rgb_controller = new RGBController_E131(tmp_device_list);
+                rgb_controllers.push_back(rgb_controller);
             }
         }
 

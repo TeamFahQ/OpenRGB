@@ -29,7 +29,18 @@ char* MSI3ZoneController::GetDeviceName()
 
 std::string MSI3ZoneController::GetDeviceLocation()
 {
-    return(location);
+    return("HID: " + location);
+}
+
+std::string MSI3ZoneController::GetSerialString()
+{
+    wchar_t serial_string[128];
+    hid_get_serial_number_string(dev, serial_string, 128);
+
+    std::wstring return_wstring = serial_string;
+    std::string return_string(return_wstring.begin(), return_wstring.end());
+
+    return(return_string);
 }
 
 void MSI3ZoneController::SetLEDs(std::vector<RGBColor> colors)

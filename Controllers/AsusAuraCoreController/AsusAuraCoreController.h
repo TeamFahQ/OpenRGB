@@ -48,8 +48,11 @@ enum
 class AuraCoreController
 {
 public:
-    AuraCoreController(hid_device* dev_handle);
+    AuraCoreController(hid_device* dev_handle, const char* path);
     ~AuraCoreController();
+
+    std::string GetDeviceLocation();
+    std::string GetSerialString();
 
     void    SendBrightness
                 (
@@ -72,5 +75,6 @@ public:
 
 private:
     hid_device*             dev;
+    std::string             location;
 
 };

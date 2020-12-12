@@ -513,6 +513,25 @@ static const char* corsair_mouse_leds[] =
     "Mouse LED 15",
 };
 
+static const char* corsair_m65_elite_leds[] =
+{
+    "",
+    "",
+    "Logo",
+    "DPI",
+    "Scroll Wheel",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+};
+
 static const char* corsair_sabre_rgb_leds[] =
 {
     "",
@@ -555,12 +574,13 @@ RGBController_CorsairPeripheral::RGBController_CorsairPeripheral(CorsairPeripher
 {
     corsair = corsair_ptr;
 
-    name        = "Corsair RGB Peripheral Device";
+    name        = corsair->GetName();
     vendor      = "Corsair";
     description = "Corsair RGB Peripheral Device";
     type        = corsair->GetDeviceType();
     version     = corsair->GetFirmwareString();
     location    = corsair->GetDeviceLocation();
+    serial      = corsair->GetSerialString();
 
     physical_layout = corsair->GetPhysicalLayout();
     logical_layout  = corsair->GetLogicalLayout();
@@ -758,7 +778,22 @@ void RGBController_CorsairPeripheral::SetupZones()
                 break;
 
             case DEVICE_TYPE_MOUSE:
-                new_led.name = corsair_mouse_leds[led_idx];
+                if(name == "Corsair M65 RGB Elite")
+                {
+                    new_led.name = corsair_m65_elite_leds[led_idx];
+                }
+                else if(name == "Corsair Harpoon RGB PRO")
+                {
+                    new_led.name = corsair_harpoon_pro_leds[led_idx];
+                }
+                else if(name == "Corsair Sabre RGB")
+                {
+                    new_led.name = corsair_sabre_rgb_leds[led_idx];
+                }
+                else
+                {
+                    new_led.name = corsair_mouse_leds[led_idx];
+                }
                 break;
             
             case DEVICE_TYPE_MOUSEMAT:

@@ -18,6 +18,10 @@ One of the biggest complaints about RGB is the software ecosystem surrounding it
 
 See the [Project Wiki](https://gitlab.com/CalcProgrammer1/OpenRGB/-/wikis/home) for the current list of supported devices.
 
+## Configuration
+
+* See the [OpenRGB Settings](https://gitlab.com/CalcProgrammer1/OpenRGB/-/wikis/OpenRGB-Settings) page for information about the configuration file.
+
 ## WARNING!
 
 This project interacts directly with hardware using reverse engineered protocols.  While we do our best to make sure we're sending the right data, there is always some risk in sending data to hardware when we don't understand exactly how that hardware works.
@@ -138,6 +142,7 @@ While OpenRGB itself only provides control over the lighting effects built into 
   * Artemis 2 (support added by diogotr7 as a plugin): https://github.com/Artemis-RGB/Artemis
   * RemoteLight (by Drumber, need OpenRGB plugin): https://github.com/Drumber/RemoteLight
   * OpenRGB-python-FX (by herosilas12): https://github.com/herosilas12/OpenRGB-python-FX
+  * AllMyLights (by sparten11740): https://github.com/sparten11740/allmylights
 
 ## Projects Used
 

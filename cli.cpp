@@ -21,7 +21,6 @@
 
 using namespace std::chrono_literals;
 
-static ProfileManager*             profile_manager;
 static std::string                 profile_save_filename = "";
 
 enum
@@ -375,6 +374,7 @@ void OptionHelp()
     help_text += "                                           USE I2C TOOLS AT YOUR OWN RISK! Don't use this option if you don't know what you're doing!\n";
     help_text += "                                           There is a risk of bricking your motherboard, RGB controller, and RAM if you send invalid SMBus/I2C transactions.\n";
     help_text += "--localconfig                            Use the current working directory instead of the global configuration directory.\n";
+    help_text += "--config path                            Use a custom path instead of the global configuration directory.\n";
     help_text += "--nodetect                               Do not try to detect hardware or autoconnect to a local server at startup.\n";
 
     std::cout << help_text << std::endl;
@@ -623,7 +623,7 @@ bool OptionSize(int *current_device, int *current_zone, std::string argument, Op
     /*---------------------------------------------------------*\
     | Save the profile                                          |
     \*---------------------------------------------------------*/
-    profile_manager->SaveProfile("sizes.ors");
+    ResourceManager::get()->GetProfileManager()->SaveProfile("sizes.ors");
 
     return true;
 }
@@ -635,7 +635,7 @@ bool OptionProfile(std::string argument, std::vector<RGBController *> &rgb_contr
     /*---------------------------------------------------------*\
     | Attempt to load profile                                   |
     \*---------------------------------------------------------*/
-    if(profile_manager->LoadProfile(argument))
+    if(ResourceManager::get()->GetProfileManager()->LoadProfile(argument))
     {
         /*-----------------------------------------------------*\
         | Change device mode if profile loading was successful  |
@@ -644,7 +644,7 @@ bool OptionProfile(std::string argument, std::vector<RGBController *> &rgb_contr
         {
             RGBController* device = rgb_controllers[controller_idx];
 
-            device->SetMode(device->active_mode);
+            device->DeviceUpdateMode();
 
             if(device->modes[device->active_mode].color_mode == MODE_COLORS_PER_LED)
             {
@@ -807,7 +807,8 @@ int ProcessOptions(int argc, char *argv[], Options *options, std::vector<RGBCont
                 | and this parser should ignore them                |
                 \*-------------------------------------------------*/
             }
-            else if(option == "--server-port")
+            else if((option == "--server-port")
+                  ||(option == "--config"))
             {
                 /*-------------------------------------------------*\
                 | Increment index for pre-detection arguments with  |
@@ -966,6 +967,15 @@ unsigned int cli_pre_detection(int argc, char *argv[])
         if(option == "--localconfig")
         {
             ResourceManager::get()->SetConfigurationDirectory("./");
+        }
+
+        /*---------------------------------------------------------*\
+        | --config                                                  |
+        \*---------------------------------------------------------*/
+        else if(option == "--config")
+        {
+            ResourceManager::get()->SetConfigurationDirectory(argument);
+            arg_index++;
         }
 
         /*---------------------------------------------------------*\
@@ -1198,7 +1208,7 @@ unsigned int cli_post_detection(int argc, char *argv[])
     \*---------------------------------------------------------*/
     if (profile_save_filename != "")
     {
-        if(profile_manager->SaveProfile(profile_save_filename))
+        if(ResourceManager::get()->GetProfileManager()->SaveProfile(profile_save_filename))
         {
             std::cout << "Profile saved successfully" << std::endl;
         }
@@ -1215,6 +1225,8 @@ unsigned int cli_post_detection(int argc, char *argv[])
     {
         WaitWhileServerOnline(ResourceManager::get()->GetServer());
     }
+
+    std::this_thread::sleep_for(1s);
 
     exit(0);
 

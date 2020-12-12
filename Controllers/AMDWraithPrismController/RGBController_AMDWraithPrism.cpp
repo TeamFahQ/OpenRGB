@@ -19,6 +19,11 @@ RGBController_AMDWraithPrism::RGBController_AMDWraithPrism(AMDWraithPrismControl
     description = "AMD Wraith Prism Device";
     version     = wraith->GetFirmwareVersionString();
     location    = wraith->GetLocationString();
+    /*-----------------------------------------------------*\
+    | Don't use HID serial string, it is inconsistent on my |
+    | Wraith Prism                                          |
+    \*-----------------------------------------------------*/
+    serial      = "";//wraith->GetSerialString();
 
     mode Direct;
     Direct.name       = "Direct";

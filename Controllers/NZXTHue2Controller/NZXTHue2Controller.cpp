@@ -50,7 +50,7 @@ unsigned short NZXTHue2Controller::GetFanRPM
 
 std::string NZXTHue2Controller::GetLocation()
 {
-    return(location);
+    return("HID: " + location);
 }
 
 unsigned int NZXTHue2Controller::GetNumFanChannels()
@@ -66,6 +66,17 @@ unsigned int NZXTHue2Controller::GetNumRGBChannels()
 std::string NZXTHue2Controller::GetFirmwareVersion()
 {
     return(firmware_version);
+}
+
+std::string NZXTHue2Controller::GetSerialString()
+{
+    wchar_t serial_string[128];
+    hid_get_serial_number_string(dev, serial_string, 128);
+
+    std::wstring return_wstring = serial_string;
+    std::string return_string(return_wstring.begin(), return_wstring.end());
+
+    return(return_string);
 }
 
 void NZXTHue2Controller::SendFan

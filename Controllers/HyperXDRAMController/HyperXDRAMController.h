@@ -188,9 +188,17 @@ enum
 static const unsigned char slot_base[4] =
 {
     HYPERX_REG_SLOT0_LED0_RED,                      /* SPD 0x50 maps to slot 0              */
-    HYPERX_REG_SLOT2_LED0_RED,                      /* SPD 0x51 maps to slot 2              */
     HYPERX_REG_SLOT1_LED0_RED,                      /* SPD 0x52 maps to slot 1              */
+    HYPERX_REG_SLOT2_LED0_RED,                      /* SPD 0x51 maps to slot 2              */
     HYPERX_REG_SLOT3_LED0_RED                       /* SPD 0x53 maps to slot 3              */
+};
+
+static const unsigned char slot_map[4] =
+{
+    0,
+    2,
+    1,
+    3
 };
 
 class HyperXDRAMController
@@ -199,11 +207,13 @@ public:
     HyperXDRAMController(i2c_smbus_interface* bus, hyperx_dev_id dev, unsigned char slots);
     ~HyperXDRAMController();
 
-    std::string     GetDeviceName();
     std::string     GetDeviceLocation();
     unsigned int    GetLEDCount();
     unsigned int    GetSlotCount();
     unsigned int    GetMode();
+
+    void            SendApply();
+
     void            SetMode(unsigned char new_mode, bool random, unsigned short new_speed);
 
     void            SetAllColors(unsigned char red, unsigned char green, unsigned char blue);
@@ -212,7 +222,6 @@ public:
     void            SetLEDColor(unsigned int slot, unsigned int led, unsigned char red, unsigned char green, unsigned char blue);
 
 private:
-    char                    device_name[32];
     unsigned int            led_count;
     unsigned char           slots_valid;
     i2c_smbus_interface*    bus;

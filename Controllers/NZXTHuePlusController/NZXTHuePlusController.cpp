@@ -24,17 +24,17 @@ HuePlusController::~HuePlusController()
 
 void HuePlusController::Initialize(char* port)
 {
-    strcpy(port_name, port);
+    port_name = port;
     
-    serialport = new serial_port(port_name, HUE_PLUS_BAUD);
+    serialport = new serial_port(port_name.c_str(), HUE_PLUS_BAUD);
 
     channel_leds[HUE_PLUS_CHANNEL_1_IDX] = GetLEDsOnChannel(HUE_PLUS_CHANNEL_1);
     channel_leds[HUE_PLUS_CHANNEL_2_IDX] = GetLEDsOnChannel(HUE_PLUS_CHANNEL_2);
 }
 
-char* HuePlusController::GetLocation()
+std::string HuePlusController::GetLocation()
 {
-    return(port_name);
+    return("COM: " + port_name);
 }
 
 unsigned int HuePlusController::GetLEDsOnChannel(unsigned int channel)
@@ -169,7 +169,7 @@ void HuePlusController::SetChannelLEDs
     /*-----------------------------------------------------*\
     | Send color data                                       |
     \*-----------------------------------------------------*/
-    SendPacket(channel, HUE_PLUS_MODE_FIXED, false, 0, 0, num_colors, &color_data[0]);
+    SendPacket(channel, HUE_PLUS_MODE_DIRECT, false, 0, 0, num_colors, &color_data[0]);
 }
 
 /*-------------------------------------------------------------------------------------------------*\
@@ -187,7 +187,7 @@ void HuePlusController::SendPacket
     unsigned char*  color_data
     )
 {
-    unsigned char serial_buf[125];
+    unsigned char serial_buf[HUE_PLUS_PACKET_SIZE];
 
     /*-----------------------------------------------------*\
     | Zero out buffer                                       |
@@ -233,5 +233,5 @@ void HuePlusController::SendPacket
     /*-----------------------------------------------------*\
     | Delay to allow Hue+ device to ready for next packet   |
     \*-----------------------------------------------------*/
-    std::this_thread::sleep_for(20ms);
+    std::this_thread::sleep_for(5ms);
 }

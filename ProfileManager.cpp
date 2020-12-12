@@ -9,7 +9,7 @@
 
 namespace fs = std::experimental::filesystem;
 
-ProfileManager::ProfileManager(std::vector<RGBController *>& control, std::string config_dir) : controllers(control)
+ProfileManager::ProfileManager(std::string config_dir)
 {
     configuration_directory = config_dir;
     UpdateProfileList();
@@ -22,6 +22,11 @@ ProfileManager::~ProfileManager()
 
 bool ProfileManager::SaveProfile(std::string profile_name)
 {
+    /*---------------------------------------------------------*\
+    | Get the list of controllers from the resource manager     |
+    \*---------------------------------------------------------*/
+    std::vector<RGBController *> controllers = ResourceManager::get()->GetRGBControllers();
+
     /*---------------------------------------------------------*\
     | If a name was entered, save the profile file              |
     \*---------------------------------------------------------*/
@@ -167,16 +172,33 @@ bool ProfileManager::LoadDeviceFromListWithOptions
         RGBController *temp_controller = temp_controllers[temp_index];
 
         /*---------------------------------------------------------*\
+        | Do not compare location string for HID devices, as the    |
+        | location string may change between runs as devices are    |
+        | connected and disconnected                                |
+        \*---------------------------------------------------------*/
+        bool compare_location = true;
+
+        if(load_controller->location.find("HID: ") == 0)
+        {
+            compare_location = false;
+        }
+
+        /*---------------------------------------------------------*\
         | Test if saved controller data matches this controller     |
         \*---------------------------------------------------------*/
-        if((temp_controller_used[temp_index] == false                   )
-         &&(temp_controller->type        == load_controller->type       )
-         &&(temp_controller->name        == load_controller->name       )
-         &&(temp_controller->description == load_controller->description)
-         &&(temp_controller->version     == load_controller->version    )
-         &&(temp_controller->serial      == load_controller->serial     )
-         &&(temp_controller->location    == load_controller->location   ))
+        if((temp_controller_used[temp_index] == false                                               )
+         &&(temp_controller->type            == load_controller->type                               )
+         &&(temp_controller->name            == load_controller->name                               )
+         &&(temp_controller->description     == load_controller->description                        )
+         &&(temp_controller->version         == load_controller->version                            )
+         &&(temp_controller->serial          == load_controller->serial                             )
+         &&((temp_controller->location       == load_controller->location   ) || (!compare_location)))
         {
+            /*---------------------------------------------------------*\
+            | Set used flag for this temp device                        |
+            \*---------------------------------------------------------*/
+            temp_controller_used[temp_index] = true;
+
             /*---------------------------------------------------------*\
             | Update zone sizes if requested                            |
             \*---------------------------------------------------------*/
@@ -246,8 +268,6 @@ bool ProfileManager::LoadDeviceFromListWithOptions
                     }
                 }
 
-                temp_controller_used[temp_index] = true;
-
                 return(true);
             }
         }
@@ -268,6 +288,11 @@ bool ProfileManager::LoadProfileWithOptions
     bool                        ret_val = false;
 
     std::string filename = configuration_directory + profile_name;
+
+    /*---------------------------------------------------------*\
+    | Get the list of controllers from the resource manager     |
+    \*---------------------------------------------------------*/
+    std::vector<RGBController *> controllers = ResourceManager::get()->GetRGBControllers();
 
     /*---------------------------------------------------------*\
     | Open input file in binary mode                            |
@@ -309,7 +334,7 @@ bool ProfileManager::LoadProfileWithOptions
 
 void ProfileManager::DeleteProfile(std::string profile_name)
 {
-    remove(profile_name.c_str());
+    remove((configuration_directory + profile_name).c_str());
 
     UpdateProfileList();
 }
