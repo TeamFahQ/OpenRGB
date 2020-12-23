@@ -40,6 +40,7 @@
 #define NVIDIA_RTX2080_DEV                      0x1E87
 #define NVIDIA_RTX2080S_DEV                     0x1E81
 #define NVIDIA_RTX2080TI_DEV                    0x1E07
+#define NVIDIA_RTX3060_TI_DEV                   0x2486
 #define NVIDIA_RTX3070_DEV                      0x2484
 #define NVIDIA_RTX3080_DEV                      0x2206
 #define NVIDIA_RTX3090_DEV                      0x2204
@@ -69,14 +70,16 @@
 /*-----------------------------------------------------*\
 | Gigabyte (Aorus) Sub-Device IDs                       |
 \*-----------------------------------------------------*/
+#define GIGABYTE_GTX1060_XTREME_SUB_DEV         0x3776
 #define GIGABYTE_GTX1070_XTREME_SUB_DEV         0x3778
 #define GIGABYTE_GTX1080_G1_GAMING_SUB_DEV      0x3702
 #define GIGABYTE_GTX1080TI_SUB_DEV              0x3752
 #define GIGABYTE_GTX1080TI_XTREME_SUB_DEV       0x3762
 #define GIGABYTE_GTX1660S_GAMING_OC_SUB_DEV     0x4014
 #define GIGABYTE_RTX2060_GAMING_OC_SUB_DEV      0x37CE
-#define GIGABYTE_RTX2070_WINDFORCE_SUB_DEV      0x37C2
 #define GIGABYTE_RTX2060S_GAMING_SUB_DEV        0x404A
+#define GIGABYTE_RTX2070_WINDFORCE_SUB_DEV      0x37C2
+#define GIGABYTE_RTX2080_GAMING_OC_SUB_DEV      0x37A7
 
 /*-----------------------------------------------------*\
 | MSI Sub-Device IDs                                    |
