@@ -12,12 +12,12 @@ qmake OpenRGB.pro
 make -j24
 
 # Test before moving
- ./OpenRGB
+ ./openrgb
 
 echo "Does it work?"
 select ynq in "yes" "no" "quit"; do
     case $ynq in
-	yes ) cp -f OpenRGB ~/bin;break;;
+	yes ) mv openrgb OpenRGB && cp -f OpenRGB ~/bin;break;;
 	no ) echo "UhOh!" && exit;break;;
 	quit ) echo "Nothing done. Good Bye!";exit;;
 esac;
