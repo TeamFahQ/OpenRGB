@@ -16,7 +16,7 @@ One of the biggest complaints about RGB is the software ecosystem surrounding it
 
 ## Supported Devices
 
-See the [Project Wiki](https://gitlab.com/CalcProgrammer1/OpenRGB/-/wikis/home) for the current list of supported devices.
+* See the [Supported Devices](https://gitlab.com/CalcProgrammer1/OpenRGB/-/wikis/Supported-Devices) page for the current list of supported devices.
 
 ## Configuration
 
@@ -54,13 +54,13 @@ There have been two instances of hardware damage in OpenRGB's development and we
   *  Pre-built binaries in AppImage format are available under the Releases section on GitLab.
   *  You can build the project using Qt Creator or on the command line.
       1.  Install build dependencies
-          - Debian: sudo apt install build-essential qtcreator qt5-default libusb-1.0-0-dev libhidapi-dev pkgconf
+          - Debian: sudo apt install git build-essential qtcreator qt5-default libusb-1.0-0-dev libhidapi-dev pkgconf
           - Fedora: sudo dnf install git make automake gcc gcc-c++ qt-creator qt5-devel hidapi-devel libusb-devel
       2.  git clone https://gitlab.com/CalcProgrammer1/OpenRGB
       3.  cd OpenRGB
       4.  qmake OpenRGB.pro
       5.  make -j8
-  *  Run the application with ./OpenRGB
+  *  Run the application with ./openrgb
   *  You can also build a Debian package (.deb) from this source code with dpkg-buildpackage -us -B
      
 ### SMBus Access
@@ -124,17 +124,19 @@ There have been two instances of hardware damage in OpenRGB's development and we
 
 ## OpenRGB SDK
 
-OpenRGB provides a network interface for controlling supported RGB devices from other software.  These projects implement the OpenRGB SDK and provide additional ways for you to control your lighting setup.
+* OpenRGB provides a network interface for controlling supported RGB devices from other software.  These projects implement the OpenRGB SDK and provide additional ways for you to control your lighting setup.
 
   * OpenRGB Python Client (by bahorn): https://github.com/bahorn/OpenRGB-PyClient
   * OpenRGB Python Client (by jath03): https://github.com/jath03/openrgb-python
   * OpenRGB Node.js Client (by vlakreeh): https://github.com/vlakreeh/openrgb
   * D-Bus Connector for OpenRGB (by Vinno97): https://github.com/Vinno97/OpenRGB-DBus-Connector
   * OpenRGB.NET - C# OpenRGB Client (by diogotr7): https://github.com/diogotr7/OpenRGB.NET
+  * OpenRGB-Client - Java Client (by morg): https://gitlab.com/mguimard/openrgb-client
+  * OpenRGB-SDK - NodeJS client (by Mola19) https://www.npmjs.com/package/openrgb-sdk                                           
 
 ## Applications Supporting OpenRGB SDK
 
-While OpenRGB itself only provides control over the lighting effects built into hardware, several open source applications can use the OpenRGB SDK to provide synchronized lighting effects for your devices.
+* While OpenRGB itself only provides control over the lighting effects built into hardware, several open source applications can use the OpenRGB SDK to provide synchronized lighting effects for your devices.
 
   * Keyboard Visualizer (by me): https://gitlab.com/CalcProgrammer1/KeyboardVisualizer
   * OpenRGB E1.31 Receiver (by me): https://gitlab.com/CalcProgrammer1/OpenRGBE131Receiver
@@ -143,7 +145,16 @@ While OpenRGB itself only provides control over the lighting effects built into 
   * RemoteLight (by Drumber, need OpenRGB plugin): https://github.com/Drumber/RemoteLight
   * OpenRGB-python-FX (by herosilas12): https://github.com/herosilas12/OpenRGB-python-FX
   * AllMyLights (by sparten11740): https://github.com/sparten11740/allmylights
+  * OpenRGBRemote (by morg): https://gitlab.com/mguimard/openrgbremote
 
+## OpenRGB Plugins
+
+* OpenRGB provides a plugin interface for adding features to the OpenRGB application.  The following projects provide additional functionality in the form of plugins.
+
+  * OpenRGB E1.31 Receiver Plugin (by me): https://gitlab.com/CalcProgrammer1/OpenRGBE131ReceiverPlugin
+  * Auto Updates Plugin (by herosilas12): https://gitlab.com/herosilas12/OpenRGB-Plugins/-/tree/Updates
+  * Effects Engine Plugin (by herosilas12): https://gitlab.com/herosilas12/OpenRGB-Plugins/-/tree/Effects
+  
 ## Projects Used
 
   * InpOutx64: http://www.highrez.co.uk/downloads/inpout32/

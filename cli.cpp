@@ -928,13 +928,6 @@ void ApplyOptions(DeviceOptions& options, std::vector<RGBController *> &rgb_cont
     }
 }
 
-void WaitWhileServerOnline(NetworkServer* srv)
-{
-    while (srv->GetOnline())
-    {
-        std::this_thread::sleep_for(1s);
-    };
-}
 
 unsigned int cli_pre_detection(int argc, char *argv[])
 {
@@ -943,6 +936,7 @@ unsigned int cli_pre_detection(int argc, char *argv[])
     | to detecting devices and/or starting clients              |
     \*---------------------------------------------------------*/
     int             arg_index    = 1;
+    unsigned int    cfg_args     = 0;
     unsigned int    ret_flags    = 0;
     unsigned short  server_port  = OPENRGB_SDK_PORT;
     bool            server_start = false;
@@ -967,6 +961,7 @@ unsigned int cli_pre_detection(int argc, char *argv[])
         if(option == "--localconfig")
         {
             ResourceManager::get()->SetConfigurationDirectory("./");
+            cfg_args++;
         }
 
         /*---------------------------------------------------------*\
@@ -975,6 +970,7 @@ unsigned int cli_pre_detection(int argc, char *argv[])
         else if(option == "--config")
         {
             ResourceManager::get()->SetConfigurationDirectory(argument);
+            cfg_args++;
             arg_index++;
         }
 
@@ -984,6 +980,7 @@ unsigned int cli_pre_detection(int argc, char *argv[])
         else if(option == "--nodetect")
         {
             ret_flags |= RET_FLAG_NO_DETECT;
+            cfg_args++;
         }
 
         /*---------------------------------------------------------*\
@@ -1073,7 +1070,7 @@ unsigned int cli_pre_detection(int argc, char *argv[])
                 print_help = true;
                 break;
             }
-
+            cfg_args++;
             arg_index++;
         }
 
@@ -1140,6 +1137,11 @@ unsigned int cli_pre_detection(int argc, char *argv[])
     {
         ResourceManager::get()->GetServer()->SetPort(server_port);
         ret_flags |= RET_FLAG_START_SERVER;
+    }
+
+    if((argc - cfg_args) <= 1)
+    {
+        ret_flags |= RET_FLAG_START_GUI;
     }
 
     return(ret_flags);
@@ -1218,17 +1220,7 @@ unsigned int cli_post_detection(int argc, char *argv[])
         }
     }
 
-    /*---------------------------------------------------------*\
-    | If the server is online, keep running while it is online  |
-    \*---------------------------------------------------------*/
-    if(ResourceManager::get()->GetServer()->GetOnline())
-    {
-        WaitWhileServerOnline(ResourceManager::get()->GetServer());
-    }
-
     std::this_thread::sleep_for(1s);
-
-    exit(0);
 
     return 0;
 }

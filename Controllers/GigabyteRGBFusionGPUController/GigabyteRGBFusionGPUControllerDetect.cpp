@@ -22,16 +22,22 @@ typedef struct
 
 static const gpu_pci_device device_list[] =
 {
+    { NVIDIA_VEN,   NVIDIA_GTX1050TI_DEV,       GIGABYTE_SUB_VEN,   GIGABYTE_GTX1050TI_G1_GAMING_SUB_DEV,   0x48,   "Gigabyte GTX1050 Ti G1 Gaming"     },
     { NVIDIA_VEN,   NVIDIA_GTX1060_DEV,         GIGABYTE_SUB_VEN,   GIGABYTE_GTX1060_XTREME_SUB_DEV,        0x47,   "Gigabyte GTX1060 Xtreme Gaming"    },
     { NVIDIA_VEN,   NVIDIA_GTX1070_DEV,         GIGABYTE_SUB_VEN,   GIGABYTE_GTX1070_XTREME_SUB_DEV,        0x47,   "Gigabyte GTX1070 Xtreme Gaming"    },
     { NVIDIA_VEN,   NVIDIA_GTX1080_DEV,         GIGABYTE_SUB_VEN,   GIGABYTE_GTX1080_G1_GAMING_SUB_DEV,     0x48,   "Gigabyte GTX1080 G1 Gaming"        },
     { NVIDIA_VEN,   NVIDIA_GTX1080TI_DEV,       GIGABYTE_SUB_VEN,   GIGABYTE_GTX1080TI_SUB_DEV,             0x47,   "Gigabyte GTX1080 Ti 11G"           },
+    { NVIDIA_VEN,   NVIDIA_GTX1080TI_DEV,       GIGABYTE_SUB_VEN,   GIGABYTE_GTX1080TI_GAMING_OC_SUB_DEV,   0x47,   "Gigabyte GTX1080 Ti Gaming OC 11G" },
     { NVIDIA_VEN,   NVIDIA_GTX1080TI_DEV,       GIGABYTE_SUB_VEN,   GIGABYTE_GTX1080TI_XTREME_SUB_DEV,      0x47,   "Gigabyte GTX1080 Ti Xtreme Edition"},
+    { NVIDIA_VEN,   NVIDIA_GTX1650_DEV,         GIGABYTE_SUB_VEN,   GIGABYTE_GTX1650_GAMING_OC_SUB_DEV,     0x55,   "Gigabyte GTX1650 Gaming OC"        },
     { NVIDIA_VEN,   NVIDIA_GTX1660S_DEV,        GIGABYTE_SUB_VEN,   GIGABYTE_GTX1660S_GAMING_OC_SUB_DEV,    0x47,   "Gigabyte GTX1660 SUPER Gaming OC"  },
     { NVIDIA_VEN,   NVIDIA_RTX2060_TU106_DEV,   GIGABYTE_SUB_VEN,   GIGABYTE_RTX2060_GAMING_OC_SUB_DEV,     0x47,   "Gigabyte RTX2060 Gaming OC"        },
     { NVIDIA_VEN,   NVIDIA_RTX2060S_DEV,        GIGABYTE_SUB_VEN,   GIGABYTE_RTX2060S_GAMING_SUB_DEV,       0x47,   "Gigabyte RTX2060 SUPER Gaming"     },
+    { NVIDIA_VEN,   NVIDIA_RTX2070_DEV,         GIGABYTE_SUB_VEN,   GIGABYTE_RTX2070_GAMING_OC_SUB_DEV,     0x47,   "Gigabyte RTX2070 Gaming OC 8G"     },
     { NVIDIA_VEN,   NVIDIA_RTX2070_DEV,         GIGABYTE_SUB_VEN,   GIGABYTE_RTX2070_WINDFORCE_SUB_DEV,     0x47,   "Gigabyte RTX2070 Windforce 8G"     },
+    { NVIDIA_VEN,   NVIDIA_RTX2070S_DEV,        GIGABYTE_SUB_VEN,   GIGABYTE_RTX2070S_GAMING_OC_SUB_DEV,    0x55,   "Gigabyte RTX2070S Gaming OC"       },
     { NVIDIA_VEN,   NVIDIA_RTX2080_DEV,         GIGABYTE_SUB_VEN,   GIGABYTE_RTX2080_GAMING_OC_SUB_DEV,     0x47,   "Gigabyte RTX2080 Gaming OC 8G"     },
+    { NVIDIA_VEN,   NVIDIA_RTX2080_A_DEV,       GIGABYTE_SUB_VEN,   GIGABYTE_RTX2080_A_GAMING_OC_SUB_DEV,   0x47,   "Gigabyte RTX2080 Gaming OC 8G"     },
 };
 
 /******************************************************************************************\
@@ -68,7 +74,7 @@ bool TestForGigabyteRGBFusionGPUController(i2c_smbus_interface* bus, unsigned ch
 
         res = bus->i2c_smbus_read_byte(address);
 
-        if(res != 0x14)
+        if ((res != 0x14) && (res != 0x10))
         {
             pass = false;
         }

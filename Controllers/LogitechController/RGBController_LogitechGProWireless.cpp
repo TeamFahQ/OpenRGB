@@ -57,6 +57,11 @@ RGBController_LogitechGProWireless::RGBController_LogitechGProWireless(LogitechG
     SetupZones();
 }
 
+RGBController_LogitechGProWireless::~RGBController_LogitechGProWireless()
+{
+    delete logitech;
+}
+
 void RGBController_LogitechGProWireless::SetupZones()
 {
     zone GProWireless_primary_zone;
@@ -117,7 +122,7 @@ void RGBController_LogitechGProWireless::UpdateSingleLED(int led)
 
 void RGBController_LogitechGProWireless::SetCustomMode()
 {
-
+    active_mode = 1;
 }
 
 void RGBController_LogitechGProWireless::DeviceUpdateMode()

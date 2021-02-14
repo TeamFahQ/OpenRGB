@@ -7,6 +7,7 @@
 \*-----------------------------------------*/
 
 #include "NetworkServer.h"
+#include "ResourceManager.h"
 #include <cstring>
 
 #ifndef WIN32
@@ -35,8 +36,9 @@ using namespace std::chrono_literals;
 
 NetworkServer::NetworkServer(std::vector<RGBController *>& control) : controllers(control)
 {
-    port_num      = OPENRGB_SDK_PORT;
-    server_online = false;
+    port_num         = OPENRGB_SDK_PORT;
+    server_online    = false;
+    server_listening = false;
     ConnectionThread = nullptr;
 }
 
@@ -72,6 +74,21 @@ void NetworkServer::DeviceListChanged()
     }
 }
 
+void NetworkServer::ServerListeningChanged()
+{
+    ServerListeningChangeMutex.lock();
+
+    /*-------------------------------------------------*\
+    | Server state has changed, call the callbacks      |
+    \*-------------------------------------------------*/
+    for(unsigned int callback_idx = 0; callback_idx < ServerListeningChangeCallbacks.size(); callback_idx++)
+    {
+        ServerListeningChangeCallbacks[callback_idx](ServerListeningChangeCallbackArgs[callback_idx]);
+    }
+
+    ServerListeningChangeMutex.unlock();
+}
+
 unsigned short NetworkServer::GetPort()
 {
     return port_num;
@@ -80,6 +97,11 @@ unsigned short NetworkServer::GetPort()
 bool NetworkServer::GetOnline()
 {
     return server_online;
+}
+
+bool NetworkServer::GetListening()
+{
+    return server_listening;
 }
 
 unsigned int NetworkServer::GetNumClients()
@@ -153,6 +175,12 @@ void NetworkServer::RegisterClientInfoChangeCallback(NetServerCallback new_callb
     ClientInfoChangeCallbackArgs.push_back(new_callback_arg);
 }
 
+void NetworkServer::RegisterServerListeningChangeCallback(NetServerCallback new_callback, void * new_callback_arg)
+{
+    ServerListeningChangeCallbacks.push_back(new_callback);
+    ServerListeningChangeCallbackArgs.push_back(new_callback_arg);
+}
+
 void NetworkServer::SetPort(unsigned short new_port)
 {
     if(server_online == false)
@@ -203,7 +231,33 @@ void NetworkServer::StartServer()
     \*-------------------------------------------------*/
     if (bind(server_sock, (sockaddr*)&myAddress, sizeof(myAddress)) == SOCKET_ERROR)
     {
-        printf("Error: Could not bind network socket \nIs port %hu already being used?\n", GetPort());
+        if(errno == EADDRINUSE)
+        {
+            printf("Error: Could not bind network socket \nIs port %hu already being used?\n", GetPort());
+        }
+        else if(errno == EACCES)
+        {
+            printf("Error: Access to socket was denied.\n");
+        }
+        else if(errno == EBADF)
+        {
+            printf("Error: sockfd is not a valid file descriptor.\n");
+        }
+        else if(errno == EINVAL)
+        {
+            printf("Error: The socket is already bound to an address, or addrlen is wrong, or addr is not a valid address for this socket's domain..\n");
+        }
+        else if(errno == ENOTSOCK)
+        {
+            printf("Error: The file descriptor sockfd does not refer to a socket.\n");
+        }
+        else
+        {
+            // could be a linux specific error
+            // https://man7.org/linux/man-pages/man2/bind.2.html
+            printf("Error: Could not bind network socket, error code:%d\n", errno);
+        }
+
         WSACleanup();
         return;
     }
@@ -214,7 +268,6 @@ void NetworkServer::StartServer()
     setsockopt(server_sock, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
 
     server_online = true;
-
     /*-------------------------------------------------*\
     | Start the connection thread                       |
     \*-------------------------------------------------*/
@@ -242,7 +295,6 @@ void NetworkServer::StopServer()
 
     if(ConnectionThread)
     {
-        ConnectionThread->join();
         delete ConnectionThread;
         ConnectionThread = nullptr;
     }
@@ -278,6 +330,9 @@ void NetworkServer::ConnectionThreadFunction()
             return;
         }
 
+        server_listening = true;
+        ServerListeningChanged();
+
         /*-------------------------------------------------*\
         | Accept the client connection                      |
         \*-------------------------------------------------*/
@@ -289,6 +344,9 @@ void NetworkServer::ConnectionThreadFunction()
         {
             printf("Connection thread closed\r\n");
             server_online = false;
+
+            server_listening = false;
+            ServerListeningChanged();
 
             return;
         }
@@ -323,6 +381,8 @@ void NetworkServer::ConnectionThreadFunction()
 
     printf("Connection thread closed\r\n");
     server_online = false;
+    server_listening = false;
+    ServerListeningChanged();
 }
 
 int NetworkServer::accept_select(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
@@ -332,7 +392,7 @@ int NetworkServer::accept_select(int sockfd, struct sockaddr *addr, socklen_t *a
 
     while(1)
     {
-        timeout.tv_sec          = 5;
+        timeout.tv_sec          = TCP_TIMEOUT_SECONDS;
         timeout.tv_usec         = 0;
 
         FD_ZERO(&set);          /* clear the set */
@@ -363,8 +423,8 @@ int NetworkServer::recv_select(SOCKET s, char *buf, int len, int flags)
 
     while(1)
     {
-        timeout.tv_sec      = 5;
-        timeout.tv_usec     = 0;
+        timeout.tv_sec          = TCP_TIMEOUT_SECONDS;
+        timeout.tv_usec         = 0;
 
         FD_ZERO(&set);      /* clear the set */
         FD_SET(s, &set);    /* add our file descriptor to the set */
@@ -612,6 +672,45 @@ void NetworkServer::ListenThreadFunction(NetworkClientInfo * client_info)
                     controllers[header.pkt_dev_idx]->UpdateMode();
                 }
                 break;
+
+            case NET_PACKET_ID_REQUEST_PROFILE_LIST:
+                SendReply_ProfileList(client_sock);
+                break;
+
+            case NET_PACKET_ID_REQUEST_SAVE_PROFILE:
+                if(data == NULL)
+                {
+                    break;
+                }
+
+                ResourceManager::get()->GetProfileManager()->SaveProfile(data);
+
+                break;
+
+            case NET_PACKET_ID_REQUEST_LOAD_PROFILE:
+                if(data == NULL)
+                {
+                    break;
+                }
+
+                ResourceManager::get()->GetProfileManager()->LoadProfile(data);
+
+                for(RGBController* controller : ResourceManager::get()->GetRGBControllers())
+                {
+                    controller->UpdateLEDs();
+                }
+
+                break;
+
+            case NET_PACKET_ID_REQUEST_DELETE_PROFILE:
+                if(data == NULL)
+                {
+                    break;
+                }
+
+                ResourceManager::get()->GetProfileManager()->DeleteProfile(data);
+
+                break;
         }
 
         delete[] data;
@@ -772,3 +871,27 @@ void NetworkServer::SendRequest_DeviceListChanged(SOCKET client_sock)
 
     send(client_sock, (char *)&pkt_hdr, sizeof(NetPacketHeader), 0);
 }
+
+void NetworkServer::SendReply_ProfileList(SOCKET client_sock)
+{
+    ProfileManager* profile_manager = ResourceManager::get()->GetProfileManager();
+
+    NetPacketHeader reply_hdr;
+    unsigned char *reply_data = profile_manager->GetProfileListDescription();
+    unsigned int reply_size;
+
+    memcpy(&reply_size, reply_data, sizeof(reply_size));
+
+    reply_hdr.pkt_magic[0] = 'O';
+    reply_hdr.pkt_magic[1] = 'R';
+    reply_hdr.pkt_magic[2] = 'G';
+    reply_hdr.pkt_magic[3] = 'B';
+
+    reply_hdr.pkt_dev_idx  = 0;
+    reply_hdr.pkt_id       = NET_PACKET_ID_REQUEST_PROFILE_LIST;
+    reply_hdr.pkt_size     = reply_size;
+
+    send(client_sock, (const char *)&reply_hdr, sizeof(NetPacketHeader), 0);
+    send(client_sock, (const char *)reply_data, reply_size, 0);
+}
+

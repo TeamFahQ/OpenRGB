@@ -1,21 +1,21 @@
 /*-----------------------------------------*\
-|  RGBController_SapphireGPU.h              |
+|  RGBController_ZalmanZSync.h              |
 |                                           |
-|  Generic RGB Interface for OpenRGB        |
-|  Sapphire GPU RGB Driver                  |
+|  Generic RGB Interface for Zalman Z Sync  |
+|  lighting devices                         |
 |                                           |
-|  Adam Honse (CalcProgrammer1) 7/15/2020   |
+|  Adam Honse (CalcProgrammer1) 1/30/2021   |
 \*-----------------------------------------*/
 
 #pragma once
-
 #include "RGBController.h"
-#include "SapphireGPUController.h"
+#include "ZalmanZSyncController.h"
 
-class RGBController_SapphireGPU : public RGBController
+class RGBController_ZalmanZSync : public RGBController
 {
 public:
-    RGBController_SapphireGPU(SapphireGPUController* sapphire_ptr);
+    RGBController_ZalmanZSync(ZalmanZSyncController* controller_ptr);
+    ~RGBController_ZalmanZSync();
 
     void        SetupZones();
 
@@ -29,5 +29,7 @@ public:
     void        DeviceUpdateMode();
 
 private:
-    SapphireGPUController* sapphire;
+    ZalmanZSyncController*      controller;
+    std::vector<unsigned int>   leds_channel;
+    std::vector<unsigned int>   zones_channel;
 };

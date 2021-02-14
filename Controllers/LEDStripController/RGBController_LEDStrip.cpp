@@ -16,7 +16,7 @@ RGBController_LEDStrip::RGBController_LEDStrip(LEDStripController* ledstrip_ptr)
 
     name        = "LED Strip";
     type        = DEVICE_TYPE_LEDSTRIP;
-    description = "Keyboard Visualizer Arduino LED Strip Device";
+    description = "Serial LED Strip Device";
     location    = strip->GetLocation();
 
     mode Direct;
@@ -27,6 +27,11 @@ RGBController_LEDStrip::RGBController_LEDStrip(LEDStripController* ledstrip_ptr)
     modes.push_back(Direct);
 
     SetupZones();
+}
+
+RGBController_LEDStrip::~RGBController_LEDStrip()
+{
+    delete strip;
 }
 
 void RGBController_LEDStrip::SetupZones()

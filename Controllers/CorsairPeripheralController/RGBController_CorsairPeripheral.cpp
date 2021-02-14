@@ -95,6 +95,29 @@ static const zone_type zone_types_k95[] =
     ZONE_TYPE_MATRIX
 };
 
+/*---------------------------------------------------------*\
+| K55                                                       |
+\*---------------------------------------------------------*/
+static const char* zone_names_k55[] =
+{
+    "Left",
+    "Middle",
+    "Right",
+};
+
+static const unsigned int zone_sizes_k55[] =
+{
+    1,
+    1,
+    1
+};
+
+static const zone_type zone_types_k55[] =
+{
+    ZONE_TYPE_SINGLE,
+    ZONE_TYPE_SINGLE,
+    ZONE_TYPE_SINGLE
+};
 
 static const char* led_names[] =
 {
@@ -513,6 +536,13 @@ static const char* corsair_mouse_leds[] =
     "Mouse LED 15",
 };
 
+static const char* led_names_k55[] =
+{
+    "LEFT",
+    "MIDDLE",
+    "RIGHT",
+};
+
 static const char* corsair_m65_elite_leds[] =
 {
     "",
@@ -607,6 +637,8 @@ RGBController_CorsairPeripheral::~RGBController_CorsairPeripheral()
             delete zones[zone_index].matrix_map;
         }
     }
+
+    delete corsair;
 }
 
 void RGBController_CorsairPeripheral::SetupZones()
@@ -623,6 +655,11 @@ void RGBController_CorsairPeripheral::SetupZones()
             if (logical_layout == CORSAIR_TYPE_K95_PLAT)
             {
                 num_zones = 2;
+                break;
+            }
+            if (logical_layout == CORSAIR_TYPE_K55)
+            {
+                num_zones = 3;
                 break;
             }
             num_zones = 1;
@@ -687,6 +724,15 @@ void RGBController_CorsairPeripheral::SetupZones()
                     {
                         new_zone.matrix_map         = NULL;
                     }
+                }
+                else if (logical_layout == CORSAIR_TYPE_K55)
+                {
+                    new_zone.name                   = zone_names_k55[zone_idx];
+                    new_zone.type                   = zone_types_k55[zone_idx];
+                    new_zone.leds_min               = zone_sizes_k55[zone_idx];
+                    new_zone.leds_max               = zone_sizes_k55[zone_idx];
+                    new_zone.leds_count             = zone_sizes_k55[zone_idx];
+                    new_zone.matrix_map             = NULL;
                 }
                 else //default layout
                 {
@@ -770,6 +816,10 @@ void RGBController_CorsairPeripheral::SetupZones()
                 else if(logical_layout == CORSAIR_TYPE_K95)
                 {
                     new_led.name = led_names_k95[led_idx];
+                }
+                else if(logical_layout == CORSAIR_TYPE_K55)
+                {
+                    new_led.name = led_names_k55[led_idx];
                 }
                 else
                 {

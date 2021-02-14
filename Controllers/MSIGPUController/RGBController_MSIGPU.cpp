@@ -217,6 +217,11 @@ RGBController_MSIGPU::RGBController_MSIGPU(MSIGPUController * msi_gpu_ptr)
     active_mode = GetDeviceMode();
 }
 
+RGBController_MSIGPU::~RGBController_MSIGPU()
+{
+    delete msi_gpu;
+}
+
 void RGBController_MSIGPU::SetupZones()
 {
     /*---------------------------------------------------------*\
@@ -313,7 +318,7 @@ void RGBController_MSIGPU::UpdateSingleLED(int /*led*/)
 
 void RGBController_MSIGPU::SetCustomMode()
 {
-    active_mode = 0;
+    active_mode = 2;  //Set to MSI_GPU_MODE_STATIC
 }
 
 void RGBController_MSIGPU::DeviceUpdateMode()
