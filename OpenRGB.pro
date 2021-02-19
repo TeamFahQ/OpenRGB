@@ -73,13 +73,14 @@ INCLUDEPATH +=                                                                  
     Controllers/EspurnaController/                                                              \
     Controllers/EVGAGPUController/                                                              \
     Controllers/FanBusController/                                                               \
+    Controllers/GainwardGPUController/                                                          \
+    Controllers/GalaxGPUController/                                                             \
     Controllers/GigabyteAorusCPUCoolerController/                                               \
     Controllers/GigabyteRGBFusion2DRAMController/                                               \
     Controllers/GigabyteRGBFusion2SMBusController/                                              \
     Controllers/GigabyteRGBFusion2USBController/                                                \
     Controllers/GigabyteRGBFusionController/                                                    \
     Controllers/GigabyteRGBFusionGPUController/                                                 \
-    Controllers/GalaxGPUController/                                                             \
     Controllers/HoltekController/                                                               \
     Controllers/HyperXDRAMController/                                                           \
     Controllers/HyperXKeyboardController/                                                       \
@@ -165,9 +166,11 @@ HEADERS +=                                                                      
     Controllers/AsusAuraUSBController/RGBController_AsusAuraUSB.h                               \
     Controllers/CoolerMasterController/CMARGBcontroller.h                                       \
     Controllers/CoolerMasterController/CMMP750Controller.h                                      \
+    Controllers/CoolerMasterController/CMSmallARGBController.h                                  \
     Controllers/CoolerMasterController/CMR6000Controller.h                                      \
     Controllers/CoolerMasterController/RGBController_CMARGBController.h                         \
     Controllers/CoolerMasterController/RGBController_CMMP750Controller.h                        \
+    Controllers/CoolerMasterController/RGBController_CMSmallARGBController.h                    \
     Controllers/CoolerMasterController/RGBController_CMR6000Controller.h                        \
     Controllers/CorsairDominatorPlatinumController/CorsairDominatorPlatinumController.h         \
     Controllers/CorsairDominatorPlatinumController/RGBController_CorsairDominatorPlatinum.h     \
@@ -200,6 +203,10 @@ HEADERS +=                                                                      
     Controllers/FanBusController/FanBusController.h                                             \
     Controllers/FanBusController/FanBusInterface.h                                              \
     Controllers/FanBusController/RGBController_FanBus.h                                         \
+    Controllers/GainwardGPUController/GainwardGPUController.h                                   \
+    Controllers/GainwardGPUController/RGBController_GainwardGPU.h                               \
+    Controllers/GalaxGPUController/GalaxGPUController.h                                         \
+    Controllers/GalaxGPUController/RGBController_GalaxGPU.h                                     \
     Controllers/GigabyteAorusCPUCoolerController/ATC800Controller.h                             \
     Controllers/GigabyteAorusCPUCoolerController/RGBController_AorusATC800.h                    \
     Controllers/GigabyteRGBFusion2DRAMController/GigabyteRGBFusion2DRAMController.h             \
@@ -212,8 +219,6 @@ HEADERS +=                                                                      
     Controllers/GigabyteRGBFusionController/RGBController_GigabyteRGBFusion.h                   \
     Controllers/GigabyteRGBFusionGPUController/GigabyteRGBFusionGPUController.h                 \
     Controllers/GigabyteRGBFusionGPUController/RGBController_GigabyteRGBFusionGPU.h             \
-    Controllers/GalaxGPUController/GalaxGPUController.h                                         \
-    Controllers/GalaxGPUController/RGBController_GalaxGPU.h                                     \
     Controllers/HoltekController/HoltekA070Controller.h                                         \
     Controllers/HoltekController/HoltekA1FAController.h                                         \
     Controllers/HoltekController/RGBController_HoltekA070.h                                     \
@@ -229,7 +234,7 @@ HEADERS +=                                                                      
     Controllers/HyperXMouseController/HyperXPulsefireDartController.h                           \
     Controllers/HyperXMouseController/RGBController_HyperXPulsefireFPSPro.h                     \
     Controllers/HyperXMouseController/RGBController_HyperXPulsefireSurge.h                      \
-    Controllers/HyperXMouseController/RGBController_HyperXPulsefireDart.h                      \
+    Controllers/HyperXMouseController/RGBController_HyperXPulsefireDart.h                       \
     Controllers/HyperXMousematController/HyperXMousematController.h                             \
     Controllers/HyperXMousematController/RGBController_HyperXMousemat.h                         \
     Controllers/LEDStripController/LEDStripController.h                                         \
@@ -238,6 +243,7 @@ HEADERS +=                                                                      
     Controllers/LogitechController/LogitechG203LController.h                                    \
     Controllers/LogitechController/LogitechG403Controller.h                                     \
     Controllers/LogitechController/LogitechG502PSController.h                                   \
+    Controllers/LogitechController/LogitechG560Controller.h                                     \
     Controllers/LogitechController/LogitechG810Controller.h                                     \
     Controllers/LogitechController/LogitechG213Controller.h                                     \
     Controllers/LogitechController/LogitechGPowerPlayController.h                               \
@@ -246,6 +252,7 @@ HEADERS +=                                                                      
     Controllers/LogitechController/RGBController_LogitechG203L.h                                \
     Controllers/LogitechController/RGBController_LogitechG403.h                                 \
     Controllers/LogitechController/RGBController_LogitechG502PS.h                               \
+    Controllers/LogitechController/RGBController_LogitechG560.h                                 \
     Controllers/LogitechController/RGBController_LogitechG810.h                                 \
     Controllers/LogitechController/RGBController_LogitechG213.h                                 \
     Controllers/LogitechController/RGBController_LogitechGPowerPlay.h                           \
@@ -370,10 +377,12 @@ SOURCES +=                                                                      
     Controllers/AsusAuraUSBController/RGBController_AsusAuraUSB.cpp                             \
     Controllers/CoolerMasterController/CMARGBcontroller.cpp                                     \
     Controllers/CoolerMasterController/CMMP750Controller.cpp                                    \
+    Controllers/CoolerMasterController/CMSmallARGBController.cpp                                \
     Controllers/CoolerMasterController/CMR6000Controller.cpp                                    \
     Controllers/CoolerMasterController/CoolerMasterControllerDetect.cpp                         \
     Controllers/CoolerMasterController/RGBController_CMARGBController.cpp                       \
     Controllers/CoolerMasterController/RGBController_CMMP750Controller.cpp                      \
+    Controllers/CoolerMasterController/RGBController_CMSmallARGBController.cpp                  \
     Controllers/CoolerMasterController/RGBController_CMR6000Controller.cpp                      \
     Controllers/CorsairDominatorPlatinumController/CorsairDominatorPlatinumController.cpp       \
     Controllers/CorsairDominatorPlatinumController/CorsairDominatorPlatinumControllerDetect.cpp \
@@ -421,6 +430,12 @@ SOURCES +=                                                                      
     Controllers/FanBusController/FanBusControllerDetect.cpp                                     \
     Controllers/FanBusController/FanBusInterface.cpp                                            \
     Controllers/FanBusController/RGBController_FanBus.cpp                                       \
+    Controllers/GainwardGPUController/GainwardGPUController.cpp                                 \
+    Controllers/GainwardGPUController/GainwardGPUControllerDetect.cpp                           \
+    Controllers/GainwardGPUController/RGBController_GainwardGPU.cpp                             \    
+    Controllers/GalaxGPUController/GalaxGPUController.cpp                                       \
+    Controllers/GalaxGPUController/GalaxGPUControllerDetect.cpp                                 \
+    Controllers/GalaxGPUController/RGBController_GalaxGPU.cpp                                   \
     Controllers/GigabyteAorusCPUCoolerController/ATC800Controller.cpp                           \
     Controllers/GigabyteAorusCPUCoolerController/GigabyteAorusCPUCoolerControllerDetect.cpp     \
     Controllers/GigabyteAorusCPUCoolerController/RGBController_AorusATC800.cpp                  \
@@ -439,9 +454,6 @@ SOURCES +=                                                                      
     Controllers/GigabyteRGBFusionGPUController/GigabyteRGBFusionGPUController.cpp               \
     Controllers/GigabyteRGBFusionGPUController/GigabyteRGBFusionGPUControllerDetect.cpp         \
     Controllers/GigabyteRGBFusionGPUController/RGBController_GigabyteRGBFusionGPU.cpp           \
-    Controllers/GalaxGPUController/GalaxGPUController.cpp                                       \
-    Controllers/GalaxGPUController/GalaxGPUControllerDetect.cpp                                 \
-    Controllers/GalaxGPUController/RGBController_GalaxGPU.cpp                                   \
     Controllers/HoltekController/HoltekA070Controller.cpp                                       \
     Controllers/HoltekController/HoltekA1FAController.cpp                                       \
     Controllers/HoltekController/HoltekControllerDetect.cpp                                     \
@@ -473,6 +485,7 @@ SOURCES +=                                                                      
     Controllers/LogitechController/LogitechG203LController.cpp                                  \
     Controllers/LogitechController/LogitechG403Controller.cpp                                   \
     Controllers/LogitechController/LogitechG502PSController.cpp                                 \
+    Controllers/LogitechController/LogitechG560Controller.cpp                                   \
     Controllers/LogitechController/LogitechG810Controller.cpp                                   \
     Controllers/LogitechController/LogitechG213Controller.cpp                                   \
     Controllers/LogitechController/LogitechGPowerPlayController.cpp                             \
@@ -481,6 +494,7 @@ SOURCES +=                                                                      
     Controllers/LogitechController/RGBController_LogitechG203L.cpp                              \
     Controllers/LogitechController/RGBController_LogitechG403.cpp                               \
     Controllers/LogitechController/RGBController_LogitechG502PS.cpp                             \
+    Controllers/LogitechController/RGBController_LogitechG560.cpp                               \
     Controllers/LogitechController/RGBController_LogitechG810.cpp                               \
     Controllers/LogitechController/RGBController_LogitechG213.cpp                               \
     Controllers/LogitechController/RGBController_LogitechGPowerPlay.cpp                         \

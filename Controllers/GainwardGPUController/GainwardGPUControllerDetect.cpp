@@ -1,15 +1,15 @@
 /*-----------------------------------------*\
-|  GalaxGPUControllerDetect.cpp             |
+|  GainwardGPUControllerDetect.cpp          |
 |                                           |
-|  Driver for Galax / KFA2 RGB on GPUs      |
+|  Driver for Gainward RGB on GPUs          |
 |                                           |
-|  Niels Westphal (crashniels)  12.07.2020  |
+|  TheRogueZeta 11/05/2020                  |
 \*-----------------------------------------*/
 
 #include "Detector.h"
-#include "GalaxGPUController.h"
+#include "GainwardGPUController.h"
 #include "RGBController.h"
-#include "RGBController_GalaxGPU.h"
+#include "RGBController_GainwardGPU.h"
 #include "i2c_smbus.h"
 #include "pci_ids.h"
 #include <vector>
@@ -31,50 +31,44 @@ typedef struct
 
 static const gpu_pci_device device_list[] =
 {
-    { NVIDIA_VEN,   NVIDIA_RTX2070_DEV,     NVIDIA_SUB_VEN,     KFA2_RTX_2070_EX_SUB_DEV,               "KFA2 RTX 2070 EX"                      },
-    { NVIDIA_VEN,   NVIDIA_RTX2070S_DEV,    NVIDIA_SUB_VEN,     GALAX_RTX_2070S_EX_GAMER_BLACK_SUB_DEV, "GALAX RTX 2070 Super EX Gamer Black"   },
-    { NVIDIA_VEN,   NVIDIA_RTX2080_DEV,     NVIDIA_SUB_VEN,     KFA2_RTX_2080_EX_OC_SUB_DEV,            "KFA2 RTX 2080 EX OC"                   },
+    { NVIDIA_VEN,   NVIDIA_GTX1080_DEV,     GAINWARD_SUB_VEN,       GAINWARD_GTX_1080_PHOENIX,      "Gainward GTX 1080 Phoenix"             },
 };
+
 /******************************************************************************************\
 *                                                                                          *
-*   TestForGalaxGPUController                                                              *
+*   TestForGainwardGPUController                                                           *
 *                                                                                          *
-*       Tests the given address to see if a Galax GPU controller exists there.             *
+*       Tests the given address to see if a Gainward GPU controller exists there.          *
 *                                                                                          *
 \******************************************************************************************/
 
-bool TestForGalaxGPUController(i2c_smbus_interface* bus, unsigned char address)
+bool TestForGainwardGPUController(i2c_smbus_interface* bus, unsigned char address)
 {
     bool pass = false;
 
-    unsigned char res  = bus->i2c_smbus_read_byte_data(address, 0x00);
-    unsigned char res2 = bus->i2c_smbus_read_byte_data(address, 0x01);
-    if(res == 0x27 && res2 == 0x10)
-    {
-        pass = true;
-    }
+    pass = bus->i2c_smbus_write_quick(address, I2C_SMBUS_WRITE);
 
     return(pass);
 
-}   /* TestForGalaxGPUController() */
+}   /* TestForGainwardGPUController() */
 
 
 /******************************************************************************************\
 *                                                                                          *
-*   DetectGalaxGPUControllers                                                              *
+*   DetectGainwardGPUControllers                                                           *
 *                                                                                          *
-*       Detect Galax GPU controllers on the enumerated I2C busses.                         *
+*       Detect Gainward GPU controllers on the enumerated I2C busses.                      *
 *                                                                                          *
 \******************************************************************************************/
 
-void DetectGalaxGPUControllers(std::vector<i2c_smbus_interface*> &busses, std::vector<RGBController*> &rgb_controllers)
+void DetectGainwardGPUControllers(std::vector<i2c_smbus_interface*> &busses, std::vector<RGBController*> &rgb_controllers)
 {
-    GalaxGPUController* new_GalaxGPU;
-    RGBController_GalaxGPU* new_controller;
+    GainwardGPUController* new_GainwardGPU;
+    RGBController_GainwardGPU* new_controller;
 
     for (unsigned int bus = 0; bus < busses.size(); bus++)
     {
-        // Check for GALAX controller at 0x23
+        // Check for Gainward controller at 0x08
         for(unsigned int dev_idx = 0; dev_idx < GPU_NUM_DEVICES; dev_idx++)
         {
             if(busses[bus]->pci_vendor           == device_list[dev_idx].pci_vendor           &&
@@ -82,17 +76,17 @@ void DetectGalaxGPUControllers(std::vector<i2c_smbus_interface*> &busses, std::v
                busses[bus]->pci_subsystem_vendor == device_list[dev_idx].pci_subsystem_vendor &&
                busses[bus]->pci_subsystem_device == device_list[dev_idx].pci_subsystem_device)
             {
-                if (TestForGalaxGPUController(busses[bus], 0x23))
+                if (TestForGainwardGPUController(busses[bus], 0x08))
                 {
-                    new_GalaxGPU         = new GalaxGPUController(busses[bus], 0x23);
-                    new_controller       = new RGBController_GalaxGPU(new_GalaxGPU);
-                    new_controller->name = device_list[dev_idx].name;
+                    new_GainwardGPU         = new GainwardGPUController(busses[bus], 0x08);
+                    new_controller          = new RGBController_GainwardGPU(new_GainwardGPU);
+                    new_controller->name    = device_list[dev_idx].name;
                     rgb_controllers.push_back(new_controller);
                 }
             }
         }
     }
 
-} /* DetectGalaxGPUControllers() */
+} /* DetectGainwardGPUControllers() */
 
-REGISTER_I2C_DETECTOR("Galax GPU", DetectGalaxGPUControllers);
+REGISTER_I2C_DETECTOR("Gainward GPU", DetectGainwardGPUControllers);

@@ -53,7 +53,7 @@
 #define NVIDIA_RTX2080_A_DEV                    0x1E87
 #define NVIDIA_RTX2080S_DEV                     0x1E81
 #define NVIDIA_RTX2080TI_DEV                    0x1E07
-#define NVIDIA_RTX3060_TI_DEV                   0x2486
+#define NVIDIA_RTX3060TI_DEV                    0x2486
 #define NVIDIA_RTX3070_DEV                      0x2484
 #define NVIDIA_RTX3080_DEV                      0x2206
 #define NVIDIA_RTX3090_DEV                      0x2204
@@ -64,6 +64,7 @@
 #define ASUS_SUB_VEN                            0x1043
 #define EVGA_SUB_VEN                            0x3842
 #define GALAX_SUB_VEN                           0x1B4C
+#define GAINWARD_SUB_VEN                        0x10B0
 #define GIGABYTE_SUB_VEN                        0x1458
 #define MSI_SUB_VEN                             0x1462
 #define NVIDIA_SUB_VEN                          0x10DE
@@ -86,10 +87,16 @@
 #define EVGA_RTX2080TI_XC_ULTRA_SUB_DEV         0x2383
 
 /*-----------------------------------------------------*\
+| Gainward Sub-Device IDs                               |
+\*-----------------------------------------------------*/
+#define GAINWARD_GTX_1080_PHOENIX               0x1B80
+
+/*-----------------------------------------------------*\
 | GALAX / KFA2 Sub-Device IDs                           |
 \*-----------------------------------------------------*/
-#define KFA2_RTX_2070_EX                        0x12FE
-#define GALAX_RTX_2070S_EX_GAMER_BLACK          0x139F
+#define KFA2_RTX_2070_EX_SUB_DEV                0x12FE
+#define GALAX_RTX_2070S_EX_GAMER_BLACK_SUB_DEV  0x139F
+#define KFA2_RTX_2080_EX_OC_SUB_DEV             0x12B0
 
 /*-----------------------------------------------------*\
 | Gigabyte (Aorus) Sub-Device IDs                       |
@@ -110,6 +117,8 @@
 #define GIGABYTE_RTX2080_A_GAMING_OC_SUB_DEV    0x37A7
 #define GIGABYTE_RTX2080_GAMING_OC_SUB_DEV      0x37D6
 #define GIGABYTE_RTX2070S_GAMING_OC_SUB_DEV     0x4008
+#define GIGABYTE_RTX3060TI_EAGLE_OC_SUB_DEV     0x405B
+#define GIGABYTE_RTX3070_VISION_OC_SUB_DEV      0x404D
 
 /*-----------------------------------------------------*\
 | MSI Sub-Device IDs                                    |

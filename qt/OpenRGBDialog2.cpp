@@ -61,6 +61,9 @@ static QString GetIconString(device_type type, bool dark)
     case DEVICE_TYPE_LIGHT:
         filename = "light";
         break;
+    case DEVICE_TYPE_SPEAKER:
+        filename = "speaker";
+        break;
     default:
         filename = "unknown";
         break;
@@ -138,7 +141,7 @@ bool OpenRGBDialog2::IsDarkTheme()
         return true;
     }
 #endif
-    
+
     return false;
 }
 
@@ -767,7 +770,7 @@ void OpenRGBDialog2::UpdateDevicesList()
             {
                 found = true;
                 QWidget* tab_widget = ui->InformationTabBar->widget(tab_idx);
-                
+
                 ui->InformationTabBar->removeTab(tab_idx);
 
                 delete tab_widget;
@@ -963,14 +966,9 @@ void Ui::OpenRGBDialog2::on_ButtonSaveProfile_clicked()
         std::string profile_name = dialog.show();
 
         /*---------------------------------------------------------*\
-        | Extension .orp - OpenRgb Profile                          |
-        \*---------------------------------------------------------*/
-        std::string filename = profile_name + ".orp";
-
-        /*---------------------------------------------------------*\
         | Save the profile                                          |
         \*---------------------------------------------------------*/
-        if(profile_manager->SaveProfile(filename))
+        if(profile_manager->SaveProfile(profile_name))
         {
             UpdateProfileList();
         }
