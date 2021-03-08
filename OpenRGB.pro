@@ -114,8 +114,11 @@ INCLUDEPATH +=                                                                  
     qt/
 
 HEADERS +=                                                                                      \
+    Controllers/ThermaltakeRiingController/RGBController_ThermaltakeRiingQuad.h \
+    Controllers/ThermaltakeRiingController/ThermaltakeRiingQuadController.h \
     dependencies/ColorWheel/ColorWheel.h                                                        \
     dependencies/json/json.hpp                                                                  \
+    LogManager.h                                                                                \
     NetworkClient.h                                                                             \
     NetworkProtocol.h                                                                           \
     NetworkServer.h                                                                             \
@@ -263,8 +266,11 @@ HEADERS +=                                                                      
     Controllers/MSI3ZoneController/RGBController_MSI3Zone.h                                     \
     Controllers/MSIGPUController/MSIGPUController.h                                             \
     Controllers/MSIGPUController/RGBController_MSIGPU.h                                         \
-    Controllers/MSIMysticLightController/MSIMysticLightController.h                             \
-    Controllers/MSIMysticLightController/RGBController_MSIMysticLight.h                         \
+    Controllers/MSIMysticLightController/MSIMysticLightCommon.h                                 \
+    Controllers/MSIMysticLightController/MSIMysticLight162Controller.h                          \
+    Controllers/MSIMysticLightController/MSIMysticLight185Controller.h                          \
+    Controllers/MSIMysticLightController/RGBController_MSIMysticLight162.h                      \
+    Controllers/MSIMysticLightController/RGBController_MSIMysticLight185.h                      \
     Controllers/MSIRGBController/MSIRGBController.h                                             \
     Controllers/MSIRGBController/RGBController_MSIRGB.h                                         \
     Controllers/NZXTHue2Controller/NZXTHue2Controller.h                                         \
@@ -279,8 +285,10 @@ HEADERS +=                                                                      
     Controllers/PhilipsWizController/PhilipsWizController.h                                     \
     Controllers/PhilipsWizController/RGBController_PhilipsWiz.h                                 \
     Controllers/RazerController/RazerController.h                                               \
+    Controllers/RazerController/RazerKrakenController.h                                         \
     Controllers/RazerController/RazerDevices.h                                                  \
     Controllers/RazerController/RGBController_Razer.h                                           \
+    Controllers/RazerController/RGBController_RazerKraken.h                                     \
     Controllers/RedragonController/RedragonK556Controller.h                                     \
     Controllers/RedragonController/RedragonM711Controller.h                                     \
     Controllers/RedragonController/RGBController_RedragonK556.h                                 \
@@ -322,11 +330,14 @@ HEADERS +=                                                                      
     RGBController/RGBController_Network.h                                                       \
 
 SOURCES +=                                                                                      \
+    Controllers/ThermaltakeRiingController/RGBController_ThermaltakeRiingQuad.cpp \
+    Controllers/ThermaltakeRiingController/ThermaltakeRiingQuadController.cpp \
     dependencies/dmiinfo.cpp                                                                    \
     dependencies/ColorWheel/ColorWheel.cpp                                                      \
     dependencies/libe131/src/e131.c                                                             \
     main.cpp                                                                                    \
     cli.cpp                                                                                     \
+    LogManager.cpp                                                                              \
     NetworkClient.cpp                                                                           \
     NetworkServer.cpp                                                                           \
     PluginManager.cpp                                                                           \
@@ -509,9 +520,11 @@ SOURCES +=                                                                      
     Controllers/MSIGPUController/MSIGPUController.cpp                                           \
     Controllers/MSIGPUController/MSIGPUControllerDetect.cpp                                     \
     Controllers/MSIGPUController/RGBController_MSIGPU.cpp                                       \
-    Controllers/MSIMysticLightController/MSIMysticLightController.cpp                           \
+    Controllers/MSIMysticLightController/MSIMysticLight162Controller.cpp                        \
+    Controllers/MSIMysticLightController/MSIMysticLight185Controller.cpp                        \
     Controllers/MSIMysticLightController/MSIMysticLightControllerDetect.cpp                     \
-    Controllers/MSIMysticLightController/RGBController_MSIMysticLight.cpp                       \
+    Controllers/MSIMysticLightController/RGBController_MSIMysticLight162.cpp                    \
+    Controllers/MSIMysticLightController/RGBController_MSIMysticLight185.cpp                    \
     Controllers/MSIRGBController/MSIRGBController.cpp                                           \
     Controllers/MSIRGBController/MSIRGBControllerDetect.cpp                                     \
     Controllers/MSIRGBController/RGBController_MSIRGB.cpp                                       \
@@ -531,8 +544,10 @@ SOURCES +=                                                                      
     Controllers/PhilipsWizController/PhilipsWizControllerDetect.cpp                             \
     Controllers/PhilipsWizController/RGBController_PhilipsWiz.cpp                               \
     Controllers/RazerController/RazerController.cpp                                             \
+    Controllers/RazerController/RazerKrakenController.cpp                                       \
     Controllers/RazerController/RazerControllerDetect.cpp                                       \
     Controllers/RazerController/RGBController_Razer.cpp                                         \
+    Controllers/RazerController/RGBController_RazerKraken.cpp                                   \
     Controllers/RedragonController/RedragonK556Controller.cpp                                   \
     Controllers/RedragonController/RedragonM711Controller.cpp                                   \
     Controllers/RedragonController/RedragonControllerDetect.cpp                                 \
@@ -804,14 +819,21 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
 macx:ICON = qt/OpenRGB.icns
 
 unix:macx {
+    DEFINES +=                                                                                  \
+    USE_HID_USAGE                                                                               \
+
     SOURCES +=                                                                                  \
     serial_port/find_usb_serial_port_linux.cpp                                                  \
 
     INCLUDEPATH +=                                                                              \
     /usr/local/include                                                                          \
+    /opt/homebrew/include                                                                       \
 
     LIBS +=                                                                                     \
-    -L/usr/local/lib -lusb-1.0 -lhidapi                                                         \
+    -L/usr/local/lib                                                                            \
+    -L/opt/homebrew/lib                                                                         \
+    -lusb-1.0                                                                                   \
+    -lhidapi                                                                                    \
 
     CONFIG +=                                                                                   \
     c++14                                                                                       \
