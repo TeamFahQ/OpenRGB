@@ -106,7 +106,7 @@ void RGBController_MSIMysticLight162::SetupZones()
         
         zone new_zone;
 
-        unsigned int led_count;
+        unsigned int led_count = 0;
 
         while(zd.leds[led_count] != MSI_ZONE_NONE)
         {
@@ -187,7 +187,7 @@ void RGBController_MSIMysticLight162::SetupModes()
     constexpr unsigned int RANDOM_ONLY  = MODE_FLAG_HAS_BRIGHTNESS | MODE_FLAG_HAS_SPEED | MODE_FLAG_HAS_RANDOM_COLOR;
     constexpr unsigned int COMMON       = RANDOM_ONLY | MODE_FLAG_HAS_PER_LED_COLOR;
 
-    SetupMode("Static",                     MSI_MODE_STATIC,                        MODE_FLAG_HAS_BRIGHTNESS | MODE_FLAG_HAS_PER_LED_COLOR);
+    SetupMode("Direct",                     MSI_MODE_STATIC,                        MODE_FLAG_HAS_BRIGHTNESS | MODE_FLAG_HAS_PER_LED_COLOR);
     SetupMode("Off",                        MSI_MODE_DISABLE,                       0);
     SetupMode("Breathing",                  MSI_MODE_BREATHING,                     COMMON);
     SetupMode("Flashing",                   MSI_MODE_FLASHING,                      COMMON);
@@ -262,6 +262,17 @@ void RGBController_MSIMysticLight162::SetupMode(const char *name, MSI_MODE mod, 
         Mode.speed      = MSI_SPEED_MEDIUM;
         Mode.speed_max  = MSI_SPEED_HIGH;
         Mode.speed_min  = MSI_SPEED_LOW;
+    }
+    else
+    {
+        /*---------------------------------------------------------*\
+        | For modes without speed this needs to be set to avoid     |
+        | bad values in the saved profile which in turn corrupts    |
+        | the brightness calculation when loading the profile       |
+        \*---------------------------------------------------------*/
+        Mode.speed      = 0;
+        Mode.speed_max  = 0;
+        Mode.speed_min  = 0;
     }
 
     modes.push_back(Mode);

@@ -35,16 +35,18 @@ public:
     void SendApply();
 
 private:
-    hid_device *dev;
+    hid_device  *dev;
     std::string location;
     std::string version;
-    bool useTraditionalSendData;
+    bool        useTraditionalSendData;
 
     void SendInitialize();
 
     void SendData(const unsigned char *data, unsigned int length);
+
     void SendDataTraditional(const unsigned char *data, unsigned int length);
+
     void SendDataModern(const unsigned char *data, unsigned int length);
 
-    int ReceiveData(unsigned char *data);
+    int ReceiveData(unsigned char *data, unsigned int max_length);
 };

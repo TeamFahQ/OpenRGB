@@ -24,5 +24,6 @@ typedef enum
     APEX_TKL	= 0x05,
     APEX_M      = 0x06,
     APEX_OLD    = 0x07,
+    SENSEI      = 0x08,
 } steelseries_type;
 

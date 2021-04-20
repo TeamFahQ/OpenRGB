@@ -1,11 +1,15 @@
 #include "ProfileManager.h"
 #include "ResourceManager.h"
 #include "RGBController_Dummy.h"
+#include "LogManager.h"
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include <experimental/filesystem>
 #include <fstream>
 #include <iostream>
 #include <cstring>
+
+#define OPENRGB_PROFILE_HEADER  "OPENRGB_PROFILE"
+#define OPENRGB_PROFILE_VERSION OPENRGB_SDK_PROTOCOL_VERSION
 
 namespace fs = std::experimental::filesystem;
 
@@ -59,8 +63,8 @@ bool ProfileManager::SaveProfile(std::string profile_name, bool sizes)
         | 16 bytes - "OPENRGB_PROFILE"                              |
         | 4 bytes - Version, unsigned int                           |
         \*---------------------------------------------------------*/
-        unsigned int profile_version = 1;
-        controller_file.write("OPENRGB_PROFILE", 16);
+        unsigned int profile_version = OPENRGB_PROFILE_VERSION;
+        controller_file.write(OPENRGB_PROFILE_HEADER, 16);
         controller_file.write((char *)&profile_version, sizeof(unsigned int));
 
         /*---------------------------------------------------------*\
@@ -68,12 +72,14 @@ bool ProfileManager::SaveProfile(std::string profile_name, bool sizes)
         \*---------------------------------------------------------*/
         for(std::size_t controller_index = 0; controller_index < controllers.size(); controller_index++)
         {
-            unsigned char *controller_data = controllers[controller_index]->GetDeviceDescription(0);
+            unsigned char *controller_data = controllers[controller_index]->GetDeviceDescription(profile_version);
             unsigned int controller_size;
 
             memcpy(&controller_size, controller_data, sizeof(controller_size));
 
             controller_file.write((const char *)controller_data, controller_size);
+
+            delete controller_data;
         }
 
         /*---------------------------------------------------------*\
@@ -121,7 +127,6 @@ std::vector<RGBController*> ProfileManager::LoadProfileToList
     unsigned int                controller_offset = 0;
     bool                        ret_val = false;
 
-
     std::string filename = configuration_directory + profile_name;
 
     /*---------------------------------------------------------*\
@@ -133,7 +138,7 @@ std::vector<RGBController*> ProfileManager::LoadProfileToList
     }
     else
     {
-        filename += ".orp";
+        filename += ((filename.substr(filename.size() - 4)==".orp") ? "" : ".orp");
     }
 
     /*---------------------------------------------------------*\
@@ -144,18 +149,28 @@ std::vector<RGBController*> ProfileManager::LoadProfileToList
     /*---------------------------------------------------------*\
     | Read and verify file header                               |
     \*---------------------------------------------------------*/
-    char            header_string[16]{};
-    unsigned int    header_version;
+    char            profile_string[16];
+    unsigned int    profile_version;
 
-    controller_file.read(header_string, 16);
-    controller_file.read((char *)&header_version, sizeof(unsigned int));
+    controller_file.read(profile_string, 16);
+    controller_file.read((char *)&profile_version, sizeof(unsigned int));
+
+    /*---------------------------------------------------------*\
+    | Profile version started at 1 and protocol version started |
+    | at 0.  Version 1 profiles should use protocol 0, but 2 or |
+    | greater should be synchronized                            |
+    \*---------------------------------------------------------*/
+    if(profile_version == 1)
+    {
+        profile_version = 0;
+    }
 
     controller_offset += 16 + sizeof(unsigned int);
     controller_file.seekg(controller_offset);
 
-    if(strcmp(header_string, "OPENRGB_PROFILE") == 0)
+    if(strcmp(profile_string, OPENRGB_PROFILE_HEADER) == 0)
     {
-        if(header_version == 1)
+        if(profile_version <= OPENRGB_PROFILE_VERSION)
         {
             /*---------------------------------------------------------*\
             | Read controller data from file until EOF                  |
@@ -172,7 +187,7 @@ std::vector<RGBController*> ProfileManager::LoadProfileToList
 
                 RGBController_Dummy *temp_controller = new RGBController_Dummy();
 
-                temp_controller->ReadDeviceDescription(controller_data, 0);
+                temp_controller->ReadDeviceDescription(controller_data, profile_version);
 
                 temp_controllers.push_back(temp_controller);
 
@@ -318,8 +333,6 @@ bool ProfileManager::LoadProfileWithOptions
     std::vector<bool>           temp_controller_used;
     bool                        ret_val = false;
 
-    std::string filename = configuration_directory + profile_name + ".orp";
-
     /*---------------------------------------------------------*\
     | Get the list of controllers from the resource manager     |
     \*---------------------------------------------------------*/
@@ -346,10 +359,9 @@ bool ProfileManager::LoadProfileWithOptions
     \*---------------------------------------------------------*/
     for(std::size_t controller_index = 0; controller_index < controllers.size(); controller_index++)
     {
-        if(LoadDeviceFromListWithOptions(temp_controllers, temp_controller_used, controllers[controller_index], load_size, load_settings))
-        {
-            ret_val = true;
-        }
+        ret_val = LoadDeviceFromListWithOptions(temp_controllers, temp_controller_used, controllers[controller_index], load_size, load_settings);
+        std::string current_name = controllers[controller_index]->name + " @ " + controllers[controller_index]->location;
+        LOG_NOTICE("Profile loading: %s for %s", ( ret_val ? "Succeeded" : "FAILED!" ), current_name.c_str());
     }
 
     /*---------------------------------------------------------*\
@@ -383,6 +395,8 @@ void ProfileManager::UpdateProfileList()
 
         if(filename.find(".orp") != std::string::npos)
         {
+            LOG_NOTICE("Found file: %s attempting to validate header", filename.c_str());
+
             /*---------------------------------------------------------*\
             | Open input file in binary mode                            |
             \*---------------------------------------------------------*/
@@ -391,21 +405,23 @@ void ProfileManager::UpdateProfileList()
             /*---------------------------------------------------------*\
             | Read and verify file header                               |
             \*---------------------------------------------------------*/
-            char            header_string[16];
-            unsigned int    header_version;
+            char            profile_string[16];
+            unsigned int    profile_version;
 
-            profile_file.read(header_string, 16);
-            profile_file.read((char *)&header_version, sizeof(unsigned int));
+            profile_file.read(profile_string, 16);
+            profile_file.read((char *)&profile_version, sizeof(unsigned int));
 
-            if(strcmp(header_string, "OPENRGB_PROFILE") == 0)
+            if(strcmp(profile_string, OPENRGB_PROFILE_HEADER) == 0)
             {
-                if(header_version == 1)
+                if(profile_version <= OPENRGB_PROFILE_VERSION)
                 {
                     /*---------------------------------------------------------*\
                     | Add this profile to the list                              |
                     \*---------------------------------------------------------*/
                     filename.erase(filename.length() - 4);
                     profile_list.push_back(filename);
+
+                    LOG_NOTICE("Valid v%i profile found for %s", profile_version, filename.c_str());
                 }
             }
 

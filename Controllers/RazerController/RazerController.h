@@ -88,6 +88,18 @@ enum
 };
 
 /*---------------------------------------------------------*\
+| Razer Matrix Type                                         |
+\*---------------------------------------------------------*/
+enum
+{
+    RAZER_MATRIX_TYPE_STANDARD                  = 0,
+    RAZER_MATRIX_TYPE_EXTENDED                  = 1,
+    RAZER_MATRIX_TYPE_LINEAR                    = 2,
+    RAZER_MATRIX_TYPE_EXTENDED_ARGB             = 3,
+    RAZER_MATRIX_TYPE_CUSTOM                    = 4,
+};
+
+/*---------------------------------------------------------*\
 | Razer Report Type (taken from OpenRazer)                  |
 \*---------------------------------------------------------*/
 struct razer_rgb
@@ -158,11 +170,18 @@ public:
     std::string             GetSerialString();
 
     void                    SetLEDs(RGBColor* colors);
+    void                    SetAddressableZoneSizes(unsigned char zone_1_size, unsigned char zone_2_size, unsigned char zone_3_size, unsigned char zone_4_size, unsigned char zone_5_size, unsigned char zone_6_size);
 
+    void                    SetModeBreathingRandom();
+    void                    SetModeBreathingOneColor(unsigned char red, unsigned char grn, unsigned char blu);
+    void                    SetModeBreathingTwoColors(unsigned char r1, unsigned char g1, unsigned char b1, unsigned char r2, unsigned char g2, unsigned char b2);
     void                    SetModeOff();
     void                    SetModeSpectrumCycle();
     void                    SetModeStatic(unsigned char red, unsigned char grn, unsigned char blu);
-    void                    SetModeWave();
+    void                    SetModeWave(unsigned char direction);
+
+    bool                    SupportsReactive();
+    bool                    SupportsWave();
 
 private:
     hid_device*             dev;
@@ -195,12 +214,19 @@ private:
     unsigned char           response_index;
 
     /*---------------------------------------------------------*\
+    | Matrix type                                               |
+    \*---------------------------------------------------------*/
+    unsigned char           matrix_type;
+
+    /*---------------------------------------------------------*\
     | Private functions based on OpenRazer                      |
     \*---------------------------------------------------------*/
     unsigned char           razer_calculate_crc(razer_report* report);
     razer_report            razer_create_report(unsigned char command_class, unsigned char command_id, unsigned char data_size);
     razer_report            razer_create_response();
 
+    razer_report            razer_create_addressable_size_report(unsigned char zone_1_size, unsigned char zone_2_size, unsigned char zone_3_size, unsigned char zone_4_size, unsigned char zone_5_size, unsigned char zone_6_size);
+    razer_report            razer_create_addressable_startup_detect_report(bool enable);
     razer_report            razer_create_brightness_extended_matrix_report(unsigned char variable_storage, unsigned char led_id, unsigned char brightness);
     razer_report            razer_create_brightness_standard_report(unsigned char variable_storage, unsigned char led_id, unsigned char brightness);
     razer_argb_report       razer_create_custom_frame_argb_report(unsigned char row_index, unsigned char stop_col, unsigned char* rgb_data);
@@ -208,6 +234,12 @@ private:
     razer_report            razer_create_custom_frame_extended_matrix_report(unsigned char row_index, unsigned char start_col, unsigned char stop_col, unsigned char* rgb_data);
     razer_report            razer_create_custom_frame_standard_matrix_report(unsigned char row_index, unsigned char start_col, unsigned char stop_col, unsigned char* rgb_data);
     razer_report            razer_create_device_mode_report(unsigned char mode, unsigned char param);
+    razer_report            razer_create_mode_breathing_one_color_extended_matrix_report(unsigned char variable_storage, unsigned char led_id, unsigned char red, unsigned char grn, unsigned char blu);
+    razer_report            razer_create_mode_breathing_one_color_standard_matrix_report(unsigned char variable_storage, unsigned char led_id, unsigned char red, unsigned char grn, unsigned char blu);
+    razer_report            razer_create_mode_breathing_random_extended_matrix_report(unsigned char variable_storage, unsigned char led_id);
+    razer_report            razer_create_mode_breathing_random_standard_matrix_report(unsigned char variable_storage, unsigned char led_id);
+    razer_report            razer_create_mode_breathing_two_colors_extended_matrix_report(unsigned char variable_storage, unsigned char led_id, unsigned char r1, unsigned char g1, unsigned char b1, unsigned char r2, unsigned char g2, unsigned char b2);
+    razer_report            razer_create_mode_breathing_two_colors_standard_matrix_report(unsigned char variable_storage, unsigned char led_id, unsigned char r1, unsigned char g1, unsigned char b1, unsigned char r2, unsigned char g2, unsigned char b2);
     razer_report            razer_create_mode_custom_extended_matrix_report();
     razer_report            razer_create_mode_custom_standard_matrix_report(unsigned char variable_storage);
     razer_report            razer_create_mode_none_extended_matrix_report(unsigned char variable_storage, unsigned char led_id);
@@ -229,12 +261,14 @@ private:
 
     void                    razer_set_device_mode(unsigned char device_mode);
     
-    void                    razer_set_mode_breathing();
+    void                    razer_set_mode_breathing_random();
+    void                    razer_set_mode_breathing_one_color(unsigned char red, unsigned char grn, unsigned char blu);
+    void                    razer_set_mode_breathing_two_colors(unsigned char r1, unsigned char g1, unsigned char b1, unsigned char r2, unsigned char g2, unsigned char b2);
     void                    razer_set_mode_custom();
     void                    razer_set_mode_none();
     void                    razer_set_mode_spectrum_cycle();
     void                    razer_set_mode_static(unsigned char red, unsigned char grn, unsigned char blu);
-    void                    razer_set_mode_wave();
+    void                    razer_set_mode_wave(unsigned char direction);
 
     int                     razer_usb_receive(razer_report* report);
     int                     razer_usb_send(razer_report* report);

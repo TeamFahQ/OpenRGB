@@ -30,22 +30,40 @@ int LoadLibraries()
 
     hDLL = LoadLibrary("atiadlxx.dll");
 
-    if (hDLL == NULL)
+    if(hDLL == NULL)
     {
-        // A 32 bit calling application on 64 bit OS will fail to LoadLIbrary.
-        // Try to load the 32 bit library (atiadlxy.dll) instead
+        /*---------------------------------------------------------------------*\
+        | A 32 bit calling application on 64 bit OS will fail to LoadLibrary.   |
+        | Try to load the 32 bit library (atiadlxy.dll) instead                 |
+        \*---------------------------------------------------------------------*/
         hDLL = LoadLibrary("atiadlxy.dll");
         return ADL_ERR;
     }
     else
     {
-        ADL2_Main_Control_Create = (ADL2_MAIN_CONTROL_CREATE)GetProcAddress(hDLL, "ADL2_Main_Control_Create");
-        ADL2_Main_Control_Destroy = (ADL2_MAIN_CONTROL_DESTROY)GetProcAddress(hDLL, "ADL2_Main_Control_Destroy");
-        ADL2_Adapter_NumberOfAdapters_Get = (ADL2_ADAPTER_NUMBEROFADAPTERS_GET)GetProcAddress(hDLL, "ADL2_Adapter_NumberOfAdapters_Get");
-        ADL2_Adapter_Primary_Get = (ADL2_ADAPTER_PRIMARY_GET)GetProcAddress(hDLL, "ADL2_Adapter_Primary_Get");
-        ADL2_Adapter_AdapterInfoX2_Get = (ADL2_ADAPTER_ADAPTERINFOX2_GET)GetProcAddress(hDLL, "ADL2_Adapter_AdapterInfoX2_Get");
-        ADL2_Display_WriteAndReadI2C = (ADL2_DISPLAY_WRITEANDREADI2C)GetProcAddress(hDLL, "ADL2_Display_WriteAndReadI2C");
-        return ADL_OK;
+        ADL2_Main_Control_Create            = (ADL2_MAIN_CONTROL_CREATE)GetProcAddress(hDLL, "ADL2_Main_Control_Create");
+        ADL2_Main_Control_Destroy           = (ADL2_MAIN_CONTROL_DESTROY)GetProcAddress(hDLL, "ADL2_Main_Control_Destroy");
+        ADL2_Adapter_NumberOfAdapters_Get   = (ADL2_ADAPTER_NUMBEROFADAPTERS_GET)GetProcAddress(hDLL, "ADL2_Adapter_NumberOfAdapters_Get");
+        ADL2_Adapter_Primary_Get            = (ADL2_ADAPTER_PRIMARY_GET)GetProcAddress(hDLL, "ADL2_Adapter_Primary_Get");
+        ADL2_Adapter_AdapterInfoX2_Get      = (ADL2_ADAPTER_ADAPTERINFOX2_GET)GetProcAddress(hDLL, "ADL2_Adapter_AdapterInfoX2_Get");
+        ADL2_Display_WriteAndReadI2C        = (ADL2_DISPLAY_WRITEANDREADI2C)GetProcAddress(hDLL, "ADL2_Display_WriteAndReadI2C");
+
+        /*---------------------------------------------------------------------*\
+        | Only return OK if all function pointers are valid                     |
+        \*---------------------------------------------------------------------*/
+        if( ADL2_Main_Control_Create 
+         && ADL2_Main_Control_Destroy
+         && ADL2_Adapter_NumberOfAdapters_Get
+         && ADL2_Adapter_Primary_Get
+         && ADL2_Adapter_AdapterInfoX2_Get
+         && ADL2_Display_WriteAndReadI2C)
+        {
+            return ADL_OK;
+        }
+        else
+        {
+            return ADL_ERR;
+        }
     }
 }
 
@@ -178,7 +196,7 @@ s32 i2c_smbus_amdadl::i2c_smbus_xfer(u8 addr, char read_write, u8 command, int s
 
 #include "Detector.h"
 
-void i2c_smbus_amdadl_detect(std::vector<i2c_smbus_interface*> &busses)
+void i2c_smbus_amdadl_detect()
 {
     int adl_status;
     int gpu_count = 0;
@@ -193,7 +211,7 @@ void i2c_smbus_amdadl_detect(std::vector<i2c_smbus_interface*> &busses)
         else
         {
             i2c_smbus_amdadl * adl_bus = new i2c_smbus_amdadl(context);
-            busses.push_back(adl_bus);
+            ResourceManager::get()->RegisterI2CBus(adl_bus);
         }
     }
 }   /* DetectAMDADLI2CBusses() */

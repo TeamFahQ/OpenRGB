@@ -251,7 +251,7 @@ build_windows_64:
 #-----------------------------------------------------------------------#
 # MacOS Build Target                                                    #
 #-----------------------------------------------------------------------#
-build_macos:
+build_macos_arm64:
   tags:
   - macos
   stage: build
@@ -260,6 +260,27 @@ build_macos:
   - qmake OpenRGB.pro
   - make -j16
   - macdeployqt OpenRGB.app -codesign=OpenRGB
+
+  artifacts:
+    paths:
+    - OpenRGB.app
+    expire_in: 30 days
+
+  rules:
+  - if: '$CI_PROJECT_PATH == "CalcProgrammer1/OpenRGB"'
+    when: on_success
+  - if: '$BUILD_MACOS =~ /.+/'
+    when: on_success
+
+build_macos_intel:
+  tags:
+  - macos
+  stage: build
+  script:
+  - eval $(/usr/local/bin/brew shellenv)
+  - arch -x86_64 /usr/local/bin/qmake OpenRGB.pro
+  - arch -x86_64 make -j16
+  - arch -x86_64 macdeployqt OpenRGB.app -codesign=OpenRGB
 
   artifacts:
     paths:

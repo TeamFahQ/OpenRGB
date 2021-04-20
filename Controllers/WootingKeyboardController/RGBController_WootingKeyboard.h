@@ -1,21 +1,21 @@
 /*-----------------------------------------*\
-|  RGBController_RedragonK556.h             |
+|  RGBController_WootingKeyboard.h          |
 |                                           |
-|  Generic RGB Interface for Redragon K556  |
-|  Devarajas RGB Keyboard                   |
+|  Generic RGB Interface for Wooting RGB    |
+|  keyboard devices                         |
 |                                           |
-|  Adam Honse (CalcProgrammer1) 3/25/2020   |
+|  Diogo Trindade (diogotr7)    3/4/2021    |
 \*-----------------------------------------*/
 
 #pragma once
 #include "RGBController.h"
-#include "RedragonK556Controller.h"
+#include "WootingKeyboardController.h"
 
-class RGBController_RedragonK556 : public RGBController
+class RGBController_WootingKeyboard : public RGBController
 {
 public:
-    RGBController_RedragonK556(RedragonK556Controller* redragon_ptr);
-    ~RGBController_RedragonK556();
+    RGBController_WootingKeyboard(WootingKeyboardController* wooting_ptr);
+    ~RGBController_WootingKeyboard();
 
     void        SetupZones();
 
@@ -29,5 +29,5 @@ public:
     void        DeviceUpdateMode();
 
 private:
-    RedragonK556Controller*   redragon;
+    WootingKeyboardController*  wooting;
 };

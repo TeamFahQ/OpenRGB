@@ -166,6 +166,9 @@ OpenRGBDevicePage::OpenRGBDevicePage(RGBController *dev, QWidget *parent) :
     | Update mode user interface elements                   |
     \*-----------------------------------------------------*/
     UpdateModeUi();
+    ui->RedSpinBox->setValue(ui->ColorWheelBox->color().red());
+    ui->GreenSpinBox->setValue(ui->ColorWheelBox->color().green());
+    ui->BlueSpinBox->setValue(ui->ColorWheelBox->color().blue());
 }
 
 OpenRGBDevicePage::~OpenRGBDevicePage()
@@ -512,21 +515,26 @@ void Ui::OpenRGBDevicePage::UpdateModeUi()
         if(supports_speed)
         {
             ui->SpeedSlider->blockSignals(true);
+            int  current_speed;
+            InvertedSpeed = device->modes[selected_mode].speed_min > device->modes[selected_mode].speed_max;
 
-            if(device->modes[selected_mode].speed_min > device->modes[selected_mode].speed_max)
+            if(InvertedSpeed)
             {
-                InvertedSpeed = true;
+                /*-----------------------------------------------------*\
+                | If Speed Slider is inverted, invert value             |
+                \*-----------------------------------------------------*/
                 ui->SpeedSlider->setMinimum(device->modes[selected_mode].speed_max);
                 ui->SpeedSlider->setMaximum(device->modes[selected_mode].speed_min);
+                current_speed = device->modes[selected_mode].speed_min - device->modes[selected_mode].speed + device->modes[selected_mode].speed_max;
             }
             else
             {
-                InvertedSpeed = false;
                 ui->SpeedSlider->setMinimum(device->modes[selected_mode].speed_min);
                 ui->SpeedSlider->setMaximum(device->modes[selected_mode].speed_max);
+                current_speed = device->modes[selected_mode].speed;
             }
             
-            ui->SpeedSlider->setValue(device->modes[selected_mode].speed);
+            ui->SpeedSlider->setValue(current_speed);
             ui->SpeedSlider->setEnabled(true);
             ui->SpeedSlider->blockSignals(false);
         }
@@ -729,6 +737,7 @@ void Ui::OpenRGBDevicePage::UpdateModeUi()
 
                 ui->LEDBox->setCurrentIndex(0);
                 on_LEDBox_currentIndexChanged(0);
+                ui->LEDBox->setEnabled(true);
                 ui->LEDBox->blockSignals(false);
                 ui->ApplyColorsButton->setEnabled(true);
                 //ui->AutoFillCheck->setEnabled(true);
@@ -800,14 +809,16 @@ void Ui::OpenRGBDevicePage::UpdateMode()
         \*-----------------------------------------------------*/
         if(ui->SpeedSlider->isEnabled())
         {
-            current_speed = ui->SpeedSlider->value();
-
             /*-----------------------------------------------------*\
             | If Speed Slider is inverted, invert value             |
             \*-----------------------------------------------------*/
             if(InvertedSpeed)
             {
-                current_speed = device->modes[(unsigned int)current_mode].speed_min - current_speed + device->modes[current_mode].speed_max;
+                current_speed = device->modes[(unsigned int)current_mode].speed_min - ui->SpeedSlider->value() + device->modes[current_mode].speed_max;
+            }
+            else
+            {
+                current_speed = ui->SpeedSlider->value();
             }
         }
 

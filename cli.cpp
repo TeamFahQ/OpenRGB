@@ -10,6 +10,7 @@
 #include "i2c_smbus.h"
 #include "NetworkClient.h"
 #include "NetworkServer.h"
+#include "LogManager.h"
 
 /*-------------------------------------------------------------*\
 | Quirk for MSVC; which doesn't support this case-insensitive   |
@@ -53,15 +54,17 @@ struct ServerOptions
 
 struct Options
 {
-    std::vector<DeviceOptions> devices;
+    std::vector<DeviceOptions>  devices;
 
     /*---------------------------------------------------------*\
     | If hasDevice is false, devices above is empty and         |
     | allDeviceOptions shall be applied to all available devices|
+    | except in the case that a profile was loaded.             |
     \*---------------------------------------------------------*/
-    bool hasDevice;
-    DeviceOptions allDeviceOptions;
-    ServerOptions servOpts;
+    bool                        hasDevice;
+    bool                        profile_loaded;
+    DeviceOptions               allDeviceOptions;
+    ServerOptions               servOpts;
 };
 
 
@@ -368,8 +371,8 @@ void OptionHelp()
     help_text += "-s,  --size [0-N]                        Sets the new size of the specified device zone.\n";
     help_text += "                                           Must be specified after specifying a zone.\n";
     help_text += "                                           If the specified size is out of range, or the zone does not offer resizing capability, the size will not be changed\n";
-    help_text += "-v,  --version                           Display version and software build information\n";
-    help_text += "-p,  --profile filename.orp              Load the profile from filename.orp\n";
+    help_text += "-V,  --version                           Display version and software build information\n";
+    help_text += "-p,  --profile filename[.orp]            Load the profile from filename/filename.orp\n";
     help_text += "-sp, --save-profile filename.orp         Save the given settings to profile filename.orp\n";
     help_text += "--i2c-tools                              Shows the I2C/SMBus Tools page in the GUI. Implies --gui, even if not specified.\n";
     help_text += "                                           USE I2C TOOLS AT YOUR OWN RISK! Don't use this option if you don't know what you're doing!\n";
@@ -378,6 +381,10 @@ void OptionHelp()
     help_text += "--config path                            Use a custom path instead of the global configuration directory.\n";
     help_text += "--nodetect                               Do not try to detect hardware at startup.\n";
     help_text += "--noautoconnect                          Do not try to autoconnect to a local server at startup.\n";
+    help_text += "--loglevel [0-6 | error | warning ...]   Set the log level (0: critical to 6: debug).\n";
+    help_text += "--print-source                           Print the source code file and line number for each log entry.\n";
+    help_text += "-v,  --verbose                           Print log messages to stdout.\n";
+    help_text += "-vv, --very-verbose                      Print debug messages and log messages to stdout.\n";
 
     std::cout << help_text << std::endl;
 }
@@ -647,10 +654,12 @@ bool OptionProfile(std::string argument, std::vector<RGBController *> &rgb_contr
             RGBController* device = rgb_controllers[controller_idx];
 
             device->DeviceUpdateMode();
+            LOG_DEBUG("Updating mode for %s to %i", device->name.c_str(), device->active_mode);
 
             if(device->modes[device->active_mode].color_mode == MODE_COLORS_PER_LED)
             {
                 device->DeviceUpdateLEDs();
+                LOG_DEBUG("Mode uses per-LED color, also updating LEDs");
             }
         }
 
@@ -774,7 +783,7 @@ int ProcessOptions(int argc, char *argv[], Options *options, std::vector<RGBCont
         \*---------------------------------------------------------*/
         else if(option == "--profile" || option == "-p")
         {
-            OptionProfile(argument, rgb_controllers);
+            options->profile_loaded = OptionProfile(argument, rgb_controllers);
 
             arg_index++;
         }
@@ -796,13 +805,17 @@ int ProcessOptions(int argc, char *argv[], Options *options, std::vector<RGBCont
         {
             if((option == "--localconfig")
              ||(option == "--nodetect")
+             ||(option == "--noautoconnect")
              ||(option == "--client")
              ||(option == "--server")
              ||(option == "--gui")
              ||(option == "--i2c-tools" || option == "--yolo")
              ||(option == "--startminimized")
+             ||(option == "--print-source")
+             ||(option == "--verbose" || option == "-v")
+             ||(option == "--very-verbose" || option == "-vv")
              ||(option == "--help" || option == "-h")
-             ||(option == "--version" || option == "-v"))
+             ||(option == "--version" || option == "-V"))
             {
                 /*-------------------------------------------------*\
                 | Do nothing, these are pre-detection arguments     |
@@ -810,6 +823,7 @@ int ProcessOptions(int argc, char *argv[], Options *options, std::vector<RGBCont
                 \*-------------------------------------------------*/
             }
             else if((option == "--server-port")
+                  ||(option == "--loglevel")
                   ||(option == "--config"))
             {
                 /*-------------------------------------------------*\
@@ -949,6 +963,8 @@ unsigned int cli_pre_detection(int argc, char *argv[])
         std::string option   = argv[arg_index];
         std::string argument = "";
 
+        LOG_DEBUG("Parsing CLI option: %s", option.c_str());
+
         /*---------------------------------------------------------*\
         | Handle options that take an argument                      |
         \*---------------------------------------------------------*/
@@ -1086,6 +1102,75 @@ unsigned int cli_pre_detection(int argc, char *argv[])
         }
 
         /*---------------------------------------------------------*\
+        | --loglevel                                                |
+        \*---------------------------------------------------------*/
+        else if(option == "--loglevel")
+        {
+            if (argument != "")
+            {
+                try
+                {
+                    int level = std::stoi(argument);
+                    if (level >= 0 && level <= LL_DEBUG)
+                    {
+                        LogManager::get()->setLoglevel(level);
+                    }
+                    else
+                    {
+                        std::cout << "Error: Loglevel out of range: " << level << " (0-6)" << std::endl;
+                        print_help = true;
+                        break;
+                    }
+                }
+                catch(std::invalid_argument& e)
+                {
+                    if(!strcasecmp(argument.c_str(), "critical"))
+                    {
+                        LogManager::get()->setLoglevel(LL_CRITICAL);
+                    }
+                    else if(!strcasecmp(argument.c_str(), "error"))
+                    {
+                        LogManager::get()->setLoglevel(LL_ERROR);
+                    }
+                    else if(!strcasecmp(argument.c_str(), "message"))
+                    {
+                        LogManager::get()->setLoglevel(LL_MESSAGE);
+                    }
+                    else if(!strcasecmp(argument.c_str(), "warning"))
+                    {
+                        LogManager::get()->setLoglevel(LL_WARNING);
+                    }
+                    else if(!strcasecmp(argument.c_str(), "notice"))
+                    {
+                        LogManager::get()->setLoglevel(LL_NOTICE);
+                    }
+                    else if(!strcasecmp(argument.c_str(), "verbose"))
+                    {
+                        LogManager::get()->setLoglevel(LL_VERBOSE);
+                    }
+                    else if(!strcasecmp(argument.c_str(), "debug"))
+                    {
+                        LogManager::get()->setLoglevel(LL_DEBUG);
+                    }
+                    else
+                    {
+                        std::cout << "Error: invalid loglevel" << std::endl;
+                        print_help = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                std::cout << "Error: Missing argument for --loglevel" << std::endl;
+                print_help = true;
+                break;
+            }
+            cfg_args++;
+            arg_index++;
+        }
+
+        /*---------------------------------------------------------*\
         | --gui (no arguments)                                      |
         \*---------------------------------------------------------*/
         else if(option == "--gui")
@@ -1102,7 +1187,7 @@ unsigned int cli_pre_detection(int argc, char *argv[])
         }
 
         /*---------------------------------------------------------*\
-        | --startminimized                                          |
+        | --startminimized (no arguments)                           |
         \*---------------------------------------------------------*/
         else if(option == "--startminimized")
         {
@@ -1119,12 +1204,39 @@ unsigned int cli_pre_detection(int argc, char *argv[])
         }
 
         /*---------------------------------------------------------*\
-        | -v / --version (no arguments)                             |
+        | -V / --version (no arguments)                             |
         \*---------------------------------------------------------*/
-        else if(option == "--version" || option == "-v")
+        else if(option == "--version" || option == "-V")
         {
             OptionVersion();
             exit(0);
+        }
+
+        /*---------------------------------------------------------*\
+        | -v / --verbose (no arguments)                             |
+        \*---------------------------------------------------------*/
+        else if(option == "--verbose" || option == "-v")
+        {
+            LogManager::get()->setVerbosity(LL_VERBOSE);
+            cfg_args++;
+        }
+
+        /*---------------------------------------------------------*\
+        | -vv / --very-verbose (no arguments)                       |
+        \*---------------------------------------------------------*/
+        else if(option == "--very-verbose" || option == "-vv")
+        {
+            LogManager::get()->setVerbosity(LL_DEBUG);
+            cfg_args++;
+        }
+
+        /*---------------------------------------------------------*\
+        | --print-source (no arguments)                             |
+        \*---------------------------------------------------------*/
+        else if(option == "--print-source")
+        {
+            LogManager::get()->setPrintSource(true);
+            cfg_args++;
         }
 
         /*---------------------------------------------------------*\
@@ -1207,7 +1319,7 @@ unsigned int cli_post_detection(int argc, char *argv[])
             ApplyOptions(options.devices[device_idx], rgb_controllers);
         }
     }
-    else
+    else if (!options.profile_loaded)
     {
         for (unsigned int device_idx = 0; device_idx < rgb_controllers.size(); device_idx++)
         {

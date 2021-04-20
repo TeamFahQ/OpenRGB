@@ -14,10 +14,10 @@ using namespace std::chrono_literals;
 
 DasKeyboardController::DasKeyboardController(hid_device *dev_handle, const char *path)
 {
-    dev                     = dev_handle;
-    location                = path;
-    version                 = "";
-    useTraditionalSendData  = false;
+    dev                    = dev_handle;
+    location               = path;
+    version                = "";
+    useTraditionalSendData = false;
 
     SendInitialize();
 }
@@ -34,8 +34,8 @@ std::string DasKeyboardController::GetDeviceLocation()
 
 std::string DasKeyboardController::GetSerialString()
 {
-    wchar_t serial_string[128]  = {};
-    int err                     = hid_get_serial_number_string(dev, serial_string, 128);
+    wchar_t serial_string[128] = {};
+    int     err                = hid_get_serial_number_string(dev, serial_string, 128);
 
     std::string return_string;
     if(!err)
@@ -91,7 +91,7 @@ std::string DasKeyboardController::GetLayoutString()
 void DasKeyboardController::SendColors(unsigned char key_id, unsigned char mode,
                                        unsigned char red, unsigned char green, unsigned char blue)
 {
-    if (key_id < 130)
+    if(key_id < 130)
     {
         unsigned char usb_buf[] = {0xEA,
                                    0x08,
@@ -145,7 +145,7 @@ void DasKeyboardController::SendInitialize()
         /*-----------------------------------------------------*\
         | Get Version String                                    |
         \*-----------------------------------------------------*/
-        cnt_receive = ReceiveData(usb_buf);
+        cnt_receive = ReceiveData(usb_buf, sizeof(usb_buf));
 
         /*-----------------------------------------------------*\
         | check if the faster modern transfer method is working |
@@ -172,14 +172,11 @@ void DasKeyboardController::SendApply()
     unsigned char usb_buf_send[]    = {0xEA, 0x03, 0x78, 0x0a};
     unsigned char usb_buf_receive[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-    do
-    {
-        SendData(usb_buf_send, sizeof(usb_buf_send));
-        ReceiveData(usb_buf_receive);
-    } while(usb_buf_receive[0] == 0);
+    SendData(usb_buf_send, sizeof(usb_buf_send));
+    ReceiveData(usb_buf_receive, sizeof(usb_buf_receive));
 }
 
-void DasKeyboardController::SendData(const unsigned char *data, unsigned int length)
+void DasKeyboardController::SendData(const unsigned char *data, const unsigned int length)
 {
     if(useTraditionalSendData)
     {
@@ -191,37 +188,46 @@ void DasKeyboardController::SendData(const unsigned char *data, unsigned int len
     }
 }
 
-void DasKeyboardController::SendDataModern(const unsigned char *data, unsigned int length)
+void DasKeyboardController::SendDataModern(const unsigned char *data, const unsigned int length)
 {
     /*-----------------------------------------------------*\
     | modern SendData (send whole bytes in one transfer)    |
     \*-----------------------------------------------------*/
     unsigned char usb_buf[65];
 
-    /*-----------------------------------------------------*\
-    | Fill data into send buffer                            |
-    \*-----------------------------------------------------*/
-    unsigned int chk_sum = 0;
-    usb_buf[0] = 1;
-
-    for(unsigned int idx = 0; idx < length; idx++)
+    unsigned int err_cnt = 3;
+    int          res     = -1;
+    while(res == -1)
     {
-        usb_buf[idx + 1] = data[idx];
-        chk_sum ^= data[idx];
+        /*-----------------------------------------------------*\
+        | Fill data into send buffer                            |
+        \*-----------------------------------------------------*/
+        unsigned int chk_sum = 0;
+        usb_buf[0] = 1;
+
+        for(unsigned int idx = 0; idx < length; idx++)
+        {
+            usb_buf[idx + 1] = data[idx];
+            chk_sum ^= data[idx];
+        }
+        usb_buf[length + 1] = chk_sum;
+
+        res = hid_send_feature_report(dev, usb_buf, length + 2);
+        if(res == -1)
+        {
+            if(!err_cnt--)
+            {
+                return;
+            }
+        }
+        /*-----------------------------------------------------*\
+        | Hack to work around a firmware bug in v21.27.0        |
+        \*-----------------------------------------------------*/
+        std::this_thread::sleep_for(0.3ms);
     }
-
-    usb_buf[++length] = chk_sum;
-    length++;
-
-    hid_send_feature_report(dev, usb_buf, length);
-
-    /*-----------------------------------------------------*\
-    | Hack to work around a firmware bug in v21.27.0        |
-    \*-----------------------------------------------------*/
-    std::this_thread::sleep_for(0.3ms);
 }
 
-void DasKeyboardController::SendDataTraditional(const unsigned char *data, unsigned int length)
+void DasKeyboardController::SendDataTraditional(const unsigned char *data, const unsigned int length)
 {
     /*-----------------------------------------------------*\
     | traditional SendData (split into chunks of 8 byte)    |
@@ -231,28 +237,39 @@ void DasKeyboardController::SendDataTraditional(const unsigned char *data, unsig
     /*-----------------------------------------------------*\
     | Fill data into send buffer                            |
     \*-----------------------------------------------------*/
+    unsigned int err_cnt = 3;
     unsigned int chk_sum = 0;
     usb_buf[8] = 0;
 
     for(unsigned int idx = 0; idx < length + 1; idx += 7)
     {
         usb_buf[0] = 1;
-        for (unsigned int fld_idx = 1; fld_idx < 8; fld_idx++)
+        for(unsigned int fld_idx = 1; fld_idx < 8; fld_idx++)
         {
             unsigned int tmp_idx = idx + fld_idx - 1;
-            if (tmp_idx < length)
+            if(tmp_idx < length)
             {
                 usb_buf[fld_idx] = data[tmp_idx];
                 chk_sum ^= data[tmp_idx];
-            } else if (tmp_idx == length)
+            }
+            else if(tmp_idx == length)
             {
                 usb_buf[fld_idx] = chk_sum;
-            } else
+            }
+            else
             {
                 usb_buf[fld_idx] = 0;
             }
         }
-        hid_send_feature_report(dev, usb_buf, 8);
+        int res = hid_send_feature_report(dev, usb_buf, 8);
+        if(res == -1)
+        {
+            idx = 0;
+            if(!err_cnt--)
+            {
+                return;
+            }
+        }
 
         /*-----------------------------------------------------*\
         | Hack to work around a firmware bug in v21.27.0        |
@@ -261,10 +278,10 @@ void DasKeyboardController::SendDataTraditional(const unsigned char *data, unsig
     }
 }
 
-int DasKeyboardController::ReceiveData(unsigned char *data)
+int DasKeyboardController::ReceiveData(unsigned char *data, const unsigned int max_length)
 {
-    int idx = 0;
-    unsigned char usb_buf[9];
+    unsigned char              usb_buf[9];
+    std::vector<unsigned char> receive_buf;
 
     /*-----------------------------------------------------*\
     | Fill data from receive buffer                         |
@@ -276,53 +293,59 @@ int DasKeyboardController::ReceiveData(unsigned char *data)
         memset(usb_buf, 0x00, sizeof(usb_buf));
         usb_buf[0x00] = 0x01;
 
-        hid_get_feature_report(dev, usb_buf, 8);
+        int res = hid_get_feature_report(dev, usb_buf, 8);
+        if(res == -1)
+        {
+            break;
+        }
 
         if(usb_buf[0])
         {
             for(unsigned int ii = 0; ii < 8; ii++)
             {
-                data[idx++] = usb_buf[ii];
+                receive_buf.push_back(usb_buf[ii]);
                 chk_sum ^= usb_buf[ii];
             }
         }
-    } while (usb_buf[0]);
+    } while(usb_buf[0]);
 
     /*-----------------------------------------------------*\
-    | If checksum is not correct, clean up data buffer      |
+    | clean up data buffer                                  |
+    \*-----------------------------------------------------*/
+    for(unsigned int ii = 0; ii < max_length; ii++)
+    {
+        data[ii] = 0;
+    }
+
+    /*-----------------------------------------------------*\
+    | If checksum is not correct, return with empty buffer  |
     \*-----------------------------------------------------*/
     if(chk_sum)
     {
-        for (int ii = 0; ii < idx; ii++)
-        {
-            data[ii] = 0;
-        }
         return -1;
     }
 
-    if(idx)
+    size_t response_size = 0;
+    if(receive_buf.size() > 1)
     {
-        idx = data[1];
+        response_size = receive_buf.at(1);
+        if(response_size + 2 > receive_buf.size())
+        {
+            return -1;
+        }
+        if(response_size > max_length)
+        {
+            response_size = static_cast<int>(max_length);
+        }
 
         /*-----------------------------------------------------*\
         | Remove first two bytes (signature?) and content length|
         \*-----------------------------------------------------*/
-        for(int ii = 0; ii < idx - 1; ii++)
+        for(size_t ii = 0; ii < response_size - 1; ii++)
         {
-            data[ii] = data[ii + 2];
+            data[ii] = receive_buf.at(ii + 2);
         }
-
-        /*-----------------------------------------------------*\
-        | Remove checksum                                       |
-        \*-----------------------------------------------------*/
-        data[idx + 1] = 0;
-
-        /*-----------------------------------------------------*\
-        | Remove duplicate bytes at the end                     |
-        \*-----------------------------------------------------*/
-        data[idx--] = 0;
-        data[idx] = 0;
     }
 
-    return idx;
+    return response_size;
 }

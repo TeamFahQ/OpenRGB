@@ -23,30 +23,35 @@
 #define RAZER_BLACKWIDOW_OVERWATCH_PID                  0x0211
 #define RAZER_BLACKWIDOW_X_CHROMA_PID                   0x0216
 #define RAZER_BLACKWIDOW_X_CHROMA_TE_PID                0x021A
-#define RAZER_BLADE_15_ADV_2020_PID                     0x0253
+#define RAZER_BLADE_2016_PID                            0x020F
+#define RAZER_BLADE_LATE_2016_PID                       0x0224
+#define RAZER_BLADE_2018_ADVANCED_PID                   0x0233
 #define RAZER_BLADE_2018_BASE_PID                       0x023B
 #define RAZER_BLADE_2018_MERCURY_PID                    0x0240
-#define RAZER_BLADE_2018_PID                            0x0233
-#define RAZER_BLADE_2019_ADV_PID                        0x023A
+#define RAZER_BLADE_2019_ADVANCED_PID                   0x023A
 #define RAZER_BLADE_2019_BASE_PID                       0x0246
-#define RAZER_BLADE_EARLY_2020_BASE_PID                 0x0255
-#define RAZER_BLADE_LATE_2016_PID                       0x0224
-#define RAZER_BLADE_MID_2019_MERCURY_PID                0x0245
-#define RAZER_BLADE_PRO_2017_FULLHD_PID                 0x022F
+#define RAZER_BLADE_2019_MERCURY_PID                    0x0245
+#define RAZER_BLADE_2019_STUDIO_PID                     0x024D
+#define RAZER_BLADE_2020_ADVANCED_PID                   0x0253
+#define RAZER_BLADE_2020_BASE_PID                       0x0255
+#define RAZER_BLADE_2021_BASE_PID                       0x026F
+
+#define RAZER_BLADE_PRO_2016_PID                        0x0210
 #define RAZER_BLADE_PRO_2017_PID                        0x0225
+#define RAZER_BLADE_PRO_2017_FULLHD_PID                 0x022F
 #define RAZER_BLADE_PRO_2019_PID                        0x0234
-#define RAZER_BLADE_PRO_LATE_2016_PID                   0x0210
 #define RAZER_BLADE_PRO_LATE_2019_PID                   0x024C
-#define RAZER_BLADE_QHD_PID                             0x020F
-#define RAZER_BLADE_STEALTH_2019_PID                    0x0239
-#define RAZER_BLADE_STEALTH_EARLY_2020_PID              0x0252
+
+#define RAZER_BLADE_STEALTH_2016_PID                    0x0205
 #define RAZER_BLADE_STEALTH_LATE_2016_PID               0x0220
+#define RAZER_BLADE_STEALTH_2017_PID                    0x022D
 #define RAZER_BLADE_STEALTH_LATE_2017_PID               0x0232
+#define RAZER_BLADE_STEALTH_2019_PID                    0x0239
 #define RAZER_BLADE_STEALTH_LATE_2019_PID               0x024A
+#define RAZER_BLADE_STEALTH_2020_PID                    0x0252
 #define RAZER_BLADE_STEALTH_LATE_2020_PID               0x0259
-#define RAZER_BLADE_STEALTH_MID_2017_PID                0x022D
-#define RAZER_BLADE_STEALTH_PID                         0x0205
-#define RAZER_BLADE_STUDIO_EDITION_2019_PID             0x024D
+
+
 #define RAZER_CYNOSA_CHROMA_PID                         0x022A
 #define RAZER_CYNOSA_LITE_PID                           0x023F
 #define RAZER_CYNOSA_V2_PID                             0x025E
@@ -90,18 +95,18 @@
 #define RAZER_DIAMONDBACK_CHROMA_PID                    0x004C
 #define RAZER_IMPERATOR_PID                             0x002F
 #define RAZER_LANCEHEAD_TE_WIRED_PID                    0x0060
-#define RAZER_LANCEHEAD_WIRED_PID                       0x0059
-#define RAZER_LANCEHEAD_WIRELESS_PID                    0x005A
-#define RAZER_LANCEHEAD_WIRELESS_RECEIVER_PID           0x006F
-#define RAZER_LANCEHEAD_WIRELESS_WIRED_PID              0x0070
+#define RAZER_LANCEHEAD_2017_WIRED_PID                  0x0059
+#define RAZER_LANCEHEAD_2017_WIRELESS_PID               0x005A
+#define RAZER_LANCEHEAD_2019_WIRED_PID                  0x0070
+#define RAZER_LANCEHEAD_2019_WIRELESS_PID               0x006F
 #define RAZER_MAMBA_2012_WIRED_PID                      0x0024
 #define RAZER_MAMBA_2012_WIRELESS_PID                   0x0025
+#define RAZER_MAMBA_2015_WIRED_PID                      0x0044
+#define RAZER_MAMBA_2015_WIRELESS_PID                   0x0045
+#define RAZER_MAMBA_2018_WIRED_PID                      0x0073
+#define RAZER_MAMBA_2018_WIRELESS_PID                   0x0072
 #define RAZER_MAMBA_ELITE_PID                           0x006C
-#define RAZER_MAMBA_TE_WIRED_PID                        0x0046
-#define RAZER_MAMBA_WIRED_PID                           0x0044
-#define RAZER_MAMBA_WIRELESS_PID                        0x0045
-#define RAZER_MAMBA_WIRELESS_RECEIVER_PID               0x0072
-#define RAZER_MAMBA_WIRELESS_WIRED_PID                  0x0073
+#define RAZER_MAMBA_TE_PID                              0x0046
 #define RAZER_NAGA_2012_PID                             0x002E
 #define RAZER_NAGA_2014_PID                             0x0040
 #define RAZER_NAGA_CHROMA_PID                           0x0053
@@ -136,10 +141,10 @@
 | Accessory product IDs                                 |
 |   List taken from OpenRazer                           |
 \*-----------------------------------------------------*/
+#define RAZER_BASE_STATION_CHROMA_PID                   0x0F08
 #define RAZER_BASE_STATION_V2_CHROMA_PID                0x0F20
 #define RAZER_CHARGING_PAD_CHROMA_PID                   0x0F26
 #define RAZER_CHROMA_ADDRESSABLE_RGB_CONTROLLER_PID     0x0F1F
-#define RAZER_CHROMA_BASE_PID                           0x0F08
 #define RAZER_CHROMA_HDK_PID                            0x0F09
 #define RAZER_CHROMA_MUG_PID                            0x0F07
 #define RAZER_CHROMA_PC_CASE_LIGHTING_KIT_PID           0x0F0E
@@ -495,9 +500,9 @@ static const razer_key blade_pro_2017_keymap[] =
     {   0,      5,      16,             "Key: Right Fn"                     },
 };
 
-#define BLADE_STEALTH_KEYMAP_SIZE (sizeof(blade_stealth_keymap) / sizeof(blade_stealth_keymap[0]))
+#define BLADE_STEALTH_2016_KEYMAP_SIZE (sizeof(blade_stealth_2016_keymap) / sizeof(blade_stealth_2016_keymap[0]))
 
-static const razer_key blade_stealth_keymap[] =
+static const razer_key blade_stealth_2016_keymap[] =
 {
     /*---------------------------------------------------------------------*\
     |   Zone,   Row,    Column,         Key                                 |
@@ -2090,13 +2095,14 @@ static const razer_device huntsman_te_device =
 \*-------------------------------------------------------------------------*/
 
 /*-------------------------------------------------------------*\
-|  Razer Blade Stealth                                          |
+|  Razer Blade (2016)                                           |
 |                                                               |
+|  Zone "Keyboard"                                              |
 |  Zone "Keyboard"                                              |
 |       Matrix                                                  |
 |       6 Rows, 16 Columns                                      |
 \*-------------------------------------------------------------*/
-static const razer_zone blade_stealth_zone =
+static const razer_zone blade_2016_zone =
 {
     "Keyboard",
     ZONE_TYPE_MATRIX,
@@ -2104,24 +2110,618 @@ static const razer_zone blade_stealth_zone =
     16
 };
 
-static const razer_device blade_stealth_device =
+static const razer_device blade_2016_device =
 {
-    "Razer Blade Stealth",
-    RAZER_BLADE_STEALTH_PID,
+    "Razer Blade (2016)",
+    RAZER_BLADE_2016_PID,
     DEVICE_TYPE_KEYBOARD,
     true,
     6,
     16,
     {
-        &blade_stealth_zone,
+        &blade_2016_zone,
         NULL,
         NULL,
         NULL,
         NULL,
         NULL
     },
-    blade_stealth_keymap,
-    BLADE_STEALTH_KEYMAP_SIZE
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade (Late 2016)                                      |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       6 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_late_2016_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    16
+};
+
+static const razer_device blade_late_2016_device =
+{
+    "Razer Blade (Late 2016)",
+    RAZER_BLADE_LATE_2016_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    16,
+    {
+        &blade_late_2016_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade 15 (2018 Advanced)                               |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       6 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_15_2018_advanced_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    16
+};
+
+static const razer_device blade_15_2018_advanced_device =
+{
+    "Razer Blade 15 (2018 Advanced)",
+    RAZER_BLADE_2018_ADVANCED_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    16,
+    {
+        &blade_15_2018_advanced_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade 15 (2018 Base)                                   |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       6 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_15_2018_base_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    16
+};
+
+static const razer_device blade_15_2018_base_device =
+{
+    "Razer Blade 15 (2018 Base)",
+    RAZER_BLADE_2018_BASE_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    16,
+    {
+        &blade_15_2018_base_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade 15 (2018 Mercury)                                |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       6 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_15_2018_mercury_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    16
+};
+
+static const razer_device blade_15_2018_mercury_device =
+{
+    "Razer Blade 15 (2018 Mercury)",
+    RAZER_BLADE_2018_MERCURY_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    16,
+    {
+        &blade_15_2018_mercury_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade 15 (2019 Advanced)                               |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       6 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_15_2019_advanced_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    16
+};
+
+static const razer_device blade_15_2019_advanced_device =
+{
+    "Razer Blade 15 (2019 Advanced)",
+    RAZER_BLADE_2019_ADVANCED_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    16,
+    {
+        &blade_15_2019_advanced_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade 15 (2019 Base)                                   |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Single                                                  |
+|       1 LED                                                   |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_15_2019_base_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_device blade_15_2019_base_device =
+{
+    "Razer Blade 15 (2019 Base)",
+    RAZER_BLADE_2019_BASE_PID,
+    DEVICE_TYPE_KEYBOARD,
+    false,
+    1,
+    1,
+    {
+        &blade_15_2019_base_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade 15 (2019 Mercury)                                |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       6 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_15_2019_mercury_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    16
+};
+
+static const razer_device blade_15_2019_mercury_device =
+{
+    "Razer Blade 15 (2019 Mercury)",
+    RAZER_BLADE_2019_MERCURY_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    16,
+    {
+        &blade_15_2019_mercury_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade 15 (2019 Studio)                                 |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       6 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_15_2019_studio_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    16
+};
+
+static const razer_device blade_15_2019_studio_device =
+{
+    "Razer Blade 15 (2019 Studio)",
+    RAZER_BLADE_2019_STUDIO_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    16,
+    {
+        &blade_15_2019_studio_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade 15 (2020 Advanced)                               |
+|                                                               |
+|   Zone "Keyboard"                                             |
+|       Matrix                                                  |
+|       6 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_15_2020_advanced_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    16
+};
+
+static const razer_device blade_15_2020_advanced_device =
+{
+    "Razer Blade 15 (2020 Advanced)",
+    RAZER_BLADE_2020_ADVANCED_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    16,
+    {
+        &blade_15_2020_advanced_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade 15 (2020 Base)                                   |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Linear                                                  |
+|       1 Row, 16 Columns                                       |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_15_2020_base_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_LINEAR,
+    1,
+    16
+};
+
+static const razer_device blade_15_2020_base_device =
+{
+    "Razer Blade 15 (2020 Base)",
+    RAZER_BLADE_2020_BASE_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    1,
+    16,
+    {
+        &blade_15_2020_base_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade 15 (2021 Base)                                   |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Linear                                                  |
+|       1 Row, 16 Columns                                       |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_15_2021_base_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_LINEAR,
+    1,
+    16
+};
+
+static const razer_device blade_15_2021_base_device =
+{
+    "Razer Blade 15 (2021 Base)",
+    RAZER_BLADE_2021_BASE_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    1,
+    16,
+    {
+        &blade_15_2021_base_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade Pro (2016)                                       |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       6 Rows, 25 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_pro_2016_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    25
+};
+
+static const razer_device blade_pro_2016_device =
+{
+    "Razer Blade Pro (2016)",
+    RAZER_BLADE_PRO_2016_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    25,
+    {
+        &blade_pro_2016_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade Pro (2017)                                       |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       6 Rows, 25 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_pro_2017_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    25
+};
+
+static const razer_device blade_pro_2017_device =
+{
+    "Razer Blade Pro (2017)",
+    RAZER_BLADE_PRO_2017_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    25,
+    {
+        &blade_pro_2017_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    blade_pro_2017_keymap,
+    BLADE_PRO_2017_KEYMAP_SIZE
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade Pro (2017 FullHD)                                |
+|                                                               |
+|   Zone "Keyboard"                                             |
+|       Matrix                                                  |
+|       6 Rows, 25 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_pro_2017_fullhd_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    25
+};
+
+static const razer_device blade_pro_2017_fullhd_device =
+{
+    "Razer Blade Pro (2017 FullHD)",
+    RAZER_BLADE_PRO_2017_FULLHD_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    25,
+    {
+        &blade_pro_2017_fullhd_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade Pro (2019)                                       |
+|   Zone "Keyboard"                                             |
+|       Matrix                                                  |
+|       6 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_pro_2019_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    16
+};
+
+static const razer_device blade_pro_2019_device =
+{
+    "Razer Blade Pro (2019)",
+    RAZER_BLADE_PRO_2019_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    16,
+    {
+        &blade_pro_2019_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade Pro (Late 2019)                                  |
+|                                                               |
+|   Zone "Keyboard"                                             |
+|       Matrix                                                  |
+|       6 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_pro_late_2019_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    16
+};
+
+static const razer_device blade_pro_late_2019_device =
+{
+    "Razer Blade Pro (Late 2019)",
+    RAZER_BLADE_PRO_LATE_2019_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    16,
+    {
+        &blade_pro_late_2019_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blade Stealth (2016)                                   |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       6 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_stealth_2016_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    16
+};
+
+static const razer_device blade_stealth_2016_device =
+{
+    "Razer Blade Stealth (2016)",
+    RAZER_BLADE_STEALTH_2016_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    6,
+    16,
+    {
+        &blade_stealth_2016_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    blade_stealth_2016_keymap,
+    BLADE_STEALTH_2016_KEYMAP_SIZE
 };
 
 /*-------------------------------------------------------------*\
@@ -2160,13 +2760,13 @@ static const razer_device blade_stealth_late_2016_device =
 };
 
 /*-------------------------------------------------------------*\
-|  Razer Blade Stealth (Mid 2017)                               |
+|  Razer Blade Stealth (2017)                                   |
 |                                                               |
 |  Zone "Keyboard"                                              |
 |       Matrix                                                  |
 |       6 Rows, 16 Columns                                      |
 \*-------------------------------------------------------------*/
-static const razer_zone blade_stealth_mid_2017_zone =
+static const razer_zone blade_stealth_2017_zone =
 {
     "Keyboard",
     ZONE_TYPE_MATRIX,
@@ -2174,16 +2774,16 @@ static const razer_zone blade_stealth_mid_2017_zone =
     16
 };
 
-static const razer_device blade_stealth_mid_2017_device =
+static const razer_device blade_stealth_2017_device =
 {
-    "Razer Blade Stealth (Mid 2017)",
-    RAZER_BLADE_STEALTH_MID_2017_PID,
+    "Razer Blade Stealth (2017)",
+    RAZER_BLADE_STEALTH_2017_PID,
     DEVICE_TYPE_KEYBOARD,
     true,
     6,
     16,
     {
-        &blade_stealth_mid_2017_zone,
+        &blade_stealth_2017_zone,
         NULL,
         NULL,
         NULL,
@@ -2298,14 +2898,15 @@ static const razer_device blade_stealth_late_2019_device =
     NULL,
     0
 };
+
 /*-------------------------------------------------------------*\
-|  Razer Blade Stealth (Early 2020) 1532:0252                   |
+|  Razer Blade Stealth (2020)                                   |
 |                                                               |
 |  Zone "Keyboard"                                              |
 |       Single                                                  |
 |       1 LED                                                   |
 \*-------------------------------------------------------------*/
-static const razer_zone blade_stealth_early_2020_zone =
+static const razer_zone blade_stealth_2020_zone =
 {
     "Keyboard",
     ZONE_TYPE_SINGLE,
@@ -2313,16 +2914,16 @@ static const razer_zone blade_stealth_early_2020_zone =
     1
 };
 
-static const razer_device blade_stealth_early_2020_device =
+static const razer_device blade_stealth_2020_device =
 {
-    "Razer Blade Stealth (Early 2020)",
-    RAZER_BLADE_STEALTH_EARLY_2020_PID,
+    "Razer Blade Stealth (2020)",
+    RAZER_BLADE_STEALTH_2020_PID,
     DEVICE_TYPE_KEYBOARD,
     false,
     1,
     1,
     {
-        &blade_stealth_late_2019_zone,
+        &blade_stealth_2020_zone,
         NULL,
         NULL,
         NULL,
@@ -2334,259 +2935,13 @@ static const razer_device blade_stealth_early_2020_device =
 };
 
 /*-------------------------------------------------------------*\
-|  Razer Blade (Late 2016)                                      |
-|                                                               |
-|  Zone "Keyboard"                                              |
-|       Matrix                                                  |
-|       6 Rows, 16 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_late_2016_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    16
-};
-
-static const razer_device blade_late_2016_device =
-{
-    "Razer Blade (Late 2016)",
-    RAZER_BLADE_LATE_2016_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    16,
-    {
-        &blade_late_2016_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade (QHD)                                            |
-|                                                               |
-|  Zone "Keyboard"                                              |
-|  Zone "Keyboard"                                              |
-|       Matrix                                                  |
-|       6 Rows, 16 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_qhd_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    16
-};
-
-static const razer_device blade_qhd_device =
-{
-    "Razer Blade (QHD)",
-    RAZER_BLADE_QHD_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    16,
-    {
-        &blade_qhd_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade 15 (2018)                                        |
-|                                                               |
-|  Zone "Keyboard"                                              |
-|       Matrix                                                  |
-|       6 Rows, 16 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_15_2018_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    16
-};
-
-static const razer_device blade_15_2018_device =
-{
-    "Razer Blade 15 (2018)",
-    RAZER_BLADE_2018_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    16,
-    {
-        &blade_15_2018_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade 15 (2018) Mercury                                |
-|                                                               |
-|  Zone "Keyboard"                                              |
-|       Matrix                                                  |
-|       6 Rows, 16 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_15_2018_mercury_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    16
-};
-
-static const razer_device blade_15_2018_mercury_device =
-{
-    "Razer Blade 15 (2018) Mercury",
-    RAZER_BLADE_2018_MERCURY_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    16,
-    {
-        &blade_15_2018_mercury_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade 15 (2018) Base Model                             |
-|                                                               |
-|  Zone "Keyboard"                                              |
-|       Matrix                                                  |
-|       6 Rows, 16 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_15_2018_base_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    16
-};
-
-static const razer_device blade_15_2018_base_device =
-{
-    "Razer Blade 15 (2018) Base Model",
-    RAZER_BLADE_2018_BASE_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    16,
-    {
-        &blade_15_2018_base_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade 15 (2019) Advanced                               |
-|                                                               |
-|  Zone "Keyboard"                                              |
-|       Matrix                                                  |
-|       6 Rows, 16 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_15_2019_advanced_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    16
-};
-
-static const razer_device blade_15_2019_advanced_device =
-{
-    "Razer Blade 15 (2019) Advanced",
-    RAZER_BLADE_2019_ADV_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    16,
-    {
-        &blade_15_2019_advanced_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade 15 (Mid 2019) Mercury                            |
-|                                                               |
-|  Zone "Keyboard"                                              |
-|       Matrix                                                  |
-|       6 Rows, 16 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_15_mid_2019_mercury_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    16
-};
-
-static const razer_device blade_15_mid_2019_mercury_device =
-{
-    "Razer Blade 15 (Mid 2019) Mercury White",
-    RAZER_BLADE_MID_2019_MERCURY_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    16,
-    {
-        &blade_15_mid_2019_mercury_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade 15 (Mid 2019) Base Model                         |
+|  Razer Blade Stealth (Late 2020)                              |
 |                                                               |
 |  Zone "Keyboard"                                              |
 |       Single                                                  |
 |       1 LED                                                   |
 \*-------------------------------------------------------------*/
-static const razer_zone blade_15_mid_2019_base_zone =
+static const razer_zone blade_stealth_late_2020_zone =
 {
     "Keyboard",
     ZONE_TYPE_SINGLE,
@@ -2594,295 +2949,16 @@ static const razer_zone blade_15_mid_2019_base_zone =
     1
 };
 
-static const razer_device blade_15_mid_2019_base_device =
+static const razer_device blade_stealth_late_2020_device =
 {
-    "Razer Blade 15 (Mid 2019) Base Model",
-    RAZER_BLADE_2019_BASE_PID,
+    "Razer Blade Stealth (Late 2020)",
+    RAZER_BLADE_STEALTH_LATE_2020_PID,
     DEVICE_TYPE_KEYBOARD,
     false,
     1,
     1,
     {
-        &blade_15_mid_2019_base_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade 15 (Early 2020) Base Model 1532:0255             |
-|                                                               |
-|  Zone "Keyboard"                                              |
-|       Linear                                                  |
-|       1 Row, 16 Columns                                       |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_15_early_2020_base_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_LINEAR,
-    1,
-    16
-};
-
-static const razer_device blade_15_early_2020_base_device =
-{
-    "Razer Blade 15 Base (Early 2020)",
-    RAZER_BLADE_EARLY_2020_BASE_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    1,
-    16,
-    {
-        &blade_15_early_2020_base_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade 15 Studio Edition (2019)                         |
-|                                                               |
-|  Zone "Keyboard"                                              |
-|       Matrix                                                  |
-|       6 Rows, 16 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_15_studio_2019_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    16
-};
-
-static const razer_device blade_15_studio_2019_device =
-{
-    "Razer Blade 15 Studio Edition (2019)",
-    RAZER_BLADE_STUDIO_EDITION_2019_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    16,
-    {
-        &blade_15_studio_2019_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade Pro (Late 2016)                                  |
-|                                                               |
-|  Zone "Keyboard"                                              |
-|       Matrix                                                  |
-|       6 Rows, 25 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_pro_late_2016_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    25
-};
-
-static const razer_device blade_pro_late_2016_device =
-{
-    "Razer Blade Pro (Late 2016)",
-    RAZER_BLADE_PRO_LATE_2016_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    25,
-    {
-        &blade_pro_late_2016_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade Pro (2017)                                       |
-|                                                               |
-|  Zone "Keyboard"                                              |
-|       Matrix                                                  |
-|       6 Rows, 25 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_pro_2017_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    25
-};
-
-static const razer_device blade_pro_2017_device =
-{
-    "Razer Blade Pro (2017)",
-    RAZER_BLADE_PRO_2017_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    25,
-    {
-        &blade_pro_2017_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    blade_pro_2017_keymap,
-    BLADE_PRO_2017_KEYMAP_SIZE
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade Pro FullHD (2017)                                |
-|                                                               |
-|   Zone "Keyboard"                                             |
-|       Matrix                                                  |
-|       6 Rows, 25 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_pro_2017_fullhd_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    25
-};
-
-static const razer_device blade_pro_2017_fullhd_device =
-{
-    "Razer Blade Pro FullHD (2017)",
-    RAZER_BLADE_PRO_2017_FULLHD_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    25,
-    {
-        &blade_pro_2017_fullhd_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade Pro 17 (2019)                                    |
-|   Zone "Keyboard"                                             |
-|       Matrix                                                  |
-|       6 Rows, 16 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_pro_17_2019_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    16
-};
-
-static const razer_device blade_pro_17_2019_device =
-{
-    "Razer Blade Pro 17 (2019)",
-    RAZER_BLADE_PRO_2019_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    16,
-    {
-        &blade_pro_17_2019_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade Pro (Late 2019)                                  |
-|                                                               |
-|   Zone "Keyboard"                                             |
-|       Matrix                                                  |
-|       6 Rows, 16 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_pro_late_2019_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    16
-};
-
-static const razer_device blade_pro_late_2019_device =
-{
-    "Razer Blade Pro (Late 2019)",
-    RAZER_BLADE_PRO_LATE_2019_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    16,
-    {
-        &blade_pro_late_2019_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Blade Advanced (2020) 1532:0253                        |
-|                                                               |
-|   Zone "Keyboard"                                             |
-|       Matrix                                                  |
-|       6 Rows, 16 Columns                                      |
-\*-------------------------------------------------------------*/
-static const razer_zone blade_15_advanced_2020_zone =
-{
-    "Keyboard",
-    ZONE_TYPE_MATRIX,
-    6,
-    16
-};
-
-static const razer_device blade_15_advanced_2020_device =
-{
-    "Razer Blade 15 Advanced (2020)",
-    RAZER_BLADE_15_ADV_2020_PID,
-    DEVICE_TYPE_KEYBOARD,
-    true,
-    6,
-    16,
-    {
-        &blade_15_advanced_2020_zone,
+        &blade_stealth_late_2020_zone,
         NULL,
         NULL,
         NULL,
@@ -3343,6 +3419,290 @@ static const razer_device diamondback_chroma_device =
 };
 
 /*-------------------------------------------------------------*\
+|  Razer Lancehead 2017 (Wired)                                 |
+|                                                               |
+|  Zone "Right"                                                 |
+|       Linear                                                  |
+|       8 LEDs                                                  |
+|                                                               |
+|  Zone "Left"                                                  |
+|       Linear                                                  |
+|       8 LEDs                                                  |
+|                                                               |
+|  Zone "Logo"                                                  |
+|       Single                                                  |
+|       1 LED                                                   |
+|                                                               |
+|  Zone "Scroll Wheel"                                          |
+|       Single                                                  |
+|       1 LED                                                   |
+\*-------------------------------------------------------------*/
+static const razer_zone lancehead_2017_wired_right_zone =
+{
+    "Right LED Strip",
+    ZONE_TYPE_LINEAR,
+    1,
+    8
+};
+
+static const razer_zone lancehead_2017_wired_left_zone =
+{
+    "Left LED Strip",
+    ZONE_TYPE_LINEAR,
+    1,
+    8
+};
+
+static const razer_zone lancehead_2017_wired_logo_zone =
+{
+    "Logo",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_zone lancehead_2017_wired_scroll_wheel_zone =
+{
+    "Scroll Wheel",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_device lancehead_2017_wired_device =
+{
+    "Razer Lancehead 2017 (Wired)",
+    RAZER_LANCEHEAD_2017_WIRED_PID,
+    DEVICE_TYPE_MOUSE,
+    true,
+    1,
+    18,
+    {
+        &lancehead_2017_wired_right_zone,
+        &lancehead_2017_wired_left_zone,
+        &lancehead_2017_wired_logo_zone,
+        &lancehead_2017_wired_scroll_wheel_zone,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Lancehead 2017 (Wireless)                              |
+|                                                               |
+|  Zone "Right"                                                 |
+|       Linear                                                  |
+|       8 LEDs                                                  |
+|                                                               |
+|  Zone "Left"                                                  |
+|       Linear                                                  |
+|       8 LEDs                                                  |
+|                                                               |
+|  Zone "Logo"                                                  |
+|       Single                                                  |
+|       1 LED                                                   |
+|                                                               |
+|  Zone "Scroll Wheel"                                          |
+|       Single                                                  |
+|       1 LED                                                   |
+\*-------------------------------------------------------------*/
+static const razer_zone lancehead_2017_wireless_right_zone =
+{
+    "Right LED Strip",
+    ZONE_TYPE_LINEAR,
+    1,
+    8
+};
+
+static const razer_zone lancehead_2017_wireless_left_zone =
+{
+    "Left LED Strip",
+    ZONE_TYPE_LINEAR,
+    1,
+    8
+};
+
+static const razer_zone lancehead_2017_wireless_logo_zone =
+{
+    "Logo",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_zone lancehead_2017_wireless_scroll_wheel_zone =
+{
+    "Scroll Wheel",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_device lancehead_2017_wireless_device =
+{
+    "Razer Lancehead 2017 (Wireless)",
+    RAZER_LANCEHEAD_2017_WIRELESS_PID,
+    DEVICE_TYPE_MOUSE,
+    true,
+    1,
+    18,
+    {
+        &lancehead_2017_wireless_right_zone,
+        &lancehead_2017_wireless_left_zone,
+        &lancehead_2017_wireless_logo_zone,
+        &lancehead_2017_wireless_scroll_wheel_zone,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Lancehead 2019 (Wired)                                 |
+|                                                               |
+|  Zone "Right"                                                 |
+|       Linear                                                  |
+|       8 LEDs                                                  |
+|                                                               |
+|  Zone "Left"                                                  |
+|       Linear                                                  |
+|       8 LEDs                                                  |
+|                                                               |
+|  Zone "Logo"                                                  |
+|       Single                                                  |
+|       1 LED                                                   |
+|                                                               |
+|  Zone "Scroll Wheel"                                          |
+|       Single                                                  |
+|       1 LED                                                   |
+\*-------------------------------------------------------------*/
+static const razer_zone lancehead_2019_wired_right_zone =
+{
+    "Right LED Strip",
+    ZONE_TYPE_LINEAR,
+    1,
+    8
+};
+
+static const razer_zone lancehead_2019_wired_left_zone =
+{
+    "Left LED Strip",
+    ZONE_TYPE_LINEAR,
+    1,
+    8
+};
+
+static const razer_zone lancehead_2019_wired_logo_zone =
+{
+    "Logo",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_zone lancehead_2019_wired_scroll_wheel_zone =
+{
+    "Scroll Wheel",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_device lancehead_2019_wired_device =
+{
+    "Razer Lancehead 2019 (Wired)",
+    RAZER_LANCEHEAD_2019_WIRED_PID,
+    DEVICE_TYPE_MOUSE,
+    true,
+    1,
+    18,
+    {
+        &lancehead_2019_wired_right_zone,
+        &lancehead_2019_wired_left_zone,
+        &lancehead_2019_wired_logo_zone,
+        &lancehead_2019_wired_scroll_wheel_zone,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Lancehead 2019 (Wireless)                              |
+|                                                               |
+|  Zone "Right"                                                 |
+|       Linear                                                  |
+|       8 LEDs                                                  |
+|                                                               |
+|  Zone "Left"                                                  |
+|       Linear                                                  |
+|       8 LEDs                                                  |
+|                                                               |
+|  Zone "Logo"                                                  |
+|       Single                                                  |
+|       1 LED                                                   |
+|                                                               |
+|  Zone "Scroll Wheel"                                          |
+|       Single                                                  |
+|       1 LED                                                   |
+\*-------------------------------------------------------------*/
+static const razer_zone lancehead_2019_wireless_right_zone =
+{
+    "Right LED Strip",
+    ZONE_TYPE_LINEAR,
+    1,
+    8
+};
+
+static const razer_zone lancehead_2019_wireless_left_zone =
+{
+    "Left LED Strip",
+    ZONE_TYPE_LINEAR,
+    1,
+    8
+};
+
+static const razer_zone lancehead_2019_wireless_logo_zone =
+{
+    "Logo",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_zone lancehead_2019_wireless_scroll_wheel_zone =
+{
+    "Scroll Wheel",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_device lancehead_2019_wireless_device =
+{
+    "Razer Lancehead 2019 (Wireless)",
+    RAZER_LANCEHEAD_2019_WIRELESS_PID,
+    DEVICE_TYPE_MOUSE,
+    true,
+    1,
+    18,
+    {
+        &lancehead_2019_wireless_right_zone,
+        &lancehead_2019_wireless_left_zone,
+        &lancehead_2019_wireless_logo_zone,
+        &lancehead_2019_wireless_scroll_wheel_zone,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
 |  Razer Lancehead Tournament Edition 1532:0060                 |
 |                                                               |
 |  Zone "Right"                                                 |
@@ -3406,148 +3766,6 @@ static const razer_device lancehead_te_device =
         &lancehead_te_left_zone,
         &lancehead_te_logo_zone,
         &lancehead_te_scroll_wheel_zone,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Lancehead V2 (Wired) 1532:0070                         |
-|                                                               |
-|  Zone "Right"                                                 |
-|       Linear                                                  |
-|       8 LEDs                                                  |
-|                                                               |
-|  Zone "Left"                                                  |
-|       Linear                                                  |
-|       8 LEDs                                                  |
-|                                                               |
-|  Zone "Logo"                                                  |
-|       Single                                                  |
-|       1 LED                                                   |
-|                                                               |
-|  Zone "Scroll Wheel"                                          |
-|       Single                                                  |
-|       1 LED                                                   |
-\*-------------------------------------------------------------*/
-static const razer_zone lancehead_v2_wired_right_zone =
-{
-    "Right LED Strip",
-    ZONE_TYPE_LINEAR,
-    1,
-    8
-};
-
-static const razer_zone lancehead_v2_wired_left_zone =
-{
-    "Left LED Strip",
-    ZONE_TYPE_LINEAR,
-    1,
-    8
-};
-
-static const razer_zone lancehead_v2_wired_logo_zone =
-{
-    "Logo",
-    ZONE_TYPE_SINGLE,
-    1,
-    1
-};
-
-static const razer_zone lancehead_v2_wired_scroll_wheel_zone =
-{
-    "Scroll Wheel",
-    ZONE_TYPE_SINGLE,
-    1,
-    1
-};
-
-static const razer_device lancehead_v2_wired_device =
-{
-    "Razer Lancehead Wireless (Wired)",
-    RAZER_LANCEHEAD_WIRELESS_WIRED_PID,
-    DEVICE_TYPE_MOUSE,
-    true,
-    1,
-    18,
-    {
-        &lancehead_v2_wired_right_zone,
-        &lancehead_v2_wired_left_zone,
-        &lancehead_v2_wired_logo_zone,
-        &lancehead_v2_wired_scroll_wheel_zone,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Lancehead V2 (Wireless) 1532:006F                      |
-|                                                               |
-|  Zone "Right"                                                 |
-|       Linear                                                  |
-|       8 LEDs                                                  |
-|                                                               |
-|  Zone "Left"                                                  |
-|       Linear                                                  |
-|       8 LEDs                                                  |
-|                                                               |
-|  Zone "Logo"                                                  |
-|       Single                                                  |
-|       1 LED                                                   |
-|                                                               |
-|  Zone "Scroll Wheel"                                          |
-|       Single                                                  |
-|       1 LED                                                   |
-\*-------------------------------------------------------------*/
-static const razer_zone lancehead_v2_wireless_right_zone =
-{
-    "Right LED Strip",
-    ZONE_TYPE_LINEAR,
-    1,
-    8
-};
-
-static const razer_zone lancehead_v2_wireless_left_zone =
-{
-    "Left LED Strip",
-    ZONE_TYPE_LINEAR,
-    1,
-    8
-};
-
-static const razer_zone lancehead_v2_wireless_logo_zone =
-{
-    "Logo",
-    ZONE_TYPE_SINGLE,
-    1,
-    1
-};
-
-static const razer_zone lancehead_v2_wireless_scroll_wheel_zone =
-{
-    "Scroll Wheel",
-    ZONE_TYPE_SINGLE,
-    1,
-    1
-};
-
-static const razer_device lancehead_v2_wireless_device =
-{
-    "Razer Lancehead Wireless (Receiver)",
-    RAZER_LANCEHEAD_WIRELESS_RECEIVER_PID,
-    DEVICE_TYPE_MOUSE,
-    true,
-    1,
-    18,
-    {
-        &lancehead_v2_wireless_right_zone,
-        &lancehead_v2_wireless_left_zone,
-        &lancehead_v2_wireless_logo_zone,
-        &lancehead_v2_wireless_scroll_wheel_zone,
         NULL,
         NULL
     },
@@ -3626,13 +3844,13 @@ static const razer_device mamba_2012_wireless_device =
 };
 
 /*-------------------------------------------------------------*\
-|  Razer Mamba (Wired)                                          |
+|  Razer Mamba 2015 (Wired)                                     |
 |                                                               |
 |  Zone "Chroma Zone"                                           |
 |       Single                                                  |
 |       15 LEDs                                                 |
 \*-------------------------------------------------------------*/
-static const razer_zone mamba_wired_zone =
+static const razer_zone mamba_2015_wired_zone =
 {
     "Chroma Zone",
     ZONE_TYPE_LINEAR,
@@ -3640,16 +3858,16 @@ static const razer_zone mamba_wired_zone =
     15
 };
 
-static const razer_device mamba_wired_device =
+static const razer_device mamba_2015_wired_device =
 {
-    "Razer Mamba (Wired)",
-    RAZER_MAMBA_WIRED_PID,
+    "Razer Mamba 2015 (Wired)",
+    RAZER_MAMBA_2015_WIRED_PID,
     DEVICE_TYPE_MOUSE,
     false,
     1,
     15,
     {
-        &mamba_wired_zone,
+        &mamba_2015_wired_zone,
         NULL,
         NULL,
         NULL,
@@ -3661,13 +3879,13 @@ static const razer_device mamba_wired_device =
 };
 
 /*-------------------------------------------------------------*\
-|  Razer Mamba (Wireless)                                       |
+|  Razer Mamba 2015 (Wireless)                                  |
 |                                                               |
 |  Zone "Chroma Zone"                                           |
 |       Single                                                  |
 |       15 LED                                                  |
 \*-------------------------------------------------------------*/
-static const razer_zone mamba_wireless_zone =
+static const razer_zone mamba_2015_wireless_zone =
 {
     "Chroma Zone",
     ZONE_TYPE_LINEAR,
@@ -3675,17 +3893,112 @@ static const razer_zone mamba_wireless_zone =
     15
 };
 
-static const razer_device mamba_wireless_device =
+static const razer_device mamba_2015_wireless_device =
 {
     "Razer Mamba (Wireless)",
-    RAZER_MAMBA_WIRELESS_PID,
+    RAZER_MAMBA_2015_WIRELESS_PID,
     DEVICE_TYPE_MOUSE,
     false,
     1,
     15,
     {
-        &mamba_wireless_zone,
+        &mamba_2015_wireless_zone,
         NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Mamba 2018 (Wired)                                     |
+|                                                               |
+|  Zone "Logo"                                                  |
+|       Single                                                  |
+|       1 LED                                                   |
+|                                                               |
+|  Zone "Scroll Wheel"                                          |
+|       Single                                                  |
+|       1 LED                                                   |
+\*-------------------------------------------------------------*/
+static const razer_zone mamba_2018_wired_logo_zone =
+{
+    "Logo Zone",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_zone mamba_2018_wired_scroll_wheel_zone =
+{
+    "Scroll Wheel Zone",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_device mamba_2018_wired_device =
+{
+    "Razer Mamba 2018 (Wired)",
+    RAZER_MAMBA_2018_WIRED_PID,
+    DEVICE_TYPE_MOUSE,
+    true,
+    1,
+    2,
+    {
+        &mamba_2018_wired_scroll_wheel_zone,
+        &mamba_2018_wired_logo_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Mamba Wireless (2018) Wireless 1532:0072               |
+|                                                               |
+|  Zone "Logo"                                                  |
+|       Single                                                  |
+|       1 LED                                                   |
+|                                                               |
+|  Zone "Scroll Wheel"                                          |
+|       Single                                                  |
+|       1 LED                                                   |
+\*-------------------------------------------------------------*/
+
+static const razer_zone mamba_2018_wireless_logo_zone =
+{
+    "Logo Zone",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_zone mamba_2018_wireless_scroll_wheel_zone =
+{
+    "Scroll Wheel Zone",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_device mamba_2018_wireless_device =
+{
+    "Razer Mamba 2018 (Wireless)",
+    RAZER_MAMBA_2018_WIRELESS_PID,
+    DEVICE_TYPE_MOUSE,
+    true,
+    1,
+    2,
+    {
+        &mamba_2018_wireless_scroll_wheel_zone,
+        &mamba_2018_wireless_logo_zone,
         NULL,
         NULL,
         NULL,
@@ -3821,7 +4134,7 @@ static const razer_zone mamba_te_scroll_wheel_zone =
 static const razer_device mamba_te_device =
 {
     "Razer Mamba Tournament Edition",
-    RAZER_MAMBA_TE_WIRED_PID,
+    RAZER_MAMBA_TE_PID,
     DEVICE_TYPE_MOUSE,
     true,
     1,
@@ -3831,101 +4144,6 @@ static const razer_device mamba_te_device =
         &mamba_te_right_zone,
         &mamba_te_logo_zone,
         &mamba_te_scroll_wheel_zone,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Mamba Wireless (2018) Wired 1532:0073                  |
-|                                                               |
-|  Zone "Logo"                                                  |
-|       Single                                                  |
-|       1 LED                                                   |
-|                                                               |
-|  Zone "Scroll Wheel"                                          |
-|       Single                                                  |
-|       1 LED                                                   |
-\*-------------------------------------------------------------*/
-static const razer_zone mamba_wireless_2018_wired_logo_zone =
-{
-    "Logo Zone",
-    ZONE_TYPE_SINGLE,
-    1,
-    1
-};
-
-static const razer_zone mamba_wireless_2018_wired_scroll_wheel_zone =
-{
-    "Scroll Wheel Zone",
-    ZONE_TYPE_SINGLE,
-    1,
-    1
-};
-
-static const razer_device mamba_wireless_2018_wired_device =
-{
-    "Razer Mamba Wireless (Wired)",
-    RAZER_MAMBA_WIRELESS_WIRED_PID,
-    DEVICE_TYPE_MOUSE,
-    true,
-    1,
-    2,
-    {
-        &mamba_wireless_2018_wired_scroll_wheel_zone,
-        &mamba_wireless_2018_wired_logo_zone,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    },
-    NULL,
-    0
-};
-
-/*-------------------------------------------------------------*\
-|  Razer Mamba Wireless (2018) Wireless 1532:0072               |
-|                                                               |
-|  Zone "Logo"                                                  |
-|       Single                                                  |
-|       1 LED                                                   |
-|                                                               |
-|  Zone "Scroll Wheel"                                          |
-|       Single                                                  |
-|       1 LED                                                   |
-\*-------------------------------------------------------------*/
-
-static const razer_zone mamba_wireless_2018_wireless_logo_zone =
-{
-    "Logo Zone",
-    ZONE_TYPE_SINGLE,
-    1,
-    1
-};
-
-static const razer_zone mamba_wireless_2018_wireless_scroll_wheel_zone =
-{
-    "Scroll Wheel Zone",
-    ZONE_TYPE_SINGLE,
-    1,
-    1
-};
-
-static const razer_device mamba_wireless_2018_wireless_device =
-{
-    "Razer Mamba Wireless (Receiver)",
-    RAZER_MAMBA_WIRELESS_RECEIVER_PID,
-    DEVICE_TYPE_MOUSE,
-    true,
-    1,
-    2,
-    {
-        &mamba_wireless_2018_wireless_scroll_wheel_zone,
-        &mamba_wireless_2018_wireless_logo_zone,
-        NULL,
-        NULL,
         NULL,
         NULL
     },
@@ -5105,13 +5323,48 @@ static const razer_zone base_station_zone =
 static const razer_device base_station_device =
 {
     "Razer Base Station Chroma",
-    RAZER_CHROMA_BASE_PID,
+    RAZER_BASE_STATION_CHROMA_PID,
     DEVICE_TYPE_HEADSET_STAND,
     true,
     1,
     15,
     {
         &base_station_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Base Station V2 Chroma                                 |
+|                                                               |
+|  Zone "LED Strip"                                             |
+|       Linear                                                  |
+|       8 LEDs                                                  |
+\*-------------------------------------------------------------*/
+static const razer_zone base_station_v2_zone =
+{
+    "LED Strip",
+    ZONE_TYPE_LINEAR,
+    1,
+    8
+};
+
+static const razer_device base_station_v2_device =
+{
+    "Razer Base Station V2 Chroma",
+    RAZER_BASE_STATION_V2_CHROMA_PID,
+    DEVICE_TYPE_HEADSET_STAND,
+    true,
+    1,
+    8,
+    {
+        &base_station_v2_zone,
         NULL,
         NULL,
         NULL,
@@ -5283,29 +5536,32 @@ static const razer_device* device_list[] =
 /*-----------------------------------------------------------------*\
 |  LAPTOPS                                                          |
 \*-----------------------------------------------------------------*/
+    &blade_2016_device,
+    &blade_late_2016_device,
+    &blade_15_2018_advanced_device,
     &blade_15_2018_base_device,
-    &blade_15_2018_device,
     &blade_15_2018_mercury_device,
     &blade_15_2019_advanced_device,
-    &blade_15_advanced_2020_device,
-    &blade_15_early_2020_base_device,
-    &blade_15_mid_2019_base_device,
-    &blade_15_mid_2019_mercury_device,
-    &blade_15_studio_2019_device,
-    &blade_late_2016_device,
-    &blade_pro_17_2019_device,
+    &blade_15_2019_base_device,
+    &blade_15_2019_mercury_device,
+    &blade_15_2019_studio_device,
+    &blade_15_2020_advanced_device,
+    &blade_15_2020_base_device,
+    &blade_15_2021_base_device,
+    &blade_pro_2016_device,
     &blade_pro_2017_device,
     &blade_pro_2017_fullhd_device,
-    &blade_pro_late_2016_device,
+    &blade_pro_2019_device,
     &blade_pro_late_2019_device,
-    &blade_qhd_device,
     &blade_stealth_2019_device,
-    &blade_stealth_device,
-    &blade_stealth_early_2020_device,
+    &blade_stealth_2016_device,
     &blade_stealth_late_2016_device,
+    &blade_stealth_2017_device,
     &blade_stealth_late_2017_device,
+    &blade_stealth_2019_device,
     &blade_stealth_late_2019_device,
-    &blade_stealth_mid_2017_device,
+    &blade_stealth_2020_device,
+    &blade_stealth_late_2020_device,
 /*-----------------------------------------------------------------*\
 |  MICE                                                             |
 \*-----------------------------------------------------------------*/
@@ -5319,17 +5575,19 @@ static const razer_device* device_list[] =
     &deathadder_essential_white_edition_device,
     &deathadder_v2_device,
     &diamondback_chroma_device,
+    &lancehead_2017_wired_device,
+    &lancehead_2017_wireless_device,
+    &lancehead_2019_wired_device,
+    &lancehead_2019_wireless_device,
     &lancehead_te_device,
-    &lancehead_v2_wired_device,
-    &lancehead_v2_wireless_device,
     &mamba_2012_wired_device,
     &mamba_2012_wireless_device,
-    &mamba_wired_device,
-    &mamba_wireless_device,
+    &mamba_2015_wired_device,
+    &mamba_2015_wireless_device,
+    &mamba_2018_wired_device,
+    &mamba_2018_wireless_device,
     &mamba_te_device,
     &mamba_elite_device,
-    &mamba_wireless_2018_wired_device,
-    &mamba_wireless_2018_wireless_device,
     &naga_chroma_device,
     &naga_epic_chroma_device,
     &naga_hex_v2_device,
@@ -5364,6 +5622,7 @@ static const razer_device* device_list[] =
 |  OTHER                                                            |
 \*-----------------------------------------------------------------*/
     &base_station_device,
+    &base_station_v2_device,
     &charging_pad_chroma_device,
     &chromaargb_device,
     &chromahdk_device,

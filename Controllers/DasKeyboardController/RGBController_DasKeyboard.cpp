@@ -193,7 +193,7 @@ RGBController_DasKeyboard::RGBController_DasKeyboard(DasKeyboardController *das_
 {
     das = das_ptr;
 
-    for(unsigned int ii=0; ii < zone_sizes[0]; ii++)
+    for(unsigned int ii = 0; ii < zone_sizes[0]; ii++)
     {
         double_buffer.push_back(-1);
     }
@@ -228,8 +228,6 @@ RGBController_DasKeyboard::RGBController_DasKeyboard(DasKeyboardController *das_
     modes[3].value      = DAS_KEYBOARD_MODE_SPECTRUM_CYCLE;
     modes[3].flags      = MODE_FLAG_HAS_PER_LED_COLOR;
     modes[3].color_mode = MODE_COLORS_PER_LED;
-
-    SetupZones();
 }
 
 RGBController_DasKeyboard::~RGBController_DasKeyboard()
@@ -274,7 +272,7 @@ void RGBController_DasKeyboard::SetupZones()
         {
             new_zone.matrix_map->map = (unsigned int *) &matrix_map_eu;
         }
-        
+
         zones.push_back(new_zone);
 
         total_led_count += zone_sizes[zone_idx];
@@ -283,7 +281,7 @@ void RGBController_DasKeyboard::SetupZones()
     for(unsigned int led_idx = 0; led_idx < total_led_count; led_idx++)
     {
         led new_led;
-        new_led.name                = led_names[led_idx];
+        new_led.name = led_names[led_idx];
         leds.push_back(new_led);
     }
 

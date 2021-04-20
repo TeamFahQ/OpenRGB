@@ -37,7 +37,8 @@ static const gpu_pci_device device_list[] =
     { NVIDIA_VEN,   NVIDIA_RTX2060S_DEV,        GIGABYTE_SUB_VEN,   GIGABYTE_RTX2060S_GAMING_SUB_DEV,               0x47,   "Gigabyte RTX2060 SUPER Gaming"                 },
     { NVIDIA_VEN,   NVIDIA_RTX2070_DEV,         GIGABYTE_SUB_VEN,   GIGABYTE_RTX2070_GAMING_OC_SUB_DEV,             0x47,   "Gigabyte RTX2070 Gaming OC 8G"                 },
     { NVIDIA_VEN,   NVIDIA_RTX2070_DEV,         GIGABYTE_SUB_VEN,   GIGABYTE_RTX2070_WINDFORCE_SUB_DEV,             0x47,   "Gigabyte RTX2070 Windforce 8G"                 },
-    { NVIDIA_VEN,   NVIDIA_RTX2070S_DEV,        GIGABYTE_SUB_VEN,   GIGABYTE_RTX2070S_GAMING_OC_SUB_DEV,            0x55,   "Gigabyte RTX2070S Gaming OC"                   },
+    { NVIDIA_VEN,   NVIDIA_RTX2070S_DEV,        GIGABYTE_SUB_VEN,   GIGABYTE_RTX2070S_GAMING_OC_SUB_DEV,            0x47,   "Gigabyte RTX2070S Gaming OC"                   },
+    { NVIDIA_VEN,   NVIDIA_RTX2070S_DEV,        GIGABYTE_SUB_VEN,   GIGABYTE_RTX2070S_GAMING_OC_3X_SUB_DEV,         0x55,   "Gigabyte RTX2070S Gaming OC 3X"                },
     { NVIDIA_VEN,   NVIDIA_RTX2080_DEV,         GIGABYTE_SUB_VEN,   GIGABYTE_RTX2080_GAMING_OC_SUB_DEV,             0x47,   "Gigabyte RTX2080 Gaming OC 8G"                 },
     { NVIDIA_VEN,   NVIDIA_RTX2080_A_DEV,       GIGABYTE_SUB_VEN,   GIGABYTE_RTX2080_A_GAMING_OC_SUB_DEV,           0x47,   "Gigabyte RTX2080 Gaming OC 8G"                 },
     { NVIDIA_VEN,   NVIDIA_RTX3060TI_DEV,       GIGABYTE_SUB_VEN,   GIGABYTE_RTX3060TI_EAGLE_OC_SUB_DEV,            0x63,   "Gigabyte RTX3060 EAGLE OC 8G"                  },
@@ -108,7 +109,7 @@ bool TestForGigabyteRGBFusionGPUController(i2c_smbus_interface* bus, unsigned ch
 *                                                                                          *
 \******************************************************************************************/
 
-void DetectGigabyteRGBFusionGPUControllers(std::vector<i2c_smbus_interface*>& busses, std::vector<RGBController*>& rgb_controllers)
+void DetectGigabyteRGBFusionGPUControllers(std::vector<i2c_smbus_interface*>& busses)
 {
     RGBFusionGPUController* new_rgb_fusion;
     RGBController_RGBFusionGPU* new_controller;
@@ -128,7 +129,7 @@ void DetectGigabyteRGBFusionGPUControllers(std::vector<i2c_smbus_interface*>& bu
                     new_rgb_fusion = new RGBFusionGPUController(busses[bus], device_list[dev_idx].controller_address);
                     new_controller = new RGBController_RGBFusionGPU(new_rgb_fusion);
                     new_controller->name = device_list[dev_idx].name;
-                    rgb_controllers.push_back(new_controller);
+                    ResourceManager::get()->RegisterRGBController(new_controller);
                 }
             }
         }

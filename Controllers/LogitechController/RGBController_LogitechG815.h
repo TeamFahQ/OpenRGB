@@ -1,26 +1,26 @@
 /*-----------------------------------------*\
-|  RGBController_GainwardGPU.h              |
+|  RGBController_LogitechG815.h             |
 |                                           |
-|  Driver for Gainward RGB on GPUs          |
+|  Generic RGB Interface for Logitech G815  |
+|  RGB Mechanical Gaming Keyboard           |
 |                                           |
-|  TheRogueZeta 11/05/2020                  |
+|  Cheerpipe      3/20/2021                 |
 \*-----------------------------------------*/
 
 #pragma once
-
 #include "RGBController.h"
-#include "GainwardGPUController.h"
+#include "LogitechG815Controller.h"
 
-class RGBController_GainwardGPU : public RGBController
+class RGBController_LogitechG815 : public RGBController
 {
 public:
-    RGBController_GainwardGPU(GainwardGPUController* gainward_gpu_ptr);
-    ~RGBController_GainwardGPU();
+    RGBController_LogitechG815(LogitechG815Controller* logitech_ptr);
+    ~RGBController_LogitechG815();
 
     void        SetupZones();
 
     void        ResizeZone(int zone, int new_size);
-
+    
     void        DeviceUpdateLEDs();
     void        UpdateZoneLEDs(int zone);
     void        UpdateSingleLED(int led);
@@ -29,7 +29,6 @@ public:
     void        DeviceUpdateMode();
 
 private:
-    GainwardGPUController* gainward_gpu;
-
-    int        GetDeviceMode();
+    LogitechG815Controller* logitech;
+    std::vector<RGBColor>   current_colors;
 };

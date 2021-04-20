@@ -35,11 +35,12 @@ static const gpu_pci_device device_list[] =
     { NVIDIA_VEN,   NVIDIA_GTX1080_DEV,       EVGA_SUB_VEN,   EVGA_GTX1080_FTW_SUB_DEV,               EVGA_RGB_V1,    "EVGA GeForce GTX 1080 FTW"               },
     { NVIDIA_VEN,   NVIDIA_RTX2070_OC_DEV,    EVGA_SUB_VEN,   EVGA_RTX2070_XC_GAMING_SUB_DEV,         EVGA_RGB_V2,    "EVGA GeForce RTX 2070 XC Gaming"         },
     { NVIDIA_VEN,   NVIDIA_RTX2070_OC_DEV,    EVGA_SUB_VEN,   EVGA_RTX2070_XC_OC_SUB_DEV,             EVGA_RGB_V2,    "EVGA GeForce RTX 2070 XC OC"             },
-    { NVIDIA_VEN,   NVIDIA_RTX2070S_DEV,      EVGA_SUB_VEN,   EVGA_RTX2070S_XC_ULTRA_SUB_DEV,         EVGA_RGB_V2,    "EVGA GeForce RTX 2070 SUPER XC ULTRA"    },
-    { NVIDIA_VEN,   NVIDIA_RTX2070S_DEV,      EVGA_SUB_VEN,   EVGA_RTX2070S_XC_ULTRA_PLUS_SUB_DEV,    EVGA_RGB_V2,    "EVGA GeForce RTX 2070 SUPER XC ULTRA+"   },
-    { NVIDIA_VEN,   NVIDIA_RTX2080_A_DEV,     EVGA_SUB_VEN,   EVGA_RTX2080_XC_BLACK_SUB_DEV,          EVGA_RGB_V2,    "EVGA GeForce RTX 2080 XC BLACK"          },
-    { NVIDIA_VEN,   NVIDIA_RTX2080_A_DEV,     EVGA_SUB_VEN,   EVGA_RTX2080_XC_GAMING_SUB_DEV,         EVGA_RGB_V2,    "EVGA GeForce RTX 2080 XC GAMING"         },
-    { NVIDIA_VEN,   NVIDIA_RTX2080TI_DEV,     EVGA_SUB_VEN,   EVGA_RTX2080TI_XC_ULTRA_SUB_DEV,        EVGA_RGB_V2,    "EVGA GeForce RTX 2080Ti XC Ultra"        },
+    { NVIDIA_VEN,   NVIDIA_RTX2070S_DEV,      EVGA_SUB_VEN,   EVGA_RTX2070S_XC_ULTRA_SUB_DEV,         EVGA_RGB_V2,    "EVGA GeForce RTX 2070 SUPER XC Ultra"    },
+    { NVIDIA_VEN,   NVIDIA_RTX2070S_DEV,      EVGA_SUB_VEN,   EVGA_RTX2070S_XC_ULTRA_PLUS_SUB_DEV,    EVGA_RGB_V2,    "EVGA GeForce RTX 2070 SUPER XC Ultra+"   },
+    { NVIDIA_VEN,   NVIDIA_RTX2080_A_DEV,     EVGA_SUB_VEN,   EVGA_RTX2080_XC_BLACK_SUB_DEV,          EVGA_RGB_V2,    "EVGA GeForce RTX 2080 XC Black"          },
+    { NVIDIA_VEN,   NVIDIA_RTX2080_A_DEV,     EVGA_SUB_VEN,   EVGA_RTX2080_XC_GAMING_SUB_DEV,         EVGA_RGB_V2,    "EVGA GeForce RTX 2080 XC Gaming"         },
+    { NVIDIA_VEN,   NVIDIA_RTX2080_A_DEV,     EVGA_SUB_VEN,   EVGA_RTX2080_XC_ULTRA_GAMING_SUB_DEV,   EVGA_RGB_V2,    "EVGA GeForce RTX 2080 XC Ultra Gaming"   },
+    { NVIDIA_VEN,   NVIDIA_RTX2080TI_DEV,     EVGA_SUB_VEN,   EVGA_RTX2080TI_XC_ULTRA_GAMING_SUB_DEV, EVGA_RGB_V2,    "EVGA GeForce RTX 2080Ti XC Ultra"        },
 
 };
 
@@ -54,7 +55,7 @@ static const gpu_pci_device device_list[] =
 *                                                                                          *
 \******************************************************************************************/
 
-void DetectEVGAGPUControllers(std::vector<i2c_smbus_interface*>& busses, std::vector<RGBController*>& rgb_controllers)
+void DetectEVGAGPUControllers(std::vector<i2c_smbus_interface*>& busses)
 {
     for (unsigned int bus = 0; bus < busses.size(); bus++)
     {
@@ -80,7 +81,7 @@ void DetectEVGAGPUControllers(std::vector<i2c_smbus_interface*>& busses, std::ve
                             new_controller          = new EVGAGPUv1Controller(busses[bus], 0x49);
                             new_rgbcontroller       = new RGBController_EVGAGPUv1(new_controller);
                             new_rgbcontroller->name = device_list[dev_idx].name;
-                            rgb_controllers.push_back(new_rgbcontroller);
+                            ResourceManager::get()->RegisterRGBController(new_rgbcontroller);
                         }
                         break;
 
@@ -92,7 +93,7 @@ void DetectEVGAGPUControllers(std::vector<i2c_smbus_interface*>& busses, std::ve
                             new_controller          = new EVGAGPUv2Controller(busses[bus], 0x49);
                             new_rgbcontroller       = new RGBController_EVGAGPUv2(new_controller);
                             new_rgbcontroller->name = device_list[dev_idx].name;
-                            rgb_controllers.push_back(new_rgbcontroller);
+                            ResourceManager::get()->RegisterRGBController(new_rgbcontroller);
                         }
                         break;
                 }
