@@ -62,7 +62,9 @@ enum
     CORSAIR_TYPE_NORMAL             = 0,
     CORSAIR_TYPE_K95_PLAT           = 1,
     CORSAIR_TYPE_K95                = 2,
-    CORSAIR_TYPE_K55                = 3
+    CORSAIR_TYPE_K55                = 3,
+    CORSAIR_TYPE_K70_MK2            = 4,
+    CORSAIR_TYPE_K68                = 5
 };
 
 class CorsairPeripheralController
@@ -97,7 +99,7 @@ private:
     int                     logical_layout;    //Normal, K95 or K95 Platinum
 
     void    LightingControl();
-    void    SetupK95LightingControl();
+    void    SetupK55AndK95LightingControl();
     void    SpecialFunctionControl();
 
     void    ReadFirmwareInfo();

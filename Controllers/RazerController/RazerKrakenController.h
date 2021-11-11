@@ -43,7 +43,7 @@ union razer_kraken_effect_byte
 /*---------------------------------------------------------*\
 | Razer Kraken Report Types (taken from OpenRazer)          |
 \*---------------------------------------------------------*/
-PACK(typedef struct razer_kraken_request_report
+PACK(struct razer_kraken_request_report
 {
     unsigned char report_id;
     unsigned char destination;
@@ -53,7 +53,7 @@ PACK(typedef struct razer_kraken_request_report
     unsigned char arguments[32];
 });
 
-PACK(typedef struct razer_kraken_response_report
+PACK(struct razer_kraken_response_report
 {
     unsigned char report_id;
     unsigned char arguments[36];

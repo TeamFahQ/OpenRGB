@@ -34,7 +34,7 @@ s32 i2c_smbus_linux::i2c_smbus_xfer(u8 addr, char read_write, u8 command, int si
 #include <dirent.h>
 #include <string.h>
 
-void i2c_smbus_linux_detect()
+bool i2c_smbus_linux_detect()
 {
     i2c_smbus_linux *       bus;
     char                    device_string[1024];
@@ -42,11 +42,11 @@ void i2c_smbus_linux_detect()
     char                    driver_path[512];
     struct dirent *         ent;
     int                     test_fd;
+    int                     ret = true;
     char path[1024];
     char buff[100];
     unsigned short pci_device, pci_vendor, pci_subsystem_device, pci_subsystem_vendor;
     unsigned short port_id;
-    bool info;
 
     // Start looking for I2C adapters in /sys/bus/i2c/devices/
     strcpy(driver_path, "/sys/bus/i2c/devices/");
@@ -54,11 +54,17 @@ void i2c_smbus_linux_detect()
 
     if(dir == NULL)
     {
-        return;
+        return(false);
     }
 
     // Loop through all entries in i2c-adapter list
     ent = readdir(dir);
+
+    if(ent == NULL)
+    {
+        return(false);
+    }
+
     while(ent != NULL)
     {
         if(ent->d_type == DT_DIR || ent->d_type == DT_LNK)
@@ -143,7 +149,7 @@ void i2c_smbus_linux_detect()
                     if (test_fd < 0)
                     {
                         ent = readdir(dir);
-                        continue;
+                        ret = false;
                     }
 
                     bus = new i2c_smbus_linux();
@@ -156,11 +162,17 @@ void i2c_smbus_linux_detect()
                     bus->port_id              = port_id;
                     ResourceManager::get()->RegisterI2CBus(bus);
                 }
+                else
+                {
+                    ret = false;
+                }
             }
         }
         ent = readdir(dir);
     }
     closedir(dir);
+
+    return(ret);
 }
 
 REGISTER_I2C_BUS_DETECTOR(i2c_smbus_linux_detect);

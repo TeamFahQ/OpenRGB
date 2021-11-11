@@ -29,7 +29,6 @@ CMR6000Controller::CMR6000Controller(hid_device* dev_handle, char *_path)
     wName  = std::wstring(tmpName);
     serial = std::string(wName.begin(), wName.end());
 
-    GetStatus();        //When setting up device get current status
 }
 
 CMR6000Controller::~CMR6000Controller()
@@ -38,30 +37,6 @@ CMR6000Controller::~CMR6000Controller()
     {
         hid_close(dev);
     }
-}
-
-void CMR6000Controller::GetStatus()
-{
-    unsigned char buffer[CM_6K_PACKET_SIZE]     = { 0x00, 0x52, 0xA0, 0x01, 0x00, 0x00, 0x03 };
-    int buffer_size                             = (sizeof(buffer) / sizeof(buffer[0]));
-
-    // Request mode
-    hid_write(dev, buffer, buffer_size);
-    hid_read(dev, buffer, buffer_size);
-
-    unsigned char cmdbuffer[CM_6K_PACKET_SIZE]  = { 0x00, 0x52, 0x2C, 0x01, 0x00 };
-    int cmdbuffer_size                          = (sizeof(cmdbuffer) / sizeof(cmdbuffer[0]));
-
-    current_mode    = buffer[0x0A];
-    cmdbuffer[0x05] = current_mode;
-    hid_write(dev, cmdbuffer, cmdbuffer_size);
-    hid_read(dev, cmdbuffer, cmdbuffer_size);
-
-    current_speed       = cmdbuffer[0x05];
-    current_brightness  = cmdbuffer[0x09];
-    current_red         = cmdbuffer[0x0A];
-    current_green       = cmdbuffer[0x0B];
-    current_blue        = cmdbuffer[0x0C];
 }
 
 std::string CMR6000Controller::GetDeviceName()
@@ -104,12 +79,17 @@ unsigned char CMR6000Controller::GetLedSpeed()
     return current_speed;
 }
 
+unsigned char CMR6000Controller::GetBrightness()
+{
+    return current_brightness;
+}
+
 bool CMR6000Controller::GetRandomColours()
 {
     return current_random;
 }
 
-void CMR6000Controller::SetMode(unsigned char mode, unsigned char speed, unsigned char red, unsigned char green, unsigned char blue, unsigned char random)
+void CMR6000Controller::SetMode(unsigned char mode, unsigned char speed, unsigned char red, unsigned char green, unsigned char blue, unsigned char random, unsigned char brightness)
 {
     current_mode        = mode;
     current_speed       = speed;
@@ -117,7 +97,7 @@ void CMR6000Controller::SetMode(unsigned char mode, unsigned char speed, unsigne
     current_green       = green;
     current_blue        = blue;
     current_random      = random;
-    current_brightness  = (current_mode == CM_MR6000_MODE_COLOR_CYCLE) ? 0x7F : 0xFF;    //Color_Cycle brightness needs to be clamped to 0x7F to avoid wash out
+    current_brightness  = brightness;
 
     SendUpdate();
 }
@@ -144,7 +124,7 @@ void CMR6000Controller::SendUpdate()
         buffer[0x03] = 0x01;
         buffer[0x04] = 0x00;
         buffer[0x05] = current_mode;
-        buffer[0x06] = (current_mode == CM_MR6000_MODE_STATIC) ? 0xFF: current_speed;
+        buffer[0x06] = (current_mode == CM_MR6000_MODE_DIRECT) ? 0xFF: current_speed;
         buffer[0x07] = (current_mode == CM_MR6000_MODE_BREATHE)? current_random : 0x00; //random (A0)
         buffer[0x08] = (current_mode == CM_MR6000_MODE_BREATHE)? 0x03 : 0xFF;
         //buffer[0x09] = 0xFF;

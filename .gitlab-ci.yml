@@ -16,6 +16,7 @@
   
 stages:
   - build
+  - test
 
 before_script:
  - echo "started by ${GITLAB_USER_NAME}"
@@ -23,21 +24,22 @@ before_script:
 #reusable templates
 .ccache_init: &ccache_init
   before_script:
-    - apt update
-    - apt install -y build-essential qtcreator qt5-default libusb-1.0-0-dev libhidapi-dev pkgconf wget git
+    - export QT_SELECT=qt5
+    - export APPIMAGE_EXTRACT_AND_RUN=1
 
 #-----------------------------------------------------------------------#
 # Linux (AppImage) 32-bit Build Target                                  #
 #-----------------------------------------------------------------------#
-build_linux_32:
+"Linux 32 AppImage":
   <<: *ccache_init
-  image: i386/ubuntu:bionic
+  image: registry.gitlab.com/openrgbdevelopers/openrgb-linux-ci-deb-builder:buster-32
   stage: build
   script:
   - export $(dpkg-architecture)
   - ./scripts/build-appimage.sh
   
   artifacts:
+    name: "${CI_PROJECT_NAME}_Linux_32_${CI_COMMIT_SHORT_SHA}"
     paths:
     - OpenRGB-i386.AppImage
     - 60-openrgb.rules
@@ -47,15 +49,16 @@ build_linux_32:
 #-----------------------------------------------------------------------#
 # Linux (AppImage) 64-bit Build Target                                  #
 #-----------------------------------------------------------------------#
-build_linux_64:
+"Linux 64 AppImage":
   <<: *ccache_init
-  image: ubuntu:bionic
+  image: registry.gitlab.com/openrgbdevelopers/openrgb-linux-ci-deb-builder:buster-64
   stage: build
   script:
   - export $(dpkg-architecture)
   - ./scripts/build-appimage.sh
   
   artifacts:
+    name: "${CI_PROJECT_NAME}_Linux_64_${CI_COMMIT_SHORT_SHA}"
     paths:
     - OpenRGB-x86_64.AppImage
     - 60-openrgb.rules
@@ -65,18 +68,18 @@ build_linux_64:
 #-----------------------------------------------------------------------#
 # Linux (.deb) 32-bit Build Target                                      #
 #-----------------------------------------------------------------------#
-build_linux_deb32:
+"Linux 32 deb":
   <<: *ccache_init
-  image: i386/ubuntu:bionic
+  image: registry.gitlab.com/openrgbdevelopers/openrgb-linux-ci-deb-builder:buster-32
   stage: build
   script:
-  - apt install -y debhelper
   - dpkg-architecture -l
   - dpkg-buildpackage --target-arch i386 -us -B
-  - rm -v ../openrgb-dbgsym*.ddeb
+  - rm -v ../openrgb-dbgsym*.deb
   - mv -v ../openrgb*.deb ./
 
   artifacts:
+    name: "${CI_PROJECT_NAME}_Linux_32_deb_${CI_COMMIT_SHORT_SHA}"
     paths:
     - openrgb*.deb
     exclude:
@@ -86,18 +89,18 @@ build_linux_deb32:
 #-----------------------------------------------------------------------#
 # Linux (.deb) 64-bit Build Target                                      #
 #-----------------------------------------------------------------------#
-build_linux_deb64:
+"Linux 64 deb":
   <<: *ccache_init
-  image: ubuntu:bionic
+  image: registry.gitlab.com/openrgbdevelopers/openrgb-linux-ci-deb-builder:buster-64
   stage: build
   script:
-  - apt install -y debhelper
   - dpkg-architecture -l
   - dpkg-buildpackage -us -B
-  - rm -v ../openrgb-dbgsym*.ddeb
+  - rm -v ../openrgb-dbgsym*.deb
   - mv -v ../openrgb*.deb ./
 
   artifacts:
+    name: "${CI_PROJECT_NAME}_Linux_64_deb_${CI_COMMIT_SHORT_SHA}"
     paths:
     - openrgb*.deb
     exclude:
@@ -105,9 +108,268 @@ build_linux_deb64:
     expire_in: 30 days
 
 #-----------------------------------------------------------------------#
+# Linux (.rpm) 64-bit Build Target                                      #
+#-----------------------------------------------------------------------#
+"Linux 64 rpm":
+  image: fedora:34
+  stage: build
+  script:
+  - dnf install rpmdevtools dnf-plugins-core -y 
+  - rpmdev-setuptree 
+  - ls /root/
+  - cp fedora/OpenRGB.spec /root/rpmbuild/SPECS
+  - cp ../OpenRGB /root/rpmbuild/SOURCES/ -r
+  - cd /root/rpmbuild/SOURCES
+  - tar -cf OpenRGB.tar.gz OpenRGB/
+  - cd ..
+  - dnf builddep SPECS/OpenRGB.spec -y
+  - rpmbuild -ba SPECS/OpenRGB.spec
+  - cd RPMS/x86_64/
+  - mv openrgb*.rpm ${CI_PROJECT_DIR}/
+  - cd ${CI_PROJECT_DIR}
+
+  artifacts:
+    name: "${CI_PROJECT_NAME}_Linux_64_rpm_${CI_COMMIT_SHORT_SHA}"
+    paths:
+    - openrgb*.rpm
+    expire_in: 30 days
+  
+#-----------------------------------------------------------------------#
+# Linux (.deb) Debian Bullseye 32-bit Build Target                      #
+#-----------------------------------------------------------------------#
+"Linux 32 deb Bullseye":
+  <<: *ccache_init
+  image: i386/debian:bullseye
+  stage: build
+  script:
+  - apt update
+  - apt install -y build-essential qtcreator qtbase5-dev libusb-1.0-0-dev libhidapi-dev libmbedtls-dev pkgconf wget git file debhelper
+  - dpkg-architecture -l
+  - dpkg-buildpackage --target-arch i386 -us -B
+  - rm -v ../openrgb-dbgsym*.deb
+  - mv -v ../openrgb*.deb ./
+
+  artifacts:
+    name: "${CI_PROJECT_NAME}_Linux_32_deb_${CI_COMMIT_SHORT_SHA}"
+    paths:
+    - openrgb*.deb
+    exclude:
+    - openrgb-dbgsym*.deb
+    expire_in: 30 days
+
+#-----------------------------------------------------------------------#
+# Linux (.deb) Debian Bullseye 64-bit Build Target                      #
+#-----------------------------------------------------------------------#
+"Linux 64 deb Bullseye":
+  <<: *ccache_init
+  image: debian:bullseye
+  stage: build
+  script:
+  - apt update
+  - apt install -y build-essential qtcreator qtbase5-dev libusb-1.0-0-dev libhidapi-dev libmbedtls-dev pkgconf wget git file debhelper
+  - dpkg-architecture -l
+  - dpkg-buildpackage -us -B
+  - rm -v ../openrgb-dbgsym*.deb
+  - mv -v ../openrgb*.deb ./
+
+  artifacts:
+    name: "${CI_PROJECT_NAME}_Linux_64_deb_${CI_COMMIT_SHORT_SHA}"
+    paths:
+    - openrgb*.deb
+    exclude:
+    - openrgb-dbgsym*.deb
+    expire_in: 30 days
+
+#-----------------------------------------------------------------------#
+# Debian 32 Buster test                                                 #
+#-----------------------------------------------------------------------#
+"Debian 32 Buster":
+  image: i386/debian:buster
+  stage: test
+  script:
+  - apt update
+  - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*i386.deb
+  - openrgb --version
+  - openrgb -l
+  - apt remove -y openrgb
+  dependencies:
+  - "Linux 32 deb"
+  needs:
+  - "Linux 32 deb"
+
+#-----------------------------------------------------------------------#
+# Debian 32 Bullseye test                                               #
+#-----------------------------------------------------------------------#
+"Debian 32 Bullseye":
+  image: i386/debian:bullseye
+  stage: test
+  script:
+  - apt update
+  - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*i386.deb
+  - openrgb --version
+  - openrgb -l
+  - apt remove -y openrgb
+  dependencies:
+  - "Linux 32 deb"
+  needs:
+  - "Linux 32 deb"
+
+# #-----------------------------------------------------------------------#
+# # Ubuntu 32 18.04LTS test                                               #
+# #-----------------------------------------------------------------------#
+# "Ubuntu 32 18.04LTS":
+#   image: i386/ubuntu:bionic
+#   stage: test
+#   script:
+#   - apt update
+#   - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*i386.deb
+#   - openrgb --version
+#   - openrgb -l
+#   - apt remove -y openrgb
+#   dependencies:
+#   - "Linux 32 deb"
+#   needs:
+#   - "Linux 32 deb"
+
+# #-----------------------------------------------------------------------#
+# # Mint 32 19.3 test                                                     #
+# #-----------------------------------------------------------------------#
+# "Mint 32 20.1":
+#   image: linuxmintd/mint19.3-i386
+#   stage: test
+#   script:
+#   - apt update
+#   - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*i386.deb
+#   - openrgb --version
+#   - openrgb -l
+#   - apt remove -y openrgb
+#   dependencies:
+#   - "Linux 32 deb"
+#   needs:
+#   - "Linux 32 deb"
+
+#-----------------------------------------------------------------------#
+# Debian 64 Buster test                                                 #
+#-----------------------------------------------------------------------#
+"Debian 64 Buster":
+  image: debian:buster
+  stage: test
+  script:
+  - apt update
+  - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
+  - openrgb --version
+  - openrgb -l
+  - apt remove -y openrgb
+  dependencies:
+  - "Linux 64 deb"
+  needs:
+  - "Linux 64 deb"
+
+#-----------------------------------------------------------------------#
+# Debian 64 Bullseye test                                               #
+#-----------------------------------------------------------------------#
+"Debian 64 Bullseye":
+  image: debian:bullseye
+  stage: test
+  script:
+  - apt update
+  - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
+  - openrgb --version
+  - openrgb -l
+  - apt remove -y openrgb
+  dependencies:
+  - "Linux 64 deb"
+  needs:
+  - "Linux 64 deb"
+
+#-----------------------------------------------------------------------#
+# Fedora 64 v34 test                                                    #
+#-----------------------------------------------------------------------#
+"Fedora 64 v34":
+  image: fedora:34
+  stage: test
+  script:
+  - yum -y localinstall ./openrgb*64.rpm
+  - openrgb --version
+  - openrgb -l
+  - yum -y remove openrgb
+  dependencies:
+  - "Linux 64 rpm"
+  needs:
+  - "Linux 64 rpm"
+
+# #-----------------------------------------------------------------------#
+# # Ubuntu 64 18.04LTS test                                               #
+# #-----------------------------------------------------------------------#
+# "Ubuntu 64 18.04LTS":
+#   image: ubuntu:bionic
+#   stage: test
+#   script:
+#   - apt update
+#   - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
+#   - openrgb --version
+#   - openrgb -l
+#   - apt remove -y openrgb
+#   dependencies:
+#   - "Linux 64 deb"
+#   needs:
+#   - "Linux 64 deb"
+
+#-----------------------------------------------------------------------#
+# Ubuntu 64 20.04LTS test                                               #
+#-----------------------------------------------------------------------#
+"Ubuntu 64 20.04LTS":
+  image: ubuntu:focal
+  stage: test
+  script:
+  - apt update
+  - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
+  - openrgb --version
+  - openrgb -l
+  - apt remove -y openrgb
+  dependencies:
+  - "Linux 64 deb"
+  needs:
+  - "Linux 64 deb"
+
+#-----------------------------------------------------------------------#
+# Ubuntu 64 20.10 test                                                  #
+#-----------------------------------------------------------------------#
+"Ubuntu 64 20.10":
+  image: ubuntu:groovy
+  stage: test
+  script:
+  - apt update
+  - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
+  - openrgb --version
+  - openrgb -l
+  - apt remove -y openrgb
+  dependencies:
+  - "Linux 64 deb"
+  needs:
+  - "Linux 64 deb"
+
+#-----------------------------------------------------------------------#
+# Mint 64 20.1 test                                                     #
+#-----------------------------------------------------------------------#
+"Mint 64 20.1":
+  image: linuxmintd/mint20.1-amd64
+  stage: test
+  script:
+  - apt update
+  - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
+  - openrgb --version
+  - openrgb -l
+  - apt remove -y openrgb
+  dependencies:
+  - "Linux 64 deb"
+  needs:
+  - "Linux 64 deb"
+
+#-----------------------------------------------------------------------#
 # Windows (32-bit) Build Target                                         #
 #-----------------------------------------------------------------------#
-build_windows_32:
+"Windows 32":
   extends:
   - .shared_windows_runners
   stage: build
@@ -160,26 +422,23 @@ build_windows_32:
   - ..\_qt\5.15.0\msvc2019\bin\windeployqt --no-angle --no-translations --no-opengl-sw --no-system-d3d-compiler --no-compiler-runtime --no-webkit2 .\release\
   - _fold_final_
   
-  - _fold_start_ 'compressing the release folder so that we can upload it as artifact'
-  - mv release 'OpenRGB Windows 32-bit'
-  - ${datetime} = Get-Date ([datetime]::UtcNow) -Format "yyyy-MM-ddTHH-mm-ss"
-  - ${revision} = ((git rev-parse --short HEAD) | Out-String).Trim()
-  - ${rversion} = (((Get-Content '..\OpenRGB.pro' | Select-String -Pattern "VERSION     =") | Out-String).Trim().Split("="))[1].Trim()
-  - 7z a -mx9 -r -y "OpenRGB_${rversion}_32_${revision}_nightly_${datetime}.7z" 'OpenRGB Windows 32-bit'
+  - _fold_start_ 'Moving results for upload'
+  - mv release ../'OpenRGB Windows 32-bit'
   - _fold_final_
 #  cache:
 #    key: same-key
 #    paths:
 #    - C:\vcpkg\installed\
   artifacts:
+    name: "${CI_PROJECT_NAME}_Windows_32_${CI_COMMIT_SHORT_SHA}"
     paths:
-    - _build/*.7z
+    - 'OpenRGB Windows 32-bit'
     expire_in: 30 days
 
 #-----------------------------------------------------------------------#
 # Windows (64-bit) Build Target                                         #
 #-----------------------------------------------------------------------#
-build_windows_64:
+"Windows 64":
   extends:
   - .shared_windows_runners
   stage: build
@@ -232,26 +491,23 @@ build_windows_64:
   - ..\_qt\5.15.0\msvc2019_64\bin\windeployqt --no-angle --no-translations --no-opengl-sw --no-system-d3d-compiler --no-compiler-runtime --no-webkit2 .\release\
   - _fold_final_
   
-  - _fold_start_ 'compressing the release folder so that we can upload it as artifact'
-  - mv release 'OpenRGB Windows 64-bit'
-  - ${datetime} = Get-Date ([datetime]::UtcNow) -Format "yyyy-MM-ddTHH-mm-ss"
-  - ${revision} = ((git rev-parse --short HEAD) | Out-String).Trim()
-  - ${rversion} = (((Get-Content '..\OpenRGB.pro' | Select-String -Pattern "VERSION     =") | Out-String).Trim().Split("="))[1].Trim()
-  - 7z a -mx9 -r -y "OpenRGB_${rversion}_64_${revision}_nightly_${datetime}.7z" 'OpenRGB Windows 64-bit'
+  - _fold_start_ 'Moving results for upload'
+  - mv release ../'OpenRGB Windows 64-bit'
   - _fold_final_
 #  cache:
 #    key: same-key
 #    paths:
 #    - C:\vcpkg\installed\
   artifacts:
+    name: "${CI_PROJECT_NAME}_Windows_64_${CI_COMMIT_SHORT_SHA}"
     paths:
-    - _build/*.7z
+    - 'OpenRGB Windows 64-bit'
     expire_in: 30 days
 
 #-----------------------------------------------------------------------#
 # MacOS Build Target                                                    #
 #-----------------------------------------------------------------------#
-build_macos_arm64:
+"MacOS ARM64":
   tags:
   - macos
   stage: build
@@ -262,6 +518,7 @@ build_macos_arm64:
   - macdeployqt OpenRGB.app -codesign=OpenRGB
 
   artifacts:
+    name: "${CI_PROJECT_NAME}_MacOS_ARM64_${CI_COMMIT_SHORT_SHA}"
     paths:
     - OpenRGB.app
     expire_in: 30 days
@@ -272,7 +529,7 @@ build_macos_arm64:
   - if: '$BUILD_MACOS =~ /.+/'
     when: on_success
 
-build_macos_intel:
+"MacOS Intel":
   tags:
   - macos
   stage: build
@@ -283,6 +540,7 @@ build_macos_intel:
   - arch -x86_64 macdeployqt OpenRGB.app -codesign=OpenRGB
 
   artifacts:
+    name: "${CI_PROJECT_NAME}_MacOS_Intel_${CI_COMMIT_SHORT_SHA}"
     paths:
     - OpenRGB.app
     expire_in: 30 days

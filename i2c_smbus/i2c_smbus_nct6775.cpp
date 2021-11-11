@@ -9,6 +9,7 @@
 #include "i2c_smbus_nct6775.h"
 #include <Windows.h>
 #include "inpout32.h"
+#include "LogManager.h"
 
 using namespace std::chrono_literals;
 
@@ -191,8 +192,14 @@ s32 i2c_smbus_nct6775::i2c_smbus_xfer(u8 addr, char read_write, u8 command, int 
 #include "Detector.h"
 #include "super_io.h"
 
-void i2c_smbus_nct6775_detect()
+bool i2c_smbus_nct6775_detect()
 {
+    if(!IsInpOutDriverOpen())
+    {
+        LOG_INFO("inpout32 is not loaded, nct6775 I2C bus detection aborted");
+        return(false);
+    }
+
     i2c_smbus_interface* bus;
     int sioaddr = 0x2E;
     superio_enter(sioaddr);
@@ -242,6 +249,8 @@ void i2c_smbus_nct6775_detect()
 
         ResourceManager::get()->RegisterI2CBus(bus);
     }
+
+    return(true);
 }
 
 REGISTER_I2C_BUS_DETECTOR(i2c_smbus_nct6775_detect);

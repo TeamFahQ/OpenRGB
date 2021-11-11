@@ -71,7 +71,12 @@ std::string NZXTHue2Controller::GetFirmwareVersion()
 std::string NZXTHue2Controller::GetSerialString()
 {
     wchar_t serial_string[128];
-    hid_get_serial_number_string(dev, serial_string, 128);
+    int ret = hid_get_serial_number_string(dev, serial_string, 128);
+
+    if(ret != 0)
+    {
+        return("");
+    }
 
     std::wstring return_wstring = serial_string;
     std::string return_string(return_wstring.begin(), return_wstring.end());
@@ -169,7 +174,11 @@ void NZXTHue2Controller::UpdateDeviceList()
             case 0x06: //Hue 2 strip (6 LEDs)
                 num_leds_on_channel += 6;
                 break;
-            
+           
+            case 0x09: //Hue 2 Underglow (300mm) (15 LEDs)
+                num_leds_on_channel += 15;
+                break;
+ 
             case 0x0A: //Hue 2 Underglow (200mm) (10 LEDs)
                 num_leds_on_channel += 10;
                 break;

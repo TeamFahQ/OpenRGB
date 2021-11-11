@@ -69,7 +69,7 @@ void RGBController_Network::SetCustomMode()
 
 void RGBController_Network::DeviceUpdateMode()
 {
-    unsigned char * data = GetModeDescription(active_mode);
+    unsigned char * data = GetModeDescription(active_mode, client->GetProtocolVersion());
     unsigned int size;
 
     memcpy(&size, &data[0], sizeof(unsigned int));
@@ -77,4 +77,30 @@ void RGBController_Network::DeviceUpdateMode()
     client->SendRequest_RGBController_UpdateMode(dev_idx, data, size);
 
     delete[] data;
+}
+
+void RGBController_Network::DeviceSaveMode()
+{
+    unsigned char * data = GetModeDescription(active_mode, client->GetProtocolVersion());
+    unsigned int size;
+
+    memcpy(&size, &data[0], sizeof(unsigned int));
+
+    client->SendRequest_RGBController_SaveMode(dev_idx, data, size);
+
+    delete[] data;
+}
+
+/*-----------------------------------------------------*\
+| This function overrides RGBController::UpdateLEDs()!  |
+| Normally, UpdateLEDs() sets a flag for the updater    |
+| thread to update the device asynchronously, which     |
+| prevents delays updating local devices.  This causes  |
+| instability and flickering with network devices though|
+| so for the network implementation, process all updates|
+| synchronously.                                        |
+\*-----------------------------------------------------*/
+void RGBController_Network::UpdateLEDs()
+{
+    DeviceUpdateLEDs();
 }

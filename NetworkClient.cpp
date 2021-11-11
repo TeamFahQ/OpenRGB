@@ -45,6 +45,12 @@ NetworkClient::~NetworkClient()
     StopClient();
 }
 
+void NetworkClient::ClearCallbacks()
+{
+    ClientInfoChangeCallbacks.clear();
+    ClientInfoChangeCallbackArgs.clear();
+}
+
 void NetworkClient::ClientInfoChanged()
 {
     ClientInfoChangeMutex.lock();
@@ -829,6 +835,28 @@ void NetworkClient::SendRequest_RGBController_UpdateMode(unsigned int dev_idx, u
     send(client_sock, (char *)data, size, MSG_NOSIGNAL);
 }
 
+void NetworkClient::SendRequest_RGBController_SaveMode(unsigned int dev_idx, unsigned char * data, unsigned int size)
+{
+    if(change_in_progress)
+    {
+        return;
+    }
+
+    NetPacketHeader request_hdr;
+
+    request_hdr.pkt_magic[0] = 'O';
+    request_hdr.pkt_magic[1] = 'R';
+    request_hdr.pkt_magic[2] = 'G';
+    request_hdr.pkt_magic[3] = 'B';
+
+    request_hdr.pkt_dev_idx  = dev_idx;
+    request_hdr.pkt_id       = NET_PACKET_ID_RGBCONTROLLER_SAVEMODE;
+    request_hdr.pkt_size     = size;
+
+    send(client_sock, (char *)&request_hdr, sizeof(NetPacketHeader), MSG_NOSIGNAL);
+    send(client_sock, (char *)data, size, MSG_NOSIGNAL);
+}
+
 void NetworkClient::SendRequest_LoadProfile(std::string profile_name)
 {
     NetPacketHeader reply_hdr;
@@ -840,7 +868,7 @@ void NetworkClient::SendRequest_LoadProfile(std::string profile_name)
 
     reply_hdr.pkt_dev_idx  = 0;
     reply_hdr.pkt_id       = NET_PACKET_ID_REQUEST_LOAD_PROFILE;
-    reply_hdr.pkt_size     = profile_name.size();
+    reply_hdr.pkt_size     = strlen(profile_name.c_str()) + 1;
 
     send(client_sock, (char *)&reply_hdr, sizeof(NetPacketHeader), MSG_NOSIGNAL);
     send(client_sock, (char *)profile_name.c_str(), reply_hdr.pkt_size, MSG_NOSIGNAL);
@@ -857,7 +885,7 @@ void NetworkClient::SendRequest_SaveProfile(std::string profile_name)
 
     reply_hdr.pkt_dev_idx  = 0;
     reply_hdr.pkt_id       = NET_PACKET_ID_REQUEST_SAVE_PROFILE;
-    reply_hdr.pkt_size     = profile_name.size();
+    reply_hdr.pkt_size     = strlen(profile_name.c_str()) + 1;
 
     send(client_sock, (char *)&reply_hdr, sizeof(NetPacketHeader), MSG_NOSIGNAL);
     send(client_sock, (char *)profile_name.c_str(), reply_hdr.pkt_size, MSG_NOSIGNAL);
@@ -874,7 +902,7 @@ void NetworkClient::SendRequest_DeleteProfile(std::string profile_name)
 
     reply_hdr.pkt_dev_idx  = 0;
     reply_hdr.pkt_id       = NET_PACKET_ID_REQUEST_DELETE_PROFILE;
-    reply_hdr.pkt_size     = profile_name.size();
+    reply_hdr.pkt_size     = strlen(profile_name.c_str()) + 1;
 
     send(client_sock, (char *)&reply_hdr, sizeof(NetPacketHeader), MSG_NOSIGNAL);
     send(client_sock, (char *)profile_name.c_str(), reply_hdr.pkt_size, MSG_NOSIGNAL);
@@ -918,9 +946,7 @@ std::vector<std::string> * NetworkClient::ProcessReply_ProfileList(unsigned int 
             memcpy(&name_len, data, sizeof(unsigned short));
             data_ptr += sizeof(unsigned short);
 
-            char * profile_name = new char[name_len];
-            memcpy(&profile_name, data, name_len);
-
+            std::string profile_name(data, name_len);
             profile_list->push_back(profile_name);
 
             data_ptr += name_len;

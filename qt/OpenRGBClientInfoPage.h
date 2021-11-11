@@ -26,12 +26,10 @@ public slots:
 private slots:
     void on_ClientConnectButton_clicked();
     void onClientDisconnectButton_clicked(QObject * arg);
+    void onClientSaveCheckBox_clicked(QObject * arg);
 
 private:
     Ui::OpenRGBClientInfoPageUi *ui;
-
-signals:
-    void ClientListUpdated();
 };
 
 #endif // OPENRGBCLIENTINFOPAGE_H

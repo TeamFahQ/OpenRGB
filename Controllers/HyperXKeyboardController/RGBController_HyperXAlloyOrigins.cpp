@@ -15,12 +15,12 @@ using namespace std::chrono_literals;
 #define NA  0xFFFFFFFF
 
 static unsigned int matrix_map[6][23] =
-    { {   0,  NA,  11,  17,  22,  27,  NA,  33,  38,  43,  49,  NA,  54,  60,  64,  68,  74,  78,  83,  NA,  NA,  NA,  NA },
-      {   1,   6,  12,  18,  23,  28,  34,  39,  44,  50,  55,  NA,  61,  65,  69,  NA,  75,  79,  84,  87,  92,  96, 101 },
-      {   2,  NA,   7,  13,  19,  24,  NA,  29,  35,  40,  45,  51,  56,  62,  66,  70,  76,  80,  85,  88,  93,  97, 102 },
-      {   3,  NA,   8,  14,  20,  25,  NA,  30,  36,  41,  46,  52,  57,  63,  71,  NA,  NA,  NA,  NA,  89,  94,  98,  NA },
-      {   4,  NA,   9,  15,  21,  26,  NA,  31,  NA,  37,  42,  47,  53,  58,  72,  NA,  NA,  81,  NA,  90,  95,  99, 103 },
-      {   5,  10,  16,  NA,  NA,  NA,  NA,  32,  NA,  NA,  NA,  NA,  48,  59,  67,  73,  77,  82,  86,  91,  NA, 100,  NA } };
+    { {   0,  NA,  12,  18,  23,  28,  NA,  34,  39,  44,  50,  NA,  55,  61,  65,  70,  77,  81,  86,  NA,  NA,  NA,  NA },
+      {   1,   7,  13,  19,  24,  29,  35,  40,  45,  51,  56,  NA,  62,  66,  71,  NA,  78,  82,  87,  90,  95,  99, 104 },
+      {   2,  NA,   8,  14,  20,  25,  NA,  30,  36,  41,  46,  52,  57,  63,  67,  72,  79,  83,  88,  91,  96, 100, 105 },
+      {   3,  NA,   9,  15,  21,  26,  NA,  31,  37,  42,  47,  53,  58,  64,  68,  73,  NA,  NA,  NA,  92,  97, 101,  NA },
+      {   4,  6,   10,  16,  22,  27,  NA,  32,  NA,  38,  43,  48,  54,  59,  74,  NA,  NA,  84,  NA,  93,  98, 102, 106 },
+      {   5,  11,  17,  NA,  NA,  NA,  NA,  33,  NA,  NA,  NA,  NA,  49,  60,  69,  76,  80,  85,  89,  94,  NA, 103,  NA } };
 
 static const char* zone_names[] =
 {
@@ -34,7 +34,7 @@ static zone_type zone_types[] =
 
 static const unsigned int zone_sizes[] =
 {
-    104,
+    107,
 };
 
 static const char *led_names[] =
@@ -45,7 +45,7 @@ static const char *led_names[] =
     "Key: Caps Lock",
     "Key: Left Shift",
     "Key: Left Control",
-    // Skip index 6
+    "Key: \\ (ISO)",
     "Key: 1",
     "Key: Q",
     "Key: A",
@@ -114,8 +114,8 @@ static const char *led_names[] =
     "Key: F11",
     "Key: =",
     "Key: ]",
-    // Skip index 75
-    // Skip index 76
+    "Key: #",
+    "Key: / (ABNT)",
     "Key: Menu",
     "Key: F12",
     "Key: Backspace",
@@ -164,7 +164,7 @@ static const char *led_names[] =
     "Key: Number Pad +",
     // Skip index 123
     // Skip index 124
-    "Key: Number Pad Enter", 
+    "Key: Number Pad Enter",
 };
 
 RGBController_HyperXAlloyOrigins::RGBController_HyperXAlloyOrigins(HyperXAlloyOriginsController* hyperx_ptr)
@@ -299,7 +299,7 @@ void RGBController_HyperXAlloyOrigins::KeepaliveThread()
         {
             if((std::chrono::steady_clock::now() - last_update_time) > std::chrono::milliseconds(50))
             {
-                DeviceUpdateLEDs();
+                UpdateLEDs();
             }
         }
         std::this_thread::sleep_for(10ms);;

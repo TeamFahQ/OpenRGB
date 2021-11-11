@@ -2,16 +2,19 @@
 
 #include <stdarg.h>
 #include <iostream>
+#include <iomanip>
+#include <chrono>
+
 #include "ResourceManager.h"
 
-#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
+#include "filesystem.h"
 
-static const char* log_codes[] = {"CRITICAL", "ERROR", "Message", "Warning", "Notice", "[verbose]", "Debug"};
+const char* LogManager::log_codes[] = {"FATAL:", "ERROR:", "Warning:", "Info:", "Verbose:", "Debug:", "Trace:", "Dialog:"};
 
 LogManager::LogManager()
 {
+    base_clock = std::chrono::steady_clock::now();
+    log_console_enabled = false;
 }
 
 LogManager* LogManager::get()
@@ -29,6 +32,18 @@ LogManager* LogManager::get()
     }
     
     return _instance;
+}
+
+unsigned int LogManager::getLoglevel()
+{
+    if(log_console_enabled)
+    {
+        return(LL_TRACE);
+    }
+    else
+    {
+        return(loglevel);
+    }
 }
 
 void LogManager::configure(json config, const std::string &defaultDir)
@@ -77,13 +92,13 @@ void LogManager::configure(json config, const std::string &defaultDir)
         /*-------------------------------------------------*\
         | If the path is relative, use logs dir             |
         \*-------------------------------------------------*/
-        fs::path p = logname;
+        filesystem::path p = logname;
         if(p.is_relative())
         {
             p = defaultDir + "logs/";
             p.append(logname);
         }
-        fs::create_directories(p.parent_path());
+        filesystem::create_directories(p.parent_path());
 
         /*-------------------------------------------------*\
         | Open the logfile                                  |
@@ -117,6 +132,14 @@ void LogManager::configure(json config, const std::string &defaultDir)
     }
 
     /*-------------------------------------------------*\
+    | Check log console configuration                   |
+    \*-------------------------------------------------*/
+    if(config.contains("log_console"))
+    {
+        log_console_enabled = config["log_console"];
+    }
+
+    /*-------------------------------------------------*\
     | Flush the log                                     |
     \*-------------------------------------------------*/
     _flush();
@@ -131,10 +154,12 @@ void LogManager::_flush()
     {
         for(size_t msg = 0; msg < temp_messages.size(); ++msg)
         {
-            if(temp_messages[msg]->level <= loglevel)
+            if(temp_messages[msg]->level <= loglevel || temp_messages[msg]->level == LL_DIALOG)
             {
                 // Put the timestamp here
-                log_stream << log_codes[temp_messages[msg]->level] << ": ";
+                std::chrono::milliseconds counter = std::chrono::duration_cast<std::chrono::milliseconds>(temp_messages[msg]->counted_second);
+                log_stream << std::left << std::setw(6) << counter.count()  << "|";
+                log_stream << std::left << std::setw(9) << log_codes[temp_messages[msg]->level];
                 log_stream << temp_messages[msg]->buffer;
          
                 if(print_source)
@@ -170,7 +195,7 @@ void LogManager::_append(const char* filename, int line, unsigned int level, con
     | If a critical message occurs, enable source       |
     | printing and set loglevel and verbosity to highest|
     \*-------------------------------------------------*/
-    if(level == LL_CRITICAL)
+    if(level == LL_FATAL)
     {
         print_source = true;
         loglevel = LL_DEBUG;
@@ -188,22 +213,36 @@ void LogManager::_append(const char* filename, int line, unsigned int level, con
     va_list va2;
     va_copy(va2, va);
     int len = vsnprintf(nullptr, 0, fmt, va);
-    mes->buffer.resize(len + 1);
+    mes->buffer.resize(len);
     vsnprintf(&(mes->buffer[0]), len + 1, fmt, va2);
+    va_end(va2);
 
     /*-------------------------------------------------*\
     | Fill in message information                       |
     \*-------------------------------------------------*/
-    mes->level      = level;
-    mes->filename   = filename;
-    mes->line       = line;
+    mes->level          = level;
+    mes->filename       = filename;
+    mes->line           = line;
+    mes->counted_second = std::chrono::steady_clock::now() - base_clock;
+
+    /*-------------------------------------------------*\
+    | If this is a dialog message, call the dialog show |
+    | callback                                          |
+    \*-------------------------------------------------*/
+    if(level == LL_DIALOG)
+    {
+        for(size_t idx = 0; idx < dialog_show_callbacks.size(); idx++)
+        {
+            dialog_show_callbacks[idx](dialog_show_callback_args[idx], mes);
+        }
+    }
 
     /*-------------------------------------------------*\
     | If the message is within the current verbosity,   |
     | print it on the screen                            |
     | TODO: Put the timestamp here                      |
     \*-------------------------------------------------*/
-    if(level <= verbosity)
+    if(level <= verbosity || level == LL_DIALOG)
     {
         std::cout << mes->buffer;
         if(print_source)
@@ -214,26 +253,29 @@ void LogManager::_append(const char* filename, int line, unsigned int level, con
     }
 
     /*-------------------------------------------------*\
-    | If the message level is LL_MESSAGE or lower, add  |
-    | it to the error queue                             |
-    \*-------------------------------------------------*/
-    if(level <= LL_MESSAGE)
-    {
-        for(size_t idx = 0; idx < error_callbacks.size(); ++idx)
-        {
-            error_callbacks[idx].first(error_callbacks[idx].second, mes);
-        }
-    }
-
-    /*-------------------------------------------------*\
     | Add the message to the logfile queue              |
     \*-------------------------------------------------*/
     temp_messages.push_back(mes);
+
+    if(log_console_enabled)
+    {
+        all_messages.push_back(mes);
+    }
 
     /*-------------------------------------------------*\
     | Flush the queues                                  |
     \*-------------------------------------------------*/
     _flush();
+}
+
+std::vector<PLogMessage> LogManager::messages()
+{
+    return all_messages;
+}
+
+void LogManager::clearMessages()
+{
+    all_messages.clear();
 }
 
 void LogManager::append(const char* filename, int line, unsigned int level, const char* fmt, ...)
@@ -253,14 +295,9 @@ void LogManager::setLoglevel(unsigned int level)
     | Check that the new log level is valid, otherwise  |
     | set it within the valid range                     |
     \*-------------------------------------------------*/
-    if(level < LL_CRITICAL)
+    if(level > LL_TRACE)
     {
-        level = LL_CRITICAL;
-    }
-
-    if(level > LL_DEBUG)
-    {
-        level = LL_DEBUG;
+        level = LL_TRACE;
     }
 
     LOG_DEBUG("Loglevel set to %d", level);
@@ -277,14 +314,10 @@ void LogManager::setVerbosity(unsigned int level)
     | Check that the new verbosity is valid, otherwise  |
     | set it within the valid range                     |
     \*-------------------------------------------------*/
-    if(level < LL_CRITICAL)
-    {
-        level = LL_CRITICAL;
-    }
 
-    if(level > LL_DEBUG)
+    if(level > LL_TRACE)
     {
-        level = LL_DEBUG;
+        level = LL_TRACE;
     }
 
     LOG_DEBUG("Verbosity set to %d", level);
@@ -301,22 +334,21 @@ void LogManager::setPrintSource(bool v)
     print_source = v;
 }
 
-void LogManager::registerErrorCallback(LogErrorCallback callback, void* receiver)
+void LogManager::RegisterDialogShowCallback(LogDialogShowCallback callback, void* receiver)
 {
-    std::lock_guard<std::mutex> grd(entry_mutex);
-
-    error_callbacks.push_back(LogErrorBlock(callback, receiver));
+    LOG_DEBUG("dialog show callback registered");
+    dialog_show_callbacks.push_back(callback);
+    dialog_show_callback_args.push_back(receiver);
 }
 
-void LogManager::unregisterErrorCallback(LogErrorCallback callback, void* receiver)
+void LogManager::UnregisterDialogShowCallback(LogDialogShowCallback callback, void* receiver)
 {
-    std::lock_guard<std::mutex> grd(entry_mutex);
-
-    for(size_t idx = 0; idx < error_callbacks.size(); ++idx)
+    for(size_t idx = 0; idx < dialog_show_callbacks.size(); idx++)
     {
-        if(error_callbacks[idx].first == callback && error_callbacks[idx].second == receiver)
+        if(dialog_show_callbacks[idx] == callback && dialog_show_callback_args[idx] == receiver)
         {
-            error_callbacks.erase(error_callbacks.begin() + idx);
+            dialog_show_callbacks.erase(dialog_show_callbacks.begin() + idx);
+            dialog_show_callback_args.erase(dialog_show_callback_args.begin() + idx);
         }
     }
 }

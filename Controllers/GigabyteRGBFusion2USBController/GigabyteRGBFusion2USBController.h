@@ -35,7 +35,7 @@ const uint8_t LED8          = 0x27;
 
 /*-------------------------------------------------------------*\
 | LED "headers" 0x20..0x27, As seen on Gigabyte X570 Elite board|
-| Internal legacy shorthand naming and possibly depracated      |
+| Internal legacy shorthand naming and possibly deprecated      |
 \*-------------------------------------------------------------*/
 const uint8_t HDR_BACK_IO   = LED1;
 const uint8_t HDR_CPU       = LED2;
@@ -175,7 +175,7 @@ union PktEffect
         e.max_brightness    = 100;
         e.min_brightness    = 0;
         e.color0            = 0x00FF2100;   //orange
-        e.period0           = 1200;
+        e.period0           = 0;            //Rising Timer - Needs to be 0 for "Direct"
         e.period1           = 1200;
         e.period2           = 200;
         e.period3           = 200;
@@ -219,7 +219,7 @@ public:
                         int             single_led      = -1
                         );
 
-    void            SetLEDEffect(unsigned int led, int mode, unsigned int speed, bool random, unsigned char red, unsigned char green, unsigned char blue);
+    void            SetLEDEffect(unsigned int led, int mode, unsigned int speed, unsigned char brightness, bool random, unsigned char red, unsigned char green, unsigned char blue);
     void            SetLedCount(unsigned int led, unsigned int count);
     void            SetMode(int mode);
     bool            ApplyEffect();

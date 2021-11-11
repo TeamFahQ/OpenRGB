@@ -4,13 +4,22 @@
 #include "ui_OpenRGBDialog2.h"
 
 #include "OpenRGBClientInfoPage.h"
+#include "OpenRGBPluginsPage/OpenRGBPluginsPage.h"
 #include "OpenRGBSoftwareInfoPage.h"
 #include "OpenRGBSystemInfoPage.h"
 #include "OpenRGBSupportedDevicesPage.h"
+#include "OpenRGBSettingsPage.h"
+#include "OpenRGBE131SettingsPage/OpenRGBE131SettingsPage.h"
+#include "OpenRGBPhilipsHueSettingsPage/OpenRGBPhilipsHueSettingsPage.h"
+#include "OpenRGBPhilipsWizSettingsPage/OpenRGBPhilipsWizSettingsPage.h"
+#include "OpenRGBQMKORGBSettingsPage/OpenRGBQMKORGBSettingsPage.h"
+#include "OpenRGBSerialSettingsPage/OpenRGBSerialSettingsPage.h"
+#include "OpenRGBYeelightSettingsPage/OpenRGBYeelightSettingsPage.h"
 #include "PluginManager.h"
 
 #include <vector>
 #include "i2c_smbus.h"
+#include "LogManager.h"
 #include "RGBController.h"
 #include "ProfileManager.h"
 #include "NetworkClient.h"
@@ -20,6 +29,7 @@
 #include <QTimer>
 #include <QSystemTrayIcon>
 #include <QMenu>
+#include <QSlider>
 
 namespace Ui
 {
@@ -39,26 +49,40 @@ public:
     void AddI2CToolsPage();
     void AddServerTab();
 
+    void AddPlugin(OpenRGBPluginEntry* plugin);
+    void RemovePlugin(OpenRGBPluginEntry* plugin);
+
     void setMode(unsigned char mode_val);
 
     static bool IsDarkTheme();
+    static bool IsMinimizeOnClose();
+
+    void SetDialogMessage(PLogMessage msg);
 
 private:
     /*-------------------------------------*\
     | Page pointers                         |
     \*-------------------------------------*/
     OpenRGBClientInfoPage *ClientInfoPage;
+    OpenRGBPluginsPage *PluginsPage;
     OpenRGBSystemInfoPage *SMBusToolsPage;
     OpenRGBSoftwareInfoPage *SoftInfoPage;
     OpenRGBSupportedDevicesPage *SupportedPage;
+    OpenRGBSettingsPage *SettingsPage;
+    OpenRGBE131SettingsPage *E131SettingsPage;
+    OpenRGBPhilipsHueSettingsPage *PhilipsHueSettingsPage;
+    OpenRGBPhilipsWizSettingsPage *PhilipsWizSettingsPage;
+    OpenRGBQMKORGBSettingsPage *QMKORGBSettingsPage;
+    OpenRGBSerialSettingsPage *SerialSettingsPage;
+    OpenRGBYeelightSettingsPage *YeelightSettingsPage;
 
     bool ShowI2CTools = false;
 
     /*-------------------------------------*\
     | System tray icon and menu             |
     \*-------------------------------------*/
-    bool MinimizeToTray;
     QSystemTrayIcon* trayIcon;
+    QMenu* trayIconMenu;
     QMenu* profileMenu;
 
     /*-------------------------------------*\
@@ -68,7 +92,15 @@ private:
 
     void AddSoftwareInfoPage();
     void AddSupportedDevicesPage();
-    void AddPluginTab(PluginManager* plugin_manager,int plugin_index);
+    void AddSettingsPage();
+    void AddE131SettingsPage();
+    void AddPhilipsHueSettingsPage();
+    void AddPhilipsWizSettingsPage();
+    void AddQMKORGBSettingsPage();
+    void AddSerialSettingsPage();
+    void AddYeelightSettingsPage();
+    void AddPluginsPage();
+    void AddConsolePage();
 
     void ClearDevicesList();
     void UpdateDevicesList();
@@ -79,11 +111,14 @@ private:
     void SaveProfile();
     void SaveProfileAs();
 
+    void TogglePluginsVisibility(int, QTabWidget*);
+
     bool device_view_showing = false;
 
     PluginManager* plugin_manager = nullptr;
-    bool NotFirstRun = false;
-    bool TopBarAlreadyLoaded = false;
+
+    QAction* actionExit;
+    QString dialog_message;
 
 private slots:
     void on_Exit();
@@ -95,12 +130,13 @@ private slots:
     void on_QuickBlue();
     void on_QuickMagenta();
     void on_QuickWhite();
-    void on_ClientListUpdated();
     void onDeviceListUpdated();
     void onDetectionProgressUpdated();
+    void onDetectionEnded();
     void on_SetAllDevices(unsigned char red, unsigned char green, unsigned char blue);
     void on_SaveSizeProfile();
     void on_ShowHide();
+    void onShowDialogMessage();
     void on_ReShow(QSystemTrayIcon::ActivationReason reason);
     void on_ProfileSelected();
     void on_ButtonLoadProfile_clicked();
@@ -110,6 +146,11 @@ private slots:
     void on_ButtonRescan_clicked();
     void on_ActionSaveProfile_triggered();
     void on_ActionSaveProfileAs_triggered();
+    void on_MainTabBar_currentChanged(int);
+    void on_InformationTabBar_currentChanged(int);
+    void on_DevicesTabBar_currentChanged(int);
+    void on_SettingsTabBar_currentChanged(int);
+
 };
 
 #endif // OPENRGBDIALOG2_H

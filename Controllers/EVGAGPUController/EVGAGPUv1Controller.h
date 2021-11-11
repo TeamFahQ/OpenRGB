@@ -14,6 +14,8 @@
 
 typedef unsigned char	evga_dev_id;
 
+#define EVGAGPUV1_CONTROLLER_NAME   "EVGAv1"
+
 enum
 {
     EVGA_GPU_V1_REG_MODE                = 0x0C,
@@ -45,6 +47,7 @@ public:
 
     void            SetColor(unsigned char red, unsigned char green, unsigned char blue);
     void            SetMode(unsigned char mode);
+    void            SaveSettings();
 
 private:
     i2c_smbus_interface*    bus;

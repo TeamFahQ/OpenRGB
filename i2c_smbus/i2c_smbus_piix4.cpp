@@ -11,6 +11,7 @@
 #include "i2c_smbus_piix4.h"
 #include <Windows.h>
 #include "inpout32.h"
+#include "LogManager.h"
 
 //Logic adapted from piix4_transaction() in i2c-piix4.c
 int i2c_smbus_piix4::piix4_transaction()
@@ -180,12 +181,17 @@ s32 i2c_smbus_piix4::i2c_smbus_xfer(u8 addr, char read_write, u8 command, int si
 #include "Detector.h"
 #include "wmi.h"
 
-void i2c_smbus_piix4_detect()
+bool i2c_smbus_piix4_detect()
 {
+    if(!IsInpOutDriverOpen())
+    {
+        LOG_INFO("inpout32 is not loaded, piix4 I2C bus detection aborted");
+        return(false);
+    }
+
     i2c_smbus_interface * bus;
     HRESULT hres;
     Wmi wmi;
-    wmi.init();
 
     // Query WMI for Win32_PnPSignedDriver entries with names matching "SMBUS" or "SM BUS"
     // These devices may be browsed under Device Manager -> System Devices
@@ -194,7 +200,8 @@ void i2c_smbus_piix4_detect()
 
     if (hres)
     {
-        return;
+        LOG_INFO("WMI query failed, piix4 I2C bus detection aborted");
+        return(false);
     }
 
     // For each detected SMBus adapter, try enumerating it as either AMD or Intel
@@ -242,6 +249,8 @@ void i2c_smbus_piix4_detect()
             ResourceManager::get()->RegisterI2CBus(bus);
         }
     }
+
+    return(true);
 }
 
 REGISTER_I2C_BUS_DETECTOR(i2c_smbus_piix4_detect);

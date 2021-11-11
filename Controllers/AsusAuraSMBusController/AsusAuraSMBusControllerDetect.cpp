@@ -1,5 +1,6 @@
 #include "Detector.h"
 #include "AsusAuraSMBusController.h"
+#include "LogManager.h"
 #include "RGBController.h"
 #include "RGBController_AsusAuraSMBus.h"
 #include "i2c_smbus.h"
@@ -7,6 +8,10 @@
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
+#include "dependencies/dmiinfo.h"
+
+#define DETECTOR_NAME   "ASUS Aura SMBus Controller"
+#define VENDOR_NAME     "ASUS"       //This should match the Vendor name from DMI
 
 using namespace std::chrono_literals;
 
@@ -56,6 +61,25 @@ static const unsigned char aura_mobo_addresses[] =
 
 /******************************************************************************************\
 *                                                                                          *
+*   AuraRegisterRead                                                                       *
+*                                                                                          *
+*       A standalone version of the AuraSMBusController::AuraRegisterRead function for     *
+*       access to Aura devices without instancing the AuraSMBusController class or reading *
+*       the config table from the device.                                                  *
+*                                                                                          *
+\******************************************************************************************/
+
+unsigned char AuraRegisterRead(i2c_smbus_interface* bus, aura_dev_id dev, aura_register reg)
+{
+    //Write Aura register
+    bus->i2c_smbus_write_word_data(dev, 0x00, ((reg << 8) & 0xFF00) | ((reg >> 8) & 0x00FF));
+
+    //Read Aura value
+    return(bus->i2c_smbus_read_byte_data(dev, 0x81));
+}
+
+/******************************************************************************************\
+*                                                                                          *
 *   AuraRegisterWrite                                                                      *
 *                                                                                          *
 *       A standalone version of the AuraSMBusController::AuraRegisterWrite function for    *
@@ -87,11 +111,15 @@ bool TestForAsusAuraSMBusController(i2c_smbus_interface* bus, unsigned char addr
 {
     bool pass = false;
 
+    LOG_DEBUG("[Aura SMBus] looking for devices at 0x%02X...", address);
+
     int res = bus->i2c_smbus_write_quick(address, I2C_SMBUS_WRITE);
 
     if (res >= 0)
     {
         pass = true;
+
+        LOG_DEBUG("[Aura SMBus] Detected an I2C device at address %02X, testing register range", address);
 
         for (int i = 0xA0; i < 0xB0; i++)
         {
@@ -99,7 +127,30 @@ bool TestForAsusAuraSMBusController(i2c_smbus_interface* bus, unsigned char addr
 
             if (res != (i - 0xA0))
             {
+                LOG_VERBOSE("[Aura SMBus] Detection failed testing register %02X.  Expected %02X, got %02X.", i, (i - 0xA0), res);
+
                 pass = false;
+            }
+        }
+
+        if(pass)
+        {
+            LOG_DEBUG("[Aura SMBus] Checking for Micron string");
+
+            char buf[16];
+            for(int i = 0; i < 16; i++)
+            {
+                buf[i] = AuraRegisterRead(bus, address, AURA_REG_MICRON_CHECK + i);
+            }
+
+            if(strcmp(buf, "Micron") == 0)
+            {
+                LOG_DEBUG("[Aura SMBus] Device %02X is a Micron device, skipping", address);
+                pass = false;
+            }
+            else
+            {
+                LOG_VERBOSE("[Aura SMBus] Detection successful, address %02X", address);
             }
         }
     }
@@ -122,24 +173,24 @@ bool TestForAsusAuraSMBusController(i2c_smbus_interface* bus, unsigned char addr
 *                                                                                          *
 \******************************************************************************************/
 
-void DetectAsusAuraSMBusControllers(std::vector<i2c_smbus_interface*> &busses)
+void DetectAsusAuraSMBusDRAMControllers(std::vector<i2c_smbus_interface*> &busses)
 {
-    AuraSMBusController* new_aura;
-    RGBController_AuraSMBus* new_controller;
-
     for (unsigned int bus = 0; bus < busses.size(); bus++)
     {
         int address_list_idx = -1;
 
         IF_DRAM_SMBUS(busses[bus]->pci_vendor, busses[bus]->pci_device)
         {
-            // Remap Aura-enabled RAM modules on 0x77
+            LOG_DEBUG("[ASUS Aura SMBus DRAM] Remapping Aura SMBus RAM modules on 0x77");
+
             for (unsigned int slot = 0; slot < 8; slot++)
             {
                 int res = busses[bus]->i2c_smbus_write_quick(0x77, I2C_SMBUS_WRITE);
 
                 if (res < 0)
                 {
+                    LOG_DEBUG("[ASUS Aura SMBus DRAM] No device detected at 0x77, aborting remap");
+
                     break;
                 }
 
@@ -149,6 +200,8 @@ void DetectAsusAuraSMBusControllers(std::vector<i2c_smbus_interface*> &busses)
 
                     if(address_list_idx < AURA_RAM_ADDRESS_COUNT)
                     {
+                        LOG_DEBUG("[ASUS Aura SMBus DRAM] Testing address %02X to see if there is a device there", aura_ram_addresses[address_list_idx]);
+
                         res = busses[bus]->i2c_smbus_write_quick(aura_ram_addresses[address_list_idx], I2C_SMBUS_WRITE);
                     }
                     else
@@ -159,6 +212,8 @@ void DetectAsusAuraSMBusControllers(std::vector<i2c_smbus_interface*> &busses)
 
                 if(address_list_idx < AURA_RAM_ADDRESS_COUNT)
                 {
+                    LOG_DEBUG("[ASUS Aura SMBus DRAM] Remapping slot %d to address %02X", slot, aura_ram_addresses[address_list_idx]);
+
                     AsusAuraRegisterWrite(busses[bus], 0x77, AURA_REG_SLOT_INDEX, slot);
                     AsusAuraRegisterWrite(busses[bus], 0x77, AURA_REG_I2C_ADDRESS, (aura_ram_addresses[address_list_idx] << 1));
                 }
@@ -169,32 +224,48 @@ void DetectAsusAuraSMBusControllers(std::vector<i2c_smbus_interface*> &busses)
             {
                 if (TestForAsusAuraSMBusController(busses[bus], aura_ram_addresses[address_list_idx]))
                 {
-                    new_aura = new AuraSMBusController(busses[bus], aura_ram_addresses[address_list_idx]);
-                    new_controller = new RGBController_AuraSMBus(new_aura);
-                    ResourceManager::get()->RegisterRGBController(new_controller);
-                }
-
-                std::this_thread::sleep_for(1ms);
-            }
-        }
-
-        // Add Aura-enabled motherboard controllers
-        IF_MOBO_SMBUS(busses[bus]->pci_vendor, busses[bus]->pci_device)
-        {
-            for (unsigned int address_list_idx = 0; address_list_idx < AURA_MOBO_ADDRESS_COUNT; address_list_idx++)
-            {
-                if (TestForAsusAuraSMBusController(busses[bus], aura_mobo_addresses[address_list_idx]))
-                {
-                    new_aura = new AuraSMBusController(busses[bus], aura_mobo_addresses[address_list_idx]);
-                    new_controller = new RGBController_AuraSMBus(new_aura);
-                    ResourceManager::get()->RegisterRGBController(new_controller);
+                    AuraSMBusController* controller = new AuraSMBusController(busses[bus], aura_ram_addresses[address_list_idx]);
+                    RGBController_AuraSMBus* rgb_controller = new RGBController_AuraSMBus(controller);
+                    ResourceManager::get()->RegisterRGBController(rgb_controller);
                 }
 
                 std::this_thread::sleep_for(1ms);
             }
         }
     }
+}   /* DetectAuraSMBusDRAMControllers() */
 
-}   /* DetectAuraSMBusControllers() */
+void DetectAsusAuraSMBusMotherboardControllers(std::vector<i2c_smbus_interface*> &busses)
+{
+    for (unsigned int bus = 0; bus < busses.size(); bus++)
+    {
+        // Add Aura-enabled motherboard controllers
+        IF_MOBO_SMBUS(busses[bus]->pci_vendor, busses[bus]->pci_device)
+        {
+            if(busses[bus]->pci_subsystem_vendor == ASUS_SUB_VEN || busses[bus]->pci_subsystem_vendor == 0)
+            {
+                for (unsigned int address_list_idx = 0; address_list_idx < AURA_MOBO_ADDRESS_COUNT; address_list_idx++)
+                {
+                    LOG_DEBUG(SMBUS_CHECK_DEVICE_MESSAGE_EN, DETECTOR_NAME, bus, VENDOR_NAME, aura_mobo_addresses[address_list_idx]);
+                    if (TestForAsusAuraSMBusController(busses[bus], aura_mobo_addresses[address_list_idx]))
+                    {
+                        DMIInfo dmi;
+                        AuraSMBusController* controller = new AuraSMBusController(busses[bus], aura_mobo_addresses[address_list_idx]);
+                        RGBController_AuraSMBus* rgb_controller = new RGBController_AuraSMBus(controller);
+                        rgb_controller->name = "ASUS " + dmi.getMainboard();
+                        ResourceManager::get()->RegisterRGBController(rgb_controller);
+                    }
 
-REGISTER_I2C_DETECTOR("ASUS Aura SMBus", DetectAsusAuraSMBusControllers);
+                    std::this_thread::sleep_for(1ms);
+                }
+            }
+            else
+            {
+                LOG_DEBUG(SMBUS_CHECK_DEVICE_FAILURE_EN, DETECTOR_NAME, bus, VENDOR_NAME);
+            }
+        }
+    }
+}   /* DetectAuraSMBusMotherboardControllers() */
+
+REGISTER_I2C_DETECTOR("ASUS Aura SMBus DRAM", DetectAsusAuraSMBusDRAMControllers);
+REGISTER_I2C_DETECTOR("ASUS Aura SMBus Motherboard", DetectAsusAuraSMBusMotherboardControllers);

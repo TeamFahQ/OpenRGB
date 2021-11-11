@@ -22,6 +22,15 @@ static unsigned int keys[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x
                               116,  117,  120,  121,  122,  123,  124,  126,  127,  128,  129,  132,  133,  134,  135,
                               136,  137,  139,  140,  141, 0x10, 114};
 
+static unsigned int keys_k70_mk2[] =   {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0C, 0x0D, 0x0E, 0x0F, 0x11, 0x12,
+                                        0x14, 0x15, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x24, 0x25, 0x26,
+                                        0x27, 0x28, 0x2A, 0x2B, 0x2C, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
+                                        0x3C, 0x3D, 0x3E, 0x3F, 0x40, 0x42, 0x43, 0x44, 0x45, 0x48, 73,   74,   75,   76,   78,
+                                        79,   80,   81,   84,   85,   86,   87,   88,   89,   90,   91,   92,   93,   96,   97,
+                                        98,   99,   100,  101,  102,  103,  104,  105,  108,  109,  110,  111,  112,  113,  115,
+                                        116,  117,  120,  121,  122,  123,  124,  126,  127,  128,  129,  132,  133,  134,  135,
+                                        136,  137,  139,  140,  141,  16,   114,  47,   59,   125 };
+
 
 static unsigned int keys_k95_plat[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0C, 0x0D, 0x0E, 0x0F, 0x11, 0x12,
                                        0x14, 0x15, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x24, 0x25, 0x26,
@@ -48,6 +57,9 @@ static unsigned int keys_k95[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07
 
 static unsigned int st100[] = { 0x00, 0x01, 0x02, 0x03, 0x05, 0x06, 0x07, 0x08, 0x04 };
 
+static unsigned int key_mapping_k95_plat_ansi[] = { 0x31, 0x3f, 0x41, 0x42, 0x51, 0x53, 0x55, 0x6f, 0x7e, 0x7f, 0x80, 0x81 };
+static unsigned int key_mapping_k95_plat_iso[] = { 0x3f, 0x41, 0x42, 0x48, 0x50, 0x53, 0x55, 0x6f, 0x7e, 0x7f, 0x80, 0x81 };
+
 CorsairPeripheralController::CorsairPeripheralController(hid_device* dev_handle, const char* path)
 {
     dev         = dev_handle;
@@ -56,18 +68,18 @@ CorsairPeripheralController::CorsairPeripheralController(hid_device* dev_handle,
     ReadFirmwareInfo();
 
     /*-----------------------------------------------------*\
-    | K95 Platinum requires additional steps                |
+    | K55 and K95 Platinum require additional steps         |
     \*-----------------------------------------------------*/
-    if (logical_layout == CORSAIR_TYPE_K95_PLAT)
+    if (logical_layout == CORSAIR_TYPE_K55 || logical_layout == CORSAIR_TYPE_K95_PLAT || logical_layout == CORSAIR_TYPE_K70_MK2 || logical_layout == CORSAIR_TYPE_K68)
     {
         SpecialFunctionControl();
     }
 
     LightingControl();
 
-    if (logical_layout == CORSAIR_TYPE_K95_PLAT)
+    if (logical_layout == CORSAIR_TYPE_K55 || logical_layout == CORSAIR_TYPE_K95_PLAT || logical_layout == CORSAIR_TYPE_K70_MK2 || logical_layout == CORSAIR_TYPE_K68)
     {
-        SetupK95LightingControl();
+        SetupK55AndK95LightingControl();
     }
 }
 
@@ -109,7 +121,12 @@ std::string CorsairPeripheralController::GetName()
 std::string CorsairPeripheralController::GetSerialString()
 {
     wchar_t serial_string[128];
-    hid_get_serial_number_string(dev, serial_string, 128);
+    int ret = hid_get_serial_number_string(dev, serial_string, 128);
+
+    if(ret != 0)
+    {
+        return("");
+    }
 
     std::wstring return_wstring = serial_string;
     std::string return_string(return_wstring.begin(), return_wstring.end());
@@ -196,6 +213,12 @@ void CorsairPeripheralController::SetLEDsKeyboardFull(std::vector<RGBColor> colo
             blu_val[keys_k95[color_idx]] = RGBGetBValue(color);
             data_sz = 48; //untested
         }
+        else if (logical_layout = CORSAIR_TYPE_K70_MK2)
+        {
+            red_val[keys_k70_mk2[color_idx]] = RGBGetRValue(color);
+            grn_val[keys_k70_mk2[color_idx]] = RGBGetGValue(color);
+            blu_val[keys_k70_mk2[color_idx]] = RGBGetBValue(color);
+        }
         else
         {
             red_val[keys[color_idx]] = RGBGetRValue(color);
@@ -228,7 +251,6 @@ void CorsairPeripheralController::SetLEDsKeyboardFull(std::vector<RGBColor> colo
     StreamPacket(3, data_sz, &blu_val[120]);
     SubmitKeyboardFullColors(3, 3, 2);
 }
-
 
 void CorsairPeripheralController::SetLEDsMouse(std::vector<RGBColor> colors)
 {
@@ -367,7 +389,7 @@ void CorsairPeripheralController::LightingControl()
 | Probably a key mapping packet?                        |
 \*-----------------------------------------------------*/
 
-void CorsairPeripheralController::SetupK95LightingControl()
+void CorsairPeripheralController::SetupK55AndK95LightingControl()
 {
     char usb_buf[65];
 
@@ -391,7 +413,16 @@ void CorsairPeripheralController::SetupK95LightingControl()
     \*-----------------------------------------------------*/
     hid_write(dev, (unsigned char *)usb_buf, 65);
 
-    int identifier = 0;
+    unsigned int* skipped_identifiers = key_mapping_k95_plat_ansi;
+    int skipped_identifiers_count = sizeof(key_mapping_k95_plat_ansi) / sizeof(key_mapping_k95_plat_ansi[0]);
+    
+    if (physical_layout == CORSAIR_LAYOUT_ISO)
+    {
+        skipped_identifiers = key_mapping_k95_plat_iso;
+        skipped_identifiers_count = sizeof(key_mapping_k95_plat_iso) / sizeof(key_mapping_k95_plat_iso[0]);
+    }
+
+    unsigned int identifier = 0;
     for (int i = 0; i < 4; i++)
     {
         /*-----------------------------------------------------*\
@@ -409,11 +440,12 @@ void CorsairPeripheralController::SetupK95LightingControl()
 
         for (int j = 0; j < 30; j++)
         {
-            while (identifier == 0x31 || identifier == 0x41 || identifier == 0x42 || identifier == 0x48
-                || identifier == 0x49 || identifier == 0x51 || identifier == 0x55 || identifier == 0x6f
-                || identifier == 0x7e || identifier == 0x7f || identifier == 0x80 || identifier == 0x81)
+            for (int j = 0; j < skipped_identifiers_count; j++)
             {
-                identifier++;
+                if (identifier == skipped_identifiers[j])
+                {
+                    identifier++;
+                }
             }
 
             usb_buf[5 + 2 * j]      = identifier++;
@@ -522,7 +554,17 @@ void CorsairPeripheralController::ReadFirmwareInfo()
 
                     case 0x1B3D:
                     logical_layout = CORSAIR_TYPE_K55;
-                    SpecialFunctionControl();
+                    break;
+
+                    case 0x1B38:
+                    case 0x1B49:
+                    case 0x1B6B:
+                    case 0x1B55:
+                    logical_layout = CORSAIR_TYPE_K70_MK2;
+                    break;
+
+                    case 0x1B4F:
+                    logical_layout = CORSAIR_TYPE_K68;
                     break;
 
                     default:

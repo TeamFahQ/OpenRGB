@@ -21,7 +21,7 @@ static unsigned int matrix_map[7][27] =
       { NA,  NA,  37,  NA,  54,  55,  56,  57,  NA,  58,  59,  60,  61,  NA,  62,  63,  64,  65,  NA,  66,  67,  68,  NA,  106, 107, 108, 109 },
       { 112, NA,  49,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  NA,  41,  42,  38,  NA,  NA,  69,  70,  71,  NA,  79,  80,  81,  82  },
       { 113, NA,  39,  NA,  16,  22,  4,   17,  NA,  19,  24,  20,  8,   14,  15,  43,  44,  45,  NA,  72,  73,  74,  NA,  91,  92,  93,  83  },
-      { 114, NA,  53,  NA,  0,   18,  3,   5,   NA,  6,   7,   9,   10,  11,  47,  48,  36,  NA,  NA,  NA,  NA,  NA,  NA,  88,  89,  90,  NA  },
+      { 114, NA,  53,  NA,  0,   18,  3,   5,   NA,  6,   7,   9,   10,  11,  47,  48,  46,  36,  NA,  NA,  NA,  NA,  NA,  88,  89,  90,  NA  },
       { 115, NA,  99,  NA,  25,  23,  2,   21,  NA,  1,   NA,  13,  12,  50,  51,  52,  103, NA,  NA,  NA,  78,  NA,  NA,  85,  86,  87,  84  },
       { 116, NA,  98,  101, 100, NA,  NA,  NA,  NA,  40,  NA,  NA,  NA,  NA,  104, 105, 97,  102, NA,  76,  77,  75,  NA,  94,  NA,  95,  NA  }  };
 
@@ -320,7 +320,7 @@ void RGBController_LogitechG815::DeviceUpdateLEDs()
         if (current_colors[led_idx]==new_colors[led_idx])
         {
             /*-------------------------------------------------*\
-            | Not ready for prime.                              |
+            | Don't send if key color is not changed            |
             \*-------------------------------------------------*/
             continue;
         }
@@ -363,16 +363,6 @@ void RGBController_LogitechG815::DeviceUpdateLEDs()
     size_t frame_pos            = 3;
     uint8_t li                  = 0;
 
-    memset(frame_buffer_big_mode, 0x00, sizeof(frame_buffer_big_mode));
-    memset(frame_buffer_little_mode, 0x00, sizeof(frame_buffer_little_mode));
-
-    /*---------------------------------------------------------*\
-    | Don't ask why but the keyboard needs one 6F               |
-    | packet in order to handle a 1F packet with one single led |
-    | color.                                                    |
-    \*---------------------------------------------------------*/
-    //logitech->SetDummyBigPacket();
-
     /*---------------------------------------------------------*\
     | Create frame_buffers of type 1F (Little, up to 4 leds     |
     | per packet) and 6F (big, up to 13 leds per packet).       |
@@ -402,19 +392,24 @@ void RGBController_LogitechG815::DeviceUpdateLEDs()
                         frame_pos++;
                     }
                 }
+
                 if (frame_pos < data_size)
                 {
+                    /*-----------------------------------------*\
+                    | Zeroing just what is needed and if needed |
+                    \*-----------------------------------------*/
+                    memset(frame_buffer_big_mode + frame_pos, 0x00, sizeof(frame_buffer_big_mode) - frame_pos);
+
                     /*-----------------------------------------*\
                     | End of Data byte                          |
                     \*-----------------------------------------*/
                     frame_buffer_big_mode[frame_pos] = 0xFF;
-                    frame_pos++;
                 }
 
+                /*-----------------------------------------------------*\
+                | Zeroing just what is needed                           |
+                \*-----------------------------------------------------*/
                 logitech->SetDirect(LOGITECH_G815_ZONE_FRAME_TYPE_BIG, frame_buffer_big_mode);
-
-                memset(frame_buffer_big_mode, 0x00, sizeof(frame_buffer_big_mode));
-
                 bi = bi + max_key_per_color;
             }
         }
@@ -441,7 +436,6 @@ void RGBController_LogitechG815::DeviceUpdateLEDs()
                     | No End of Data byte if the packet is full |
                     \*-----------------------------------------*/
                     logitech->SetDirect(LOGITECH_G815_ZONE_FRAME_TYPE_LITTLE, frame_buffer_little_mode);
-                    memset(frame_buffer_little_mode, 0x00, sizeof(frame_buffer_little_mode));
                     led_in_little_frame=0;
                 }
             }
@@ -455,7 +449,12 @@ void RGBController_LogitechG815::DeviceUpdateLEDs()
     if(led_in_little_frame > 0)
     {
         /*-----------------------------------------------------*\
-        | End of Data byte                                      |
+        | Zeroing just what is needed                           |
+        \*-----------------------------------------------------*/
+        memset(frame_buffer_little_mode + (led_in_little_frame * 4 + 1), 0x00, sizeof(frame_buffer_little_mode) - led_in_little_frame * 4);
+
+        /*-----------------------------------------------------*\
+        | Data byte                                             |
         \*-----------------------------------------------------*/
         frame_buffer_little_mode[led_in_little_frame*4 + 0] = 0xFF;
 
@@ -463,7 +462,6 @@ void RGBController_LogitechG815::DeviceUpdateLEDs()
         | Send little frame and clear little frame buffer       |
         \*-----------------------------------------------------*/
         logitech->SetDirect(LOGITECH_G815_ZONE_FRAME_TYPE_LITTLE, frame_buffer_little_mode);
-        memset(frame_buffer_little_mode, 0x00, sizeof(frame_buffer_little_mode));
     }
     if(ledsByColors.size() > 0)
     {

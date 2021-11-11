@@ -18,7 +18,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <thread>
-#include <QMessageBox>
 
 #include "OpenRGBDialog2.h"
 
@@ -126,56 +125,25 @@ bool AttemptLocalConnection()
     }
     else
     {
-        ResourceManager::get()->GetClients().push_back(client);
+        ResourceManager::get()->RegisterNetworkClient(client);
 
         success = true;
+
+        /*-----------------------------------------------------*\
+        | Wait up to 5 seconds for the client connection to     |
+        | retrieve all controllers                              |
+        \*-----------------------------------------------------*/
+        for(int timeout = 0; timeout < 1000; timeout++)
+        {
+            if(client->GetOnline())
+            {
+                break;
+            }
+            std::this_thread::sleep_for(5ms);
+        }
     }
 
     return success;
-}
-
-/******************************************************************************************\
-*                                                                                          *
-*   MessageBoxCallback                                                                     *
-*                                                                                          *
-*       Displays a message box when an error occurs.  Only call once GUI is initialized    *
-*                                                                                          *
-\******************************************************************************************/
-
-void MessageBoxCallback(void*, PLogMessage message)
-{
-    /*---------------------------------------------------------*\
-    | Create a message box                                      |
-    \*---------------------------------------------------------*/
-    QMessageBox box;
-
-    /*---------------------------------------------------------*\
-    | Set the box main text to the log message text             |
-    \*---------------------------------------------------------*/
-    box.setText(QString::fromStdString(message->buffer));
-
-    /*---------------------------------------------------------*\
-    | Set the informative text from the message information     |
-    \*---------------------------------------------------------*/
-    QString info = "Occured in ";
-    info += message->filename;
-    info += " on line " + QVariant(message->line).toString();
-    box.setInformativeText(info);
-
-    /*---------------------------------------------------------*\
-    | Set the message box icon according to message level       |
-    \*---------------------------------------------------------*/
-    switch(message->level)
-    {
-        case LL_CRITICAL: box.setIcon(QMessageBox::Critical); break;
-        case LL_ERROR: box.setIcon(QMessageBox::Warning); break;
-        case LL_MESSAGE: box.setIcon(QMessageBox::Information); break;
-    }
-
-    /*---------------------------------------------------------*\
-    | Show the message box                                      |
-    \*---------------------------------------------------------*/
-    box.exec();
 }
 
 /******************************************************************************************\
@@ -231,7 +199,7 @@ int main(int argc, char* argv[])
         else
         {
             printf("Local OpenRGB server connected, running in client mode\r\n");
-            
+
             ResourceManager::get()->DisableDetection();
         }
     }
@@ -241,7 +209,11 @@ int main(int argc, char* argv[])
     \*---------------------------------------------------------*/
     if(!(ret_flags & RET_FLAG_NO_DETECT))
     {
-        printf("Running standalone.\r\n");
+        if(ResourceManager::get()->GetDetectionEnabled())
+        {
+            printf("Running standalone.\r\n");
+        }
+
         ResourceManager::get()->DetectDevices();
     }
 
@@ -277,11 +249,6 @@ int main(int argc, char* argv[])
     {
         QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         QApplication a(argc, argv);
-
-        /*---------------------------------------------------------*\
-        | Register the message box callback with the log manager    |
-        \*---------------------------------------------------------*/
-        LogManager::get()->registerErrorCallback(&MessageBoxCallback, nullptr);
 
         Ui::OpenRGBDialog2 dlg;
 

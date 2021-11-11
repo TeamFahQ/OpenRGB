@@ -4,6 +4,7 @@
 #include <tuple>
 #include <iostream>
 #include "OpenRGB.h"
+#include "AutoStart.h"
 #include "ProfileManager.h"
 #include "ResourceManager.h"
 #include "RGBController.h"
@@ -11,6 +12,7 @@
 #include "NetworkClient.h"
 #include "NetworkServer.h"
 #include "LogManager.h"
+#include "Colors.h"
 
 /*-------------------------------------------------------------*\
 | Quirk for MSVC; which doesn't support this case-insensitive   |
@@ -42,6 +44,7 @@ struct DeviceOptions
     std::vector<std::tuple<unsigned char, unsigned char, unsigned char>> colors;
     std::string     mode;
     unsigned int    size;
+    bool            random_colors;
     bool            hasSize;
     bool            hasOption;
 };
@@ -67,162 +70,160 @@ struct Options
     ServerOptions               servOpts;
 };
 
-
 /*---------------------------------------------------------------------------------------------------------*\
 | Support a common subset of human colors; for easier typing: https://www.w3.org/TR/css-color-3/#svg-color  |
 \*---------------------------------------------------------------------------------------------------------*/
 struct HumanColors { uint32_t rgb; const char* keyword; } static const human_colors[] =
 {
-    { 0x000000, "black" },
-    { 0x000080, "navy" },
-    { 0x00008b, "darkblue" },
-    { 0x0000cd, "mediumblue" },
-    { 0x0000ff, "blue" },
-    { 0x006400, "darkgreen" },
-    { 0x008000, "green" },
-    { 0x008080, "teal" },
-    { 0x008b8b, "darkcyan" },
-    { 0x00bfff, "deepskyblue" },
-    { 0x00ced1, "darkturquoise" },
-    { 0x00fa9a, "mediumspringgreen" },
-    { 0x00ff00, "lime" },
-    { 0x00ff7f, "springgreen" },
-    { 0x00ffff, "aqua" },
-    { 0x00ffff, "cyan" },
-    { 0x191970, "midnightblue" },
-    { 0x1e90ff, "dodgerblue" },
-    { 0x20b2aa, "lightseagreen" },
-    { 0x228b22, "forestgreen" },
-    { 0x2e8b57, "seagreen" },
-    { 0x2f4f4f, "darkslategray" },
-    { 0x2f4f4f, "darkslategrey" },
-    { 0x32cd32, "limegreen" },
-    { 0x3cb371, "mediumseagreen" },
-    { 0x40e0d0, "turquoise" },
-    { 0x4169e1, "royalblue" },
-    { 0x4682b4, "steelblue" },
-    { 0x483d8b, "darkslateblue" },
-    { 0x48d1cc, "mediumturquoise" },
-    { 0x4b0082, "indigo" },
-    { 0x556b2f, "darkolivegreen" },
-    { 0x5f9ea0, "cadetblue" },
-    { 0x6495ed, "cornflowerblue" },
-    { 0x66cdaa, "mediumaquamarine" },
-    { 0x696969, "dimgray" },
-    { 0x696969, "dimgrey" },
-    { 0x6a5acd, "slateblue" },
-    { 0x6b8e23, "olivedrab" },
-    { 0x708090, "slategray" },
-    { 0x708090, "slategrey" },
-    { 0x778899, "lightslategray" },
-    { 0x778899, "lightslategrey" },
-    { 0x7b68ee, "mediumslateblue" },
-    { 0x7cfc00, "lawngreen" },
-    { 0x7fff00, "chartreuse" },
-    { 0x7fffd4, "aquamarine" },
-    { 0x800000, "maroon" },
-    { 0x800080, "purple" },
-    { 0x808000, "olive" },
-    { 0x808080, "gray" },
-    { 0x808080, "grey" },
-    { 0x87ceeb, "skyblue" },
-    { 0x87cefa, "lightskyblue" },
-    { 0x8a2be2, "blueviolet" },
-    { 0x8b0000, "darkred" },
-    { 0x8b008b, "darkmagenta" },
-    { 0x8b4513, "saddlebrown" },
-    { 0x8fbc8f, "darkseagreen" },
-    { 0x90ee90, "lightgreen" },
-    { 0x9370db, "mediumpurple" },
-    { 0x9400d3, "darkviolet" },
-    { 0x98fb98, "palegreen" },
-    { 0x9932cc, "darkorchid" },
-    { 0x9acd32, "yellowgreen" },
-    { 0xa0522d, "sienna" },
-    { 0xa52a2a, "brown" },
-    { 0xa9a9a9, "darkgray" },
-    { 0xa9a9a9, "darkgrey" },
-    { 0xadd8e6, "lightblue" },
-    { 0xadff2f, "greenyellow" },
-    { 0xafeeee, "paleturquoise" },
-    { 0xb0c4de, "lightsteelblue" },
-    { 0xb0e0e6, "powderblue" },
-    { 0xb22222, "firebrick" },
-    { 0xb8860b, "darkgoldenrod" },
-    { 0xba55d3, "mediumorchid" },
-    { 0xbc8f8f, "rosybrown" },
-    { 0xbdb76b, "darkkhaki" },
-    { 0xc0c0c0, "silver" },
-    { 0xc71585, "mediumvioletred" },
-    { 0xcd5c5c, "indianred" },
-    { 0xcd853f, "peru" },
-    { 0xd2691e, "chocolate" },
-    { 0xd2b48c, "tan" },
-    { 0xd3d3d3, "lightgray" },
-    { 0xd3d3d3, "lightgrey" },
-    { 0xd8bfd8, "thistle" },
-    { 0xda70d6, "orchid" },
-    { 0xdaa520, "goldenrod" },
-    { 0xdb7093, "palevioletred" },
-    { 0xdc143c, "crimson" },
-    { 0xdcdcdc, "gainsboro" },
-    { 0xdda0dd, "plum" },
-    { 0xdeb887, "burlywood" },
-    { 0xe0ffff, "lightcyan" },
-    { 0xe6e6fa, "lavender" },
-    { 0xe9967a, "darksalmon" },
-    { 0xee82ee, "violet" },
-    { 0xeee8aa, "palegoldenrod" },
-    { 0xf08080, "lightcoral" },
-    { 0xf0e68c, "khaki" },
-    { 0xf0f8ff, "aliceblue" },
-    { 0xf0fff0, "honeydew" },
-    { 0xf0ffff, "azure" },
-    { 0xf4a460, "sandybrown" },
-    { 0xf5deb3, "wheat" },
-    { 0xf5f5dc, "beige" },
-    { 0xf5f5f5, "whitesmoke" },
-    { 0xf5fffa, "mintcream" },
-    { 0xf8f8ff, "ghostwhite" },
-    { 0xfa8072, "salmon" },
-    { 0xfaebd7, "antiquewhite" },
-    { 0xfaf0e6, "linen" },
-    { 0xfafad2, "lightgoldenrodyellow" },
-    { 0xfdf5e6, "oldlace" },
-    { 0xff0000, "red" },
-    { 0xff00ff, "fuchsia" },
-    { 0xff00ff, "magenta" },
-    { 0xff1493, "deeppink" },
-    { 0xff4500, "orangered" },
-    { 0xff6347, "tomato" },
-    { 0xff69b4, "hotpink" },
-    { 0xff7f50, "coral" },
-    { 0xff8c00, "darkorange" },
-    { 0xffa07a, "lightsalmon" },
-    { 0xffa500, "orange" },
-    { 0xffb6c1, "lightpink" },
-    { 0xffc0cb, "pink" },
-    { 0xffd700, "gold" },
-    { 0xffdab9, "peachpuff" },
-    { 0xffdead, "navajowhite" },
-    { 0xffe4b5, "moccasin" },
-    { 0xffe4c4, "bisque" },
-    { 0xffe4e1, "mistyrose" },
-    { 0xffebcd, "blanchedalmond" },
-    { 0xffefd5, "papayawhip" },
-    { 0xfff0f5, "lavenderblush" },
-    { 0xfff5ee, "seashell" },
-    { 0xfff8dc, "cornsilk" },
-    { 0xfffacd, "lemonchiffon" },
-    { 0xfffaf0, "floralwhite" },
-    { 0xfffafa, "snow" },
-    { 0xffff00, "yellow" },
-    { 0xffffe0, "lightyellow" },
-    { 0xfffff0, "ivory" },
-    { 0xffffff, "white" },
+    { COLOR_BLACK, "black" },
+    { COLOR_NAVY, "navy" },
+    { COLOR_DARKBLUE, "darkblue" },
+    { COLOR_MEDIUMBLUE, "mediumblue" },
+    { COLOR_BLUE, "blue" },
+    { COLOR_DARKGREEN, "darkgreen" },
+    { COLOR_GREEN, "green" },
+    { COLOR_TEAL, "teal" },
+    { COLOR_DARKCYAN, "darkcyan" },
+    { COLOR_DEEPSKYBLUE, "deepskyblue" },
+    { COLOR_DARKTURQUOISE, "darkturquoise" },
+    { COLOR_MEDIUMSPRINGGREEN, "mediumspringgreen" },
+    { COLOR_LIME, "lime" },
+    { COLOR_SPRINGGREEN, "springgreen" },
+    { COLOR_AQUA, "aqua" },
+    { COLOR_CYAN, "cyan" },
+    { COLOR_MIDNIGHTBLUE, "midnightblue" },
+    { COLOR_DODGERBLUE, "dodgerblue" },
+    { COLOR_LIGHTSEAGREEN, "lightseagreen" },
+    { COLOR_FORESTGREEN, "forestgreen" },
+    { COLOR_SEAGREEN, "seagreen" },
+    { COLOR_DARKSLATEGRAY, "darkslategray" },
+    { COLOR_DARKSLATEGREY, "darkslategrey" },
+    { COLOR_LIMEGREEN, "limegreen" },
+    { COLOR_MEDIUMSEAGREEN, "mediumseagreen" },
+    { COLOR_TURQUOISE, "turquoise" },
+    { COLOR_ROYALBLUE, "royalblue" },
+    { COLOR_STEELBLUE, "steelblue" },
+    { COLOR_DARKSLATEBLUE, "darkslateblue" },
+    { COLOR_MEDIUMTURQUOISE, "mediumturquoise" },
+    { COLOR_INDIGO, "indigo" },
+    { COLOR_DARKOLIVEGREEN, "darkolivegreen" },
+    { COLOR_CADETBLUE, "cadetblue" },
+    { COLOR_CORNFLOWERBLUE, "cornflowerblue" },
+    { COLOR_MEDIUMAQUAMARINE, "mediumaquamarine" },
+    { COLOR_DIMGRAY, "dimgray" },
+    { COLOR_DIMGREY, "dimgrey" },
+    { COLOR_SLATEBLUE, "slateblue" },
+    { COLOR_OLIVEDRAB, "olivedrab" },
+    { COLOR_SLATEGRAY, "slategray" },
+    { COLOR_SLATEGREY, "slategrey" },
+    { COLOR_LIGHTSLATEGRAY, "lightslategray" },
+    { COLOR_LIGHTSLATEGREY, "lightslategrey" },
+    { COLOR_MEDIUMSLATEBLUE, "mediumslateblue" },
+    { COLOR_LAWNGREEN, "lawngreen" },
+    { COLOR_CHARTREUSE, "chartreuse" },
+    { COLOR_AQUAMARINE, "aquamarine" },
+    { COLOR_MAROON, "maroon" },
+    { COLOR_PURPLE, "purple" },
+    { COLOR_OLIVE, "olive" },
+    { COLOR_GRAY, "gray" },
+    { COLOR_GREY, "grey" },
+    { COLOR_SKYBLUE, "skyblue" },
+    { COLOR_LIGHTSKYBLUE, "lightskyblue" },
+    { COLOR_BLUEVIOLET, "blueviolet" },
+    { COLOR_DARKRED, "darkred" },
+    { COLOR_DARKMAGENTA, "darkmagenta" },
+    { COLOR_SADDLEBROWN, "saddlebrown" },
+    { COLOR_DARKSEAGREEN, "darkseagreen" },
+    { COLOR_LIGHTGREEN, "lightgreen" },
+    { COLOR_MEDIUMPURPLE, "mediumpurple" },
+    { COLOR_DARKVIOLET, "darkviolet" },
+    { COLOR_PALEGREEN, "palegreen" },
+    { COLOR_DARKORCHID, "darkorchid" },
+    { COLOR_YELLOWGREEN, "yellowgreen" },
+    { COLOR_SIENNA, "sienna" },
+    { COLOR_BROWN, "brown" },
+    { COLOR_DARKGRAY, "darkgray" },
+    { COLOR_DARKGREY, "darkgrey" },
+    { COLOR_LIGHTBLUE, "lightblue" },
+    { COLOR_GREENYELLOW, "greenyellow" },
+    { COLOR_PALETURQUOISE, "paleturquoise" },
+    { COLOR_LIGHTSTEELBLUE, "lightsteelblue" },
+    { COLOR_POWDERBLUE, "powderblue" },
+    { COLOR_FIREBRICK, "firebrick" },
+    { COLOR_DARKGOLDENROD, "darkgoldenrod" },
+    { COLOR_MEDIUMORCHID, "mediumorchid" },
+    { COLOR_ROSYBROWN, "rosybrown" },
+    { COLOR_DARKKHAKI, "darkkhaki" },
+    { COLOR_SILVER, "silver" },
+    { COLOR_MEDIUMVIOLETRED, "mediumvioletred" },
+    { COLOR_INDIANRED, "indianred" },
+    { COLOR_PERU, "peru" },
+    { COLOR_CHOCOLATE, "chocolate" },
+    { COLOR_TAN, "tan" },
+    { COLOR_LIGHTGRAY, "lightgray" },
+    { COLOR_LIGHTGREY, "lightgrey" },
+    { COLOR_THISTLE, "thistle" },
+    { COLOR_ORCHID, "orchid" },
+    { COLOR_GOLDENROD, "goldenrod" },
+    { COLOR_PALEVIOLETRED, "palevioletred" },
+    { COLOR_CRIMSON, "crimson" },
+    { COLOR_GAINSBORO, "gainsboro" },
+    { COLOR_PLUM, "plum" },
+    { COLOR_BURLYWOOD, "burlywood" },
+    { COLOR_LIGHTCYAN, "lightcyan" },
+    { COLOR_LAVENDER, "lavender" },
+    { COLOR_DARKSALMON, "darksalmon" },
+    { COLOR_VIOLET, "violet" },
+    { COLOR_PALEGOLDENROD, "palegoldenrod" },
+    { COLOR_LIGHTCORAL, "lightcoral" },
+    { COLOR_KHAKI, "khaki" },
+    { COLOR_ALICEBLUE, "aliceblue" },
+    { COLOR_HONEYDEW, "honeydew" },
+    { COLOR_AZURE, "azure" },
+    { COLOR_SANDYBROWN, "sandybrown" },
+    { COLOR_WHEAT, "wheat" },
+    { COLOR_BEIGE, "beige" },
+    { COLOR_WHITESMOKE, "whitesmoke" },
+    { COLOR_MINTCREAM, "mintcream" },
+    { COLOR_GHOSTWHITE, "ghostwhite" },
+    { COLOR_SALMON, "salmon" },
+    { COLOR_ANTIQUEWHITE, "antiquewhite" },
+    { COLOR_LINEN, "linen" },
+    { COLOR_LIGHTGOLDENRODYELLOW, "lightgoldenrodyellow" },
+    { COLOR_OLDLACE, "oldlace" },
+    { COLOR_RED, "red" },
+    { COLOR_FUCHSIA, "fuchsia" },
+    { COLOR_MAGENTA, "magenta" },
+    { COLOR_DEEPPINK, "deeppink" },
+    { COLOR_ORANGERED, "orangered" },
+    { COLOR_TOMATO, "tomato" },
+    { COLOR_HOTPINK, "hotpink" },
+    { COLOR_CORAL, "coral" },
+    { COLOR_DARKORANGE, "darkorange" },
+    { COLOR_LIGHTSALMON, "lightsalmon" },
+    { COLOR_ORANGE, "orange" },
+    { COLOR_LIGHTPINK, "lightpink" },
+    { COLOR_PINK, "pink" },
+    { COLOR_GOLD, "gold" },
+    { COLOR_PEACHPUFF, "peachpuff" },
+    { COLOR_NAVAJOWHITE, "navajowhite" },
+    { COLOR_MOCCASIN, "moccasin" },
+    { COLOR_BISQUE, "bisque" },
+    { COLOR_MISTYROSE, "mistyrose" },
+    { COLOR_BLANCHEDALMOND, "blanchedalmond" },
+    { COLOR_PAPAYAWHIP, "papayawhip" },
+    { COLOR_LAVENDERBLUSH, "lavenderblush" },
+    { COLOR_SEASHELL, "seashell" },
+    { COLOR_CORNSILK, "cornsilk" },
+    { COLOR_LEMONCHIFFON, "lemonchiffon" },
+    { COLOR_FLORALWHITE, "floralwhite" },
+    { COLOR_SNOW, "snow" },
+    { COLOR_YELLOW, "yellow" },
+    { COLOR_LIGHTYELLOW, "lightyellow" },
+    { COLOR_IVORY, "ivory" },
+    { COLOR_WHITE, "white" },
     { 0, NULL }
 };
-
 
 bool ParseColors(std::string colors_string, DeviceOptions *options)
 {
@@ -237,15 +238,31 @@ bool ParseColors(std::string colors_string, DeviceOptions *options)
         if (color.length() <= 0)
             break;
 
-        /* swy: (A) try interpreting it as text; as human keywords, otherwise strtoul() will pick up 'darkgreen' as 0xDA */
-        for (const struct HumanColors *hc = human_colors; hc->keyword != NULL; hc++)
+        /*-----------------------------------------------------------------*\
+        | This will set correct colour mode for modes with a                |
+        |   MODE_COLORS_RANDOM else generate a random colour from the       |
+        |   human_colors list above                                         |
+        \*-----------------------------------------------------------------*/
+        if (color == "random")
         {
-            if (strcasecmp(hc->keyword, color.c_str()) != 0)
-                continue;
+            options->random_colors = true;
+            srand(time(NULL));
+            int index = rand() % (sizeof(human_colors) / sizeof(human_colors[0])) + 1; //Anything other than black
+            rgb = human_colors[index].rgb;
+            parsed = true;
+        }
+        else
+        {
+            /* swy: (A) try interpreting it as text; as human keywords, otherwise strtoul() will pick up 'darkgreen' as 0xDA */
+            for (const struct HumanColors *hc = human_colors; hc->keyword != NULL; hc++)
+            {
+                if (strcasecmp(hc->keyword, color.c_str()) != 0)
+                    continue;
 
-            rgb = hc->rgb; parsed = true;
+                rgb = hc->rgb; parsed = true;
 
-            break;
+                break;
+            }
         }
 
         /* swy: (B) no luck, try interpreting it as an hexadecimal number instead */
@@ -365,7 +382,7 @@ void OptionHelp()
     help_text += "                                           Can be specified multiple times with different modes and colors\n";
     help_text += "-z,  --zone [0-9]                        Selects zone to apply colors and/or sizes to, or applies to all zones in device if omitted\n";
     help_text += "                                           Must be specified after specifying a device\n";
-    help_text += "-c,  --color FFFFFF,00AAFF...            Sets colors on each device directly if no effect is specified, and sets the effect color if an effect is specified\n";
+    help_text += "-c,  --color [random | FFFFF,00AAFF ...] Sets colors on each device directly if no effect is specified, and sets the effect color if an effect is specified\n";
     help_text += "                                           If there are more LEDs than colors given, the last color will be applied to the remaining LEDs\n";
     help_text += "-m,  --mode [breathing | static | ...]   Sets the mode to be applied, check --list-devices to see which modes are supported on your device\n";
     help_text += "-s,  --size [0-N]                        Sets the new size of the specified device zone.\n";
@@ -381,10 +398,13 @@ void OptionHelp()
     help_text += "--config path                            Use a custom path instead of the global configuration directory.\n";
     help_text += "--nodetect                               Do not try to detect hardware at startup.\n";
     help_text += "--noautoconnect                          Do not try to autoconnect to a local server at startup.\n";
-    help_text += "--loglevel [0-6 | error | warning ...]   Set the log level (0: critical to 6: debug).\n";
+    help_text += "--loglevel [0-6 | error | warning ...]   Set the log level (0: fatal to 6: trace).\n";
     help_text += "--print-source                           Print the source code file and line number for each log entry.\n";
     help_text += "-v,  --verbose                           Print log messages to stdout.\n";
     help_text += "-vv, --very-verbose                      Print debug messages and log messages to stdout.\n";
+    help_text += "--autostart-check                        Check if OpenRGB starting at login is enabled.\n";
+    help_text += "--autostart-disable                      Disable OpenRGB starting at login.\n";
+    help_text += "--autostart-enable arguments             Enable OpenRGB to start at login. Requires arguments to give to OpenRGB at login.\n";
 
     std::cout << help_text << std::endl;
 }
@@ -690,6 +710,7 @@ int ProcessOptions(int argc, char *argv[], Options *options, std::vector<RGBCont
     int current_zone        = -1;
 
     options->hasDevice = false;
+    options->profile_loaded = false;
 
     while(arg_index < argc)
     {
@@ -815,7 +836,9 @@ int ProcessOptions(int argc, char *argv[], Options *options, std::vector<RGBCont
              ||(option == "--verbose" || option == "-v")
              ||(option == "--very-verbose" || option == "-vv")
              ||(option == "--help" || option == "-h")
-             ||(option == "--version" || option == "-V"))
+             ||(option == "--version" || option == "-V")
+             ||(option == "--autostart-check")
+             ||(option == "--autostart-disable"))
             {
                 /*-------------------------------------------------*\
                 | Do nothing, these are pre-detection arguments     |
@@ -824,7 +847,8 @@ int ProcessOptions(int argc, char *argv[], Options *options, std::vector<RGBCont
             }
             else if((option == "--server-port")
                   ||(option == "--loglevel")
-                  ||(option == "--config"))
+                  ||(option == "--config")
+                  ||(option == "--autostart-enable"))
             {
                 /*-------------------------------------------------*\
                 | Increment index for pre-detection arguments with  |
@@ -879,6 +903,16 @@ void ApplyOptions(DeviceOptions& options, std::vector<RGBController *> &rgb_cont
     unsigned int mode = ParseMode(options, rgb_controllers);
 
     /*---------------------------------------------------------*\
+    | If the user has specified random colours and the device   |
+    |   supports that colour mode then swich to it before       |
+    |   evaluating if a colour needs to be set                  |
+    \*---------------------------------------------------------*/
+    if (options.random_colors && (device->modes[mode].flags & MODE_FLAG_HAS_RANDOM_COLOR))
+    {
+        device->modes[mode].color_mode = MODE_COLORS_RANDOM;
+    }
+
+    /*---------------------------------------------------------*\
     | Determine which color mode this mode uses and update      |
     | colors accordingly                                        |
     \*---------------------------------------------------------*/
@@ -914,7 +948,7 @@ void ApplyOptions(DeviceOptions& options, std::vector<RGBController *> &rgb_cont
             {
                 device->modes[mode].colors.resize(options.colors.size());
 
-                for(std::size_t color_idx = 0; color_idx <= options.colors.size(); color_idx++)
+                for(std::size_t color_idx = 0; color_idx < options.colors.size(); color_idx++)
                 {
                     device->modes[mode].colors[color_idx] = ToRGBColor(std::get<0>(options.colors[color_idx]),
                                                                        std::get<1>(options.colors[color_idx]),
@@ -1111,38 +1145,34 @@ unsigned int cli_pre_detection(int argc, char *argv[])
                 try
                 {
                     int level = std::stoi(argument);
-                    if (level >= 0 && level <= LL_DEBUG)
+                    if (level >= 0 && level <= LL_TRACE)
                     {
                         LogManager::get()->setLoglevel(level);
                     }
                     else
                     {
-                        std::cout << "Error: Loglevel out of range: " << level << " (0-6)" << std::endl;
+                        LOG_ERROR("Loglevel out of range: %d (0-6)", level);
                         print_help = true;
                         break;
                     }
                 }
                 catch(std::invalid_argument& e)
                 {
-                    if(!strcasecmp(argument.c_str(), "critical"))
+                    if(!strcasecmp(argument.c_str(), "fatal"))
                     {
-                        LogManager::get()->setLoglevel(LL_CRITICAL);
+                        LogManager::get()->setLoglevel(LL_FATAL);
                     }
                     else if(!strcasecmp(argument.c_str(), "error"))
                     {
                         LogManager::get()->setLoglevel(LL_ERROR);
                     }
-                    else if(!strcasecmp(argument.c_str(), "message"))
-                    {
-                        LogManager::get()->setLoglevel(LL_MESSAGE);
-                    }
                     else if(!strcasecmp(argument.c_str(), "warning"))
                     {
                         LogManager::get()->setLoglevel(LL_WARNING);
                     }
-                    else if(!strcasecmp(argument.c_str(), "notice"))
+                    else if(!strcasecmp(argument.c_str(), "info"))
                     {
-                        LogManager::get()->setLoglevel(LL_NOTICE);
+                        LogManager::get()->setLoglevel(LL_INFO);
                     }
                     else if(!strcasecmp(argument.c_str(), "verbose"))
                     {
@@ -1152,9 +1182,13 @@ unsigned int cli_pre_detection(int argc, char *argv[])
                     {
                         LogManager::get()->setLoglevel(LL_DEBUG);
                     }
+                    else if(!strcasecmp(argument.c_str(), "trace"))
+                    {
+                        LogManager::get()->setLoglevel(LL_TRACE);
+                    }
                     else
                     {
-                        std::cout << "Error: invalid loglevel" << std::endl;
+                        LOG_ERROR("Invalid loglevel");
                         print_help = true;
                         break;
                     }
@@ -1162,10 +1196,84 @@ unsigned int cli_pre_detection(int argc, char *argv[])
             }
             else
             {
-                std::cout << "Error: Missing argument for --loglevel" << std::endl;
+                LOG_ERROR("Missing argument for --loglevel");
                 print_help = true;
                 break;
             }
+            cfg_args+= 2;
+            arg_index++;
+        }
+
+        /*---------------------------------------------------------*\
+        | --autostart-check (no arguments)                          |
+        \*---------------------------------------------------------*/
+        else if(option == "--autostart-check")
+        {
+            AutoStart auto_start("OpenRGB");
+
+            if(auto_start.IsAutoStartEnabled())
+            {
+                std::cout << "Autostart is enabled." << std::endl;
+            }
+            else
+            {
+                std::cout << "Autostart is disabled." << std::endl;
+            }
+        }
+
+        /*---------------------------------------------------------*\
+        | --autostart-disable (no arguments)                        |
+        \*---------------------------------------------------------*/
+        else if(option == "--autostart-disable")
+        {
+            AutoStart auto_start("OpenRGB");
+
+            if(auto_start.DisableAutoStart())
+            {
+                std::cout << "Autostart disabled." << std::endl;
+            }
+            else
+            {
+                std::cout << "Autostart failed to disable." << std::endl;
+            }
+        }
+
+        /*---------------------------------------------------------*\
+        | --autostart-enable                                        |
+        \*---------------------------------------------------------*/
+        else if(option == "--autostart-enable")
+        {
+            if (argument != "")
+            {
+                std::string desc = "OpenRGB ";
+                desc += VERSION_STRING;
+                desc += ", for controlling RGB lighting.";
+
+                AutoStart       auto_start("OpenRGB");
+                AutoStartInfo   auto_start_interface;
+
+                auto_start_interface.args        = argument;
+                auto_start_interface.category    = "Utility;";
+                auto_start_interface.desc        = desc;
+                auto_start_interface.icon        = "OpenRGB";
+                auto_start_interface.path        = auto_start.GetExePath();
+
+                if(auto_start.EnableAutoStart(auto_start_interface))
+                {
+                    std::cout << "Autostart enabled." << std::endl;
+                }
+                else
+                {
+                    std::cout << "Autostart failed to enable." << std::endl;
+                }
+            }
+            else
+            {
+                std::cout << "Error: Missing argument for --autostart-enable" << std::endl;
+                print_help = true;
+                break;
+            }
+
             cfg_args++;
             arg_index++;
         }
@@ -1226,7 +1334,7 @@ unsigned int cli_pre_detection(int argc, char *argv[])
         \*---------------------------------------------------------*/
         else if(option == "--very-verbose" || option == "-vv")
         {
-            LogManager::get()->setVerbosity(LL_DEBUG);
+            LogManager::get()->setVerbosity(LL_TRACE);
             cfg_args++;
         }
 
@@ -1335,11 +1443,11 @@ unsigned int cli_post_detection(int argc, char *argv[])
     {
         if(ResourceManager::get()->GetProfileManager()->SaveProfile(profile_save_filename))
         {
-            std::cout << "Profile saved successfully" << std::endl;
+            LOG_INFO("Profile saved successfully");
         }
         else
         {
-            std::cout << "Profile saving failed" << std::endl;
+            LOG_ERROR("Profile saving failed");
         }
     }
 

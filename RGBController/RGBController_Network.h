@@ -26,6 +26,9 @@ public:
 
     void        SetCustomMode();
     void        DeviceUpdateMode();
+    void        DeviceSaveMode();
+
+    void        UpdateLEDs();
 
 private:
     NetworkClient *     client;

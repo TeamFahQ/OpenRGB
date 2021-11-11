@@ -21,6 +21,8 @@ DeviceView::DeviceView(QWidget *parent) :
     mouseDown(false)
 {
     controller = NULL;
+    numerical_labels = false;
+    per_led = true;
     setMouseTracking(1);
 
     size = width();
@@ -223,7 +225,7 @@ void DeviceView::setController(RGBController * controller_ptr)
                     unsigned int map_idx    = led_y * map->width + led_x;
                     unsigned int color_idx  = map->map[map_idx] + controller->zones[zone_idx].start_idx;
 
-                    if(color_idx != 0xFFFFFFFF && color_idx < led_pos.size())
+                    if(map->map[map_idx] != 0xFFFFFFFF && color_idx < led_pos.size())
                     {
                         led_pos[color_idx].matrix_x = (zone_pos[zone_idx].matrix_x + led_x + ledPadding) * atom;
                         led_pos[color_idx].matrix_y = current_y + (led_y + ledPadding) * atom;
@@ -317,6 +319,10 @@ void DeviceView::setController(RGBController * controller_ptr)
         {
             led_labels[led_idx] = it->second.label_utf8;
         }
+        else if(numerical_labels)
+        {
+            led_labels[led_idx] = QString::number(led_idx);
+        }
     }
 
     /*-----------------------------------------------------*\
@@ -332,9 +338,20 @@ void DeviceView::setController(RGBController * controller_ptr)
     }
 }
 
+void DeviceView::setNumericalLabels(bool enable)
+{
+    numerical_labels = enable;
+}
+
+void DeviceView::setPerLED(bool per_led_mode)
+{
+    per_led = per_led_mode;
+    update();
+}
+
 QSize DeviceView::sizeHint () const
 {
-    return QSize(height(),height());
+    return QSize(height() - 1, height() - 1);
 }
 
 QSize DeviceView::minimumSizeHint () const
@@ -344,88 +361,97 @@ QSize DeviceView::minimumSizeHint () const
 
 void DeviceView::mousePressEvent(QMouseEvent *event)
 {
-    ctrlDown    = event->modifiers().testFlag(Qt::ControlModifier);
-    mouseDown   = true;
-    mouseMoved  = false;
-
-    if(ctrlDown)
+    if(per_led)
     {
-        previousFlags = selectionFlags;
-        previousSelection = selectedLeds;
+        ctrlDown    = event->modifiers().testFlag(Qt::ControlModifier);
+        mouseDown   = true;
+        mouseMoved  = false;
+
+        if(ctrlDown)
+        {
+            previousFlags = selectionFlags;
+            previousSelection = selectedLeds;
+        }
+
+        /*-----------------------------------------------------*\
+        | It's okay if the size becomes negative                |
+        \*-----------------------------------------------------*/
+        selectionRect.setLeft(event->x());
+        selectionRect.setTop(event->y());
+        selectionRect.setRight(event->x());
+        selectionRect.setBottom(event->y());
+
+        updateSelection();
+        update();
     }
-
-    /*-----------------------------------------------------*\
-    | It's okay if the size becomes negative                |
-    \*-----------------------------------------------------*/
-    selectionRect.setLeft(event->x());
-    selectionRect.setTop(event->y());
-    selectionRect.setRight(event->x());
-    selectionRect.setBottom(event->y());
-
-    updateSelection();
-    update();
 }
 
 void DeviceView::mouseMoveEvent(QMouseEvent *event)
 {
-    lastMousePos = event->pos();
-    selectionRect.setRight(event->x());
-    selectionRect.setBottom(event->y());
-
-    if(mouseDown)
+    if(per_led)
     {
-        mouseMoved  = true;
-        ctrlDown    = event->modifiers().testFlag(Qt::ControlModifier);
+        lastMousePos = event->pos();
+        selectionRect.setRight(event->x());
+        selectionRect.setBottom(event->y());
 
-        /*-----------------------------------------------------*\
-        | Clear the previous selection in case ctrl is released |
-        \*-----------------------------------------------------*/
-        if(!ctrlDown)
+        if(mouseDown)
         {
-            previousSelection.clear();
-            previousFlags.clear();
-            previousFlags.resize(controller->leds.size());
+            mouseMoved  = true;
+            ctrlDown    = event->modifiers().testFlag(Qt::ControlModifier);
+
+            /*-----------------------------------------------------*\
+            | Clear the previous selection in case ctrl is released |
+            \*-----------------------------------------------------*/
+            if(!ctrlDown)
+            {
+                previousSelection.clear();
+                previousFlags.clear();
+                previousFlags.resize(controller->leds.size());
+            }
+            updateSelection();
         }
-        updateSelection();
+        update();
     }
-    update();
 }
 
 void DeviceView::mouseReleaseEvent(QMouseEvent* event)
 {
-    selectionRect = selectionRect.normalized();
-    mouseDown = false;
-
-    /*-----------------------------------------------------*\
-    | Check if the user clicked a zone name & select it     |
-    \*-----------------------------------------------------*/
-    if(!mouseMoved)
+    if(per_led)
     {
-        int size     = width();
-        int offset_x = 0;
+        selectionRect = selectionRect.normalized();
+        mouseDown = false;
 
-        if(height() < size * matrix_h)
+        /*-----------------------------------------------------*\
+        | Check if the user clicked a zone name & select it     |
+        \*-----------------------------------------------------*/
+        if(!mouseMoved)
         {
-            size     = height() / matrix_h;
-            offset_x = (width() - size) / 2;
-        }
+            int size     = width();
+            int offset_x = 0;
 
-        for(std::size_t zone_idx = 0; zone_idx < controller->zones.size(); zone_idx++)
-        {
-            int posx = zone_pos[zone_idx].matrix_x * size + offset_x;
-            int posy = zone_pos[zone_idx].matrix_y * size;
-            int posw = zone_pos[zone_idx].matrix_w * size;
-            int posh = zone_pos[zone_idx].matrix_h * size;
-
-            QRect rect = {posx, posy, posw, posh};
-
-            if(rect.contains(event->pos()))
+            if(height() < size * matrix_h)
             {
-                selectZone(zone_idx, ctrlDown);
+                size     = height() / matrix_h;
+                offset_x = (width() - size) / 2;
+            }
+
+            for(std::size_t zone_idx = 0; zone_idx < controller->zones.size(); zone_idx++)
+            {
+                int posx = zone_pos[zone_idx].matrix_x * size + offset_x;
+                int posy = zone_pos[zone_idx].matrix_y * size;
+                int posw = zone_pos[zone_idx].matrix_w * size;
+                int posh = zone_pos[zone_idx].matrix_h * size;
+
+                QRect rect = {posx, posy, posw, posh};
+
+                if(rect.contains(event->pos()))
+                {
+                    selectZone(zone_idx, ctrlDown);
+                }
             }
         }
+        update();
     }
-    update();
 }
 
 void DeviceView::resizeEvent(QResizeEvent* /*event*/)
@@ -449,7 +475,7 @@ void DeviceView::paintEvent(QPaintEvent* /* event */)
     /*-----------------------------------------------------*\
     | If Device View is hidden, don't paint                 |
     \*-----------------------------------------------------*/
-    if(isHidden())
+    if(isHidden() || !per_led)
     {
         return;
     }

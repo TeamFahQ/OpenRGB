@@ -1,5 +1,6 @@
 #include "OpenRGBSupportedDevicesPage.h"
 #include "ui_OpenRGBSupportedDevicesPage.h"
+#include "ResourceManager.h"
 
 using namespace Ui;
 
@@ -54,5 +55,5 @@ void OpenRGBSupportedDevicesPage::on_Filter_textChanged(const QString &arg1)
 
 void OpenRGBSupportedDevicesPage::on_ToggleAllCheckbox_toggled(const bool checked)
 {
-        detectorTableModel->toggleAll(checked);
+    detectorTableModel->toggleAll(checked, detectorSortModel);
 }

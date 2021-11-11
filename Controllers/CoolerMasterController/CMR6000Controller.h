@@ -20,7 +20,7 @@
 
 enum
 {
-    CM_MR6000_MODE_STATIC        = 0x00, //Static Mode
+    CM_MR6000_MODE_DIRECT        = 0x00, //Direct Mode
     CM_MR6000_MODE_BREATHE       = 0x01, //Breathe Mode
     CM_MR6000_MODE_COLOR_CYCLE   = 0x02, //Color cycle
     CM_MR6000_MODE_OFF           = 0xFF, //Off
@@ -56,8 +56,9 @@ public:
     unsigned char GetLedGreen();
     unsigned char GetLedBlue();
     unsigned char GetLedSpeed();
+    unsigned char GetBrightness();
     bool          GetRandomColours();
-    void          SetMode(unsigned char mode, unsigned char speed, unsigned char red, unsigned char green, unsigned char blue, unsigned char random);
+    void          SetMode(unsigned char mode, unsigned char speed, unsigned char red, unsigned char green, unsigned char blue, unsigned char random, unsigned char brightness);
 
 private:
     std::string             device_name;
@@ -74,7 +75,6 @@ private:
     unsigned char           current_blue;
     unsigned char           current_brightness;
 
-    void GetStatus();
     void SendUpdate();
     void SendEnableCommand();
     void SendApplyCommand();

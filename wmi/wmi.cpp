@@ -2,6 +2,7 @@
 
 IWbemLocator* Wmi::pLoc = nullptr;
 IWbemServices* Wmi::pSvc = nullptr;
+HRESULT WmiInit = Wmi::init();
 
 // Taken from https://stackoverflow.com/questions/215963/
 // Convert a wide Unicode string to an UTF8 string
@@ -55,7 +56,7 @@ HRESULT Wmi::init()
     }
 
     // Initialize COM. ------------------------------------------
-    hres = CoInitializeEx(0, COINIT_MULTITHREADED);
+    hres = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
     if (FAILED(hres))
     {
         return hres;
@@ -146,6 +147,26 @@ HRESULT Wmi::query(std::string queryStr, std::vector<QueryObj>& queryVectorOut, 
     HRESULT hres;
     int nIdx = 0;
     IEnumWbemClassObject* pEnumerator = nullptr;
+
+    // Initialize COM. ------------------------------------------
+    hres = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
+    if (FAILED(hres))
+    {
+        return hres;
+    }
+
+    pSvc->Release();
+    // Reconnect to server before each query as we were seeing disconnected failures
+    hres = pLoc->ConnectServer(
+        _bstr_t(L"ROOT\\CIMV2"), // Object path of WMI namespace
+        nullptr,                    // User name. NULL = current user
+        nullptr,                    // User password. NULL = current
+        nullptr,                 // Locale. NULL indicates current
+        0,                    // Security flags.
+        nullptr,                 // Authority (for example, Kerberos)
+        nullptr,                 // Context object
+        &pSvc                    // pointer to IWbemServices proxy
+    );
 
     // Make the WMI query
     hres = pSvc->ExecQuery(

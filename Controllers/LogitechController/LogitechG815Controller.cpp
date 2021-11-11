@@ -24,7 +24,12 @@ LogitechG815Controller::~LogitechG815Controller()
 std::string LogitechG815Controller::GetSerialString()
 {
     wchar_t serial_string[128];
-    hid_get_serial_number_string(dev_pkt_0x11, serial_string, 128);
+    int ret = hid_get_serial_number_string(dev_pkt_0x11, serial_string, 128);
+
+    if(ret != 0)
+    {
+        return("");
+    }
 
     std::wstring return_wstring = serial_string;
     std::string return_string(return_wstring.begin(), return_wstring.end());
@@ -85,7 +90,7 @@ void LogitechG815Controller::SendCommit()
     | Send packet                                           |
     \*-----------------------------------------------------*/
     hid_write(dev_pkt_0x11, (unsigned char *)usb_buf, 20);
-    hid_read(dev_pkt_0x11,  (unsigned char *)usb_buf, 20);
+    hid_read_timeout(dev_pkt_0x11,  (unsigned char *)usb_buf, 20, LOGITECH_READ_TIMEOUT);
 }
 
 void LogitechG815Controller::InitializeDirect()
@@ -238,7 +243,7 @@ void LogitechG815Controller::SendDirectFrame
     | Send packet                                           |
     \*-----------------------------------------------------*/
     hid_write(dev_pkt_0x11, (unsigned char *)usb_buf, 20);
-    hid_read(dev_pkt_0x11,  (unsigned char *)usb_buf, 20);
+    hid_read_timeout(dev_pkt_0x11,  (unsigned char *)usb_buf, 20, LOGITECH_READ_TIMEOUT);
 }
 
 void LogitechG815Controller::SendMode

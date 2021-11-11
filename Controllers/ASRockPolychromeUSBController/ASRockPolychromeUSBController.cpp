@@ -54,8 +54,13 @@ std::string PolychromeUSBController::GetDeviceName()
 std::string PolychromeUSBController::GetSerialString()
 {
     wchar_t serial_string[128];
-    hid_get_serial_number_string(dev, serial_string, 128);
+    int ret = hid_get_serial_number_string(dev, serial_string, 128);
 
+    if(ret != 0)
+    {
+        return("");
+    }
+    
     std::wstring return_wstring = serial_string;
     std::string return_string(return_wstring.begin(), return_wstring.end());
 
@@ -179,7 +184,8 @@ void PolychromeUSBController::WriteRGSwap
 void PolychromeUSBController::WriteHeader
     (
     unsigned char   cfg,
-    unsigned char   configstring[]
+    unsigned char*  configstring,
+    unsigned int    configsize
     )
 {
     unsigned char usb_buf[65];
@@ -194,7 +200,7 @@ void PolychromeUSBController::WriteHeader
     \*-----------------------------------------------------*/
     usb_buf[0x01] = POLYCHROME_USB_WRITE_HEADER;
 	usb_buf[0x03] = cfg;
-    memcpy(&usb_buf[4], configstring, sizeof(configstring));
+    memcpy(&usb_buf[4], configstring, configsize);
 
     /*-----------------------------------------------------*\
     | Send packet                                           |
@@ -207,7 +213,7 @@ PolychromeZoneInfo PolychromeUSBController::GetZoneConfig(unsigned char zone)
 {
     unsigned char       usb_buf[65];
     PolychromeZoneInfo  zoneinfo;
-    unsigned char       all;
+    //unsigned char       all;
     unsigned char       r;
     unsigned char       g;
     unsigned char       b;
@@ -242,7 +248,7 @@ PolychromeZoneInfo PolychromeUSBController::GetZoneConfig(unsigned char zone)
     zoneinfo.color  = ToRGBColor(r,g,b);  
     zoneinfo.speed  = usb_buf[0x08];
     zoneinfo.zone   = usb_buf[0x03];
-    all             = usb_buf[0x10];
+    //all             = usb_buf[0x10];
 
     return(zoneinfo);
 }

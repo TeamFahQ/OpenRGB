@@ -127,7 +127,7 @@ union command_id_union
     } parts;
 };
 
-PACK(typedef struct razer_report
+PACK(struct razer_report
 {
     unsigned char               report_id;
     unsigned char               status;
@@ -145,7 +145,7 @@ PACK(typedef struct razer_report
 /*---------------------------------------------------------*\
 | Razer ARGB Report Type (taken from OpenRazer)             |
 \*---------------------------------------------------------*/
-PACK(typedef struct razer_argb_report
+PACK(struct razer_argb_report
 {
     unsigned char hid_id;
     unsigned char report_id;
@@ -168,6 +168,8 @@ public:
     std::string             GetFirmwareString();
     std::string             GetName();
     std::string             GetSerialString();
+
+    void                    SetBrightness(unsigned char brightness);
 
     void                    SetLEDs(RGBColor* colors);
     void                    SetAddressableZoneSizes(unsigned char zone_1_size, unsigned char zone_2_size, unsigned char zone_3_size, unsigned char zone_4_size, unsigned char zone_5_size, unsigned char zone_6_size);

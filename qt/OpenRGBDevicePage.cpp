@@ -66,86 +66,25 @@ OpenRGBDevicePage::OpenRGBDevicePage(RGBController *dev, QWidget *parent) :
     \*-----------------------------------------------------*/
     connect(ui->DeviceViewBox, &DeviceView::selectionChanged, this, &OpenRGBDevicePage::on_DeviceViewBox_selectionChanged);
 
+    /*-----------------------------------------------------*\
+    | Get the UserInterface settings and check the          |
+    | numerical labels setting                              |
+    \*-----------------------------------------------------*/
+    SettingsManager*    settings_manager    = ResourceManager::get()->GetSettingsManager();
+    std::string         ui_string           = "UserInterface";
+    json                ui_settings;
+
+    ui_settings = settings_manager->GetSettings(ui_string);
+
+    if(ui_settings.contains("numerical_labels"))
+    {
+        bool            numerical_labels    = ui_settings["numerical_labels"];
+
+        ui->DeviceViewBox->setNumericalLabels(numerical_labels);
+    }
+
     ui->DeviceViewBox->setController(device);
     ui->DeviceViewBox->hide();
-
-    /*-----------------------------------------------------*\
-    | Set up the color palette buttons                      |
-    \*-----------------------------------------------------*/
-#ifdef _WIN32
-    if(((OpenRGBDialog2 *)parent)->IsDarkTheme())
-    {
-        ui->ButtonRed->setStyleSheet("QPushButton {background-color: rgb(255,0,0); color: rgb(255,0,0);}");
-        ui->ButtonRed->setFlat(true);
-        ui->ButtonRed->update();
-
-        ui->ButtonYellow->setStyleSheet("QPushButton {background-color: rgb(255,255,0); color: rgb(255,255,0);}");
-        ui->ButtonYellow->setFlat(true);
-        ui->ButtonYellow->update();
-
-        ui->ButtonGreen->setStyleSheet("QPushButton {background-color: rgb(0,255,0); color: rgb(0,255,0);}");
-        ui->ButtonGreen->setFlat(true);
-        ui->ButtonGreen->update();
-
-        ui->ButtonCyan->setStyleSheet("QPushButton {background-color: rgb(0,255,255); color: rgb(0,255,255);}");
-        ui->ButtonCyan->setFlat(true);
-        ui->ButtonCyan->update();
-
-        ui->ButtonBlue->setStyleSheet("QPushButton {background-color: rgb(0,0,255); color: rgb(0,0,255);}");
-        ui->ButtonBlue->setFlat(true);
-        ui->ButtonBlue->update();
-
-        ui->ButtonMagenta->setStyleSheet("QPushButton {background-color: rgb(255,0,255); color: rgb(255,0,255);}");
-        ui->ButtonMagenta->setFlat(true);
-        ui->ButtonMagenta->update();
-    }
-    else
-#endif
-    {
-        QPalette pal;
-
-        pal = ui->ButtonRed->palette();
-        pal.setColor(QPalette::Button, QColor(255, 0, 0));
-        ui->ButtonRed->setAutoFillBackground(true);
-        ui->ButtonRed->setPalette(pal);
-        ui->ButtonRed->setFlat(true);
-        ui->ButtonRed->update();
-
-        pal = ui->ButtonYellow->palette();
-        pal.setColor(QPalette::Button, QColor(255, 255, 0));
-        ui->ButtonYellow->setAutoFillBackground(true);
-        ui->ButtonYellow->setPalette(pal);
-        ui->ButtonYellow->setFlat(true);
-        ui->ButtonYellow->update();
-
-        pal = ui->ButtonGreen->palette();
-        pal.setColor(QPalette::Button, QColor(0, 255, 0));
-        ui->ButtonGreen->setAutoFillBackground(true);
-        ui->ButtonGreen->setPalette(pal);
-        ui->ButtonGreen->setFlat(true);
-        ui->ButtonGreen->update();
-
-        pal = ui->ButtonCyan->palette();
-        pal.setColor(QPalette::Button, QColor(0, 255, 255));
-        ui->ButtonCyan->setAutoFillBackground(true);
-        ui->ButtonCyan->setPalette(pal);
-        ui->ButtonCyan->setFlat(true);
-        ui->ButtonCyan->update();
-
-        pal = ui->ButtonBlue->palette();
-        pal.setColor(QPalette::Button, QColor(0, 0, 255));
-        ui->ButtonBlue->setAutoFillBackground(true);
-        ui->ButtonBlue->setPalette(pal);
-        ui->ButtonBlue->setFlat(true);
-        ui->ButtonBlue->update();
-
-        pal = ui->ButtonMagenta->palette();
-        pal.setColor(QPalette::Button, QColor(255, 0, 255));
-        ui->ButtonMagenta->setAutoFillBackground(true);
-        ui->ButtonMagenta->setPalette(pal);
-        ui->ButtonMagenta->setFlat(true);
-        ui->ButtonMagenta->update();
-    }
 
     /*-----------------------------------------------------*\
     | Fill in the mode selection box                        |
@@ -169,6 +108,7 @@ OpenRGBDevicePage::OpenRGBDevicePage(RGBController *dev, QWidget *parent) :
     ui->RedSpinBox->setValue(ui->ColorWheelBox->color().red());
     ui->GreenSpinBox->setValue(ui->ColorWheelBox->color().green());
     ui->BlueSpinBox->setValue(ui->ColorWheelBox->color().blue());
+    ui->ApplyColorsButton->setDisabled(autoUpdateEnabled());
 }
 
 OpenRGBDevicePage::~OpenRGBDevicePage()
@@ -397,17 +337,17 @@ void Ui::OpenRGBDevicePage::on_LEDBox_currentIndexChanged(int index)
 
         case MODE_COLORS_MODE_SPECIFIC:
             {
-            /*-----------------------------------------------------*\
-            | Update color picker with color of selected mode       |
-            \*-----------------------------------------------------*/
-            RGBColor color = device->modes[selected_mode].colors[index];
-            UpdatingColor = true;
-            ui->RedSpinBox->setValue(RGBGetRValue(color));
-            ui->GreenSpinBox->setValue(RGBGetGValue(color));
-            ui->BlueSpinBox->setValue(RGBGetBValue(color));
-            UpdatingColor = false;
-            updateHSV();
-            updateWheel();
+                /*-----------------------------------------------------*\
+                | Update color picker with color of selected mode       |
+                \*-----------------------------------------------------*/
+                RGBColor color = device->modes[selected_mode].colors[index];
+                UpdatingColor = true;
+                ui->RedSpinBox->setValue(RGBGetRValue(color));
+                ui->GreenSpinBox->setValue(RGBGetGValue(color));
+                ui->BlueSpinBox->setValue(RGBGetBValue(color));
+                UpdatingColor = false;
+                updateHSV();
+                updateWheel();
             }
             break;
     }
@@ -425,6 +365,11 @@ void Ui::OpenRGBDevicePage::on_ModeBox_currentIndexChanged(int /*index*/)
     | Change device mode                                    |
     \*-----------------------------------------------------*/
     UpdateMode();
+
+    /*-----------------------------------------------------*\
+    | Disable the button if we can safely auto apply colors |
+    \*-----------------------------------------------------*/
+    ui->ApplyColorsButton->setDisabled(autoUpdateEnabled());
 }
 
 void Ui::OpenRGBDevicePage::on_PerLEDCheck_clicked()
@@ -466,6 +411,14 @@ void Ui::OpenRGBDevicePage::on_RandomCheck_clicked()
     UpdateModeUi();
 }
 
+void Ui::OpenRGBDevicePage::on_BrightnessSlider_valueChanged(int /*value*/)
+{
+    /*-----------------------------------------------------*\
+    | Change device mode                                    |
+    \*-----------------------------------------------------*/
+    UpdateMode();
+}
+
 void Ui::OpenRGBDevicePage::on_SpeedSlider_valueChanged(int /*value*/)
 {
     /*-----------------------------------------------------*\
@@ -504,6 +457,7 @@ void Ui::OpenRGBDevicePage::UpdateModeUi()
         bool supports_mode_specific = ( device->modes[selected_mode].flags & MODE_FLAG_HAS_MODE_SPECIFIC_COLOR );
         bool supports_random        = ( device->modes[selected_mode].flags & MODE_FLAG_HAS_RANDOM_COLOR );
         bool supports_speed         = ( device->modes[selected_mode].flags & MODE_FLAG_HAS_SPEED );
+        bool supports_brightness    = ( device->modes[selected_mode].flags & MODE_FLAG_HAS_BRIGHTNESS);
         bool supports_dir_lr        = ( device->modes[selected_mode].flags & MODE_FLAG_HAS_DIRECTION_LR );
         bool supports_dir_ud        = ( device->modes[selected_mode].flags & MODE_FLAG_HAS_DIRECTION_UD );
         bool supports_dir_hv        = ( device->modes[selected_mode].flags & MODE_FLAG_HAS_DIRECTION_HV );
@@ -511,6 +465,8 @@ void Ui::OpenRGBDevicePage::UpdateModeUi()
         bool mode_specific          = device->modes[selected_mode].color_mode == MODE_COLORS_MODE_SPECIFIC;
         bool random                 = device->modes[selected_mode].color_mode == MODE_COLORS_RANDOM;
         unsigned int dir            = device->modes[selected_mode].direction;
+        bool manual_save            = ( device->modes[selected_mode].flags & MODE_FLAG_MANUAL_SAVE );
+        bool automatic_save         = ( device->modes[selected_mode].flags & MODE_FLAG_AUTOMATIC_SAVE );
 
         if(supports_speed)
         {
@@ -543,6 +499,36 @@ void Ui::OpenRGBDevicePage::UpdateModeUi()
             ui->SpeedSlider->blockSignals(true);
             ui->SpeedSlider->setEnabled(false);
             ui->SpeedSlider->blockSignals(false);
+        }
+
+        if(supports_brightness)
+        {
+            ui->BrightnessSlider->blockSignals(true);
+            InvertedBrightness = device->modes[selected_mode].brightness_min > device->modes[selected_mode].brightness_max;
+
+            if(InvertedBrightness)
+            {
+                /*-----------------------------------------------------*\
+                | If Brightness Slider is inverted, invert value        |
+                \*-----------------------------------------------------*/
+                ui->BrightnessSlider->setMinimum(device->modes[selected_mode].brightness_max);
+                ui->BrightnessSlider->setMaximum(device->modes[selected_mode].brightness_min);
+            }
+            else
+            {
+                ui->BrightnessSlider->setMinimum(device->modes[selected_mode].brightness_min);
+                ui->BrightnessSlider->setMaximum(device->modes[selected_mode].brightness_max);
+            }
+
+            ui->BrightnessSlider->setValue(device->modes[selected_mode].brightness);
+            ui->BrightnessSlider->setEnabled(true);
+            ui->BrightnessSlider->blockSignals(false);
+        }
+        else
+        {
+            ui->BrightnessSlider->blockSignals(true);
+            ui->BrightnessSlider->setEnabled(false);
+            ui->BrightnessSlider->blockSignals(false);
         }
 
         ui->DirectionBox->blockSignals(true);
@@ -620,6 +606,7 @@ void Ui::OpenRGBDevicePage::UpdateModeUi()
         {
             ui->PerLEDCheck->setEnabled(true);
             ui->PerLEDCheck->setChecked(per_led);
+            ui->DeviceViewBox->setPerLED(true);
         }
         else
         {
@@ -627,6 +614,7 @@ void Ui::OpenRGBDevicePage::UpdateModeUi()
             ui->PerLEDCheck->setAutoExclusive(false);
             ui->PerLEDCheck->setChecked(false);
             ui->PerLEDCheck->setAutoExclusive(true);
+            ui->DeviceViewBox->setPerLED(false);
         }
 
         if(supports_mode_specific)
@@ -653,6 +641,22 @@ void Ui::OpenRGBDevicePage::UpdateModeUi()
             ui->RandomCheck->setAutoExclusive(false);
             ui->RandomCheck->setChecked(false);
             ui->RandomCheck->setAutoExclusive(true);
+        }
+
+        if(automatic_save)
+        {
+            ui->DeviceSaveButton->setText("Saved To Device");
+            ui->DeviceSaveButton->setEnabled(false);
+        }
+        else if(manual_save)
+        {
+            ui->DeviceSaveButton->setText("Save To Device");
+            ui->DeviceSaveButton->setEnabled(true);
+        }
+        else
+        {
+            ui->DeviceSaveButton->setText("Saving Not Supported");
+            ui->DeviceSaveButton->setEnabled(false);
         }
 
         /*-----------------------------------------------------*\
@@ -728,7 +732,7 @@ void Ui::OpenRGBDevicePage::UpdateModeUi()
                     ui->ResizeButton->setEnabled(true);
                 }
 
-                for (std::size_t i = 0; i < device->modes[selected_mode].colors.size(); i++)
+                for(unsigned int i = 0; i < device->modes[selected_mode].colors.size(); i++)
                 {
                     char id_buf[32];
                     snprintf(id_buf, 16, "Mode Color %u", i);
@@ -755,15 +759,16 @@ void Ui::OpenRGBDevicePage::UpdateMode()
 
     if(current_mode >= 0)
     {
-        int  current_speed     = 0;
-        bool current_per_led   = ui->PerLEDCheck->isChecked();
-        bool current_mode_specific = ui->ModeSpecificCheck->isChecked();
-        bool current_random    = ui->RandomCheck->isChecked();
-        int  current_dir_idx   = ui->DirectionBox->currentIndex();
-        int  current_direction = 0;
-        bool supports_dir_lr = ( device->modes[(unsigned int)current_mode].flags & MODE_FLAG_HAS_DIRECTION_LR );
-        bool supports_dir_ud = ( device->modes[(unsigned int)current_mode].flags & MODE_FLAG_HAS_DIRECTION_UD );
-        bool supports_dir_hv = ( device->modes[(unsigned int)current_mode].flags & MODE_FLAG_HAS_DIRECTION_HV );
+        int  current_speed          = 0;
+        int  current_brightness     = 0;
+        bool current_per_led        = ui->PerLEDCheck->isChecked();
+        bool current_mode_specific  = ui->ModeSpecificCheck->isChecked();
+        bool current_random         = ui->RandomCheck->isChecked();
+        int  current_dir_idx        = ui->DirectionBox->currentIndex();
+        int  current_direction      = 0;
+        bool supports_dir_lr        = ( device->modes[(unsigned int)current_mode].flags & MODE_FLAG_HAS_DIRECTION_LR );
+        bool supports_dir_ud        = ( device->modes[(unsigned int)current_mode].flags & MODE_FLAG_HAS_DIRECTION_UD );
+        bool supports_dir_hv        = ( device->modes[(unsigned int)current_mode].flags & MODE_FLAG_HAS_DIRECTION_HV );
 
         /*-----------------------------------------------------*\
         | Set the direction value                               |
@@ -823,6 +828,24 @@ void Ui::OpenRGBDevicePage::UpdateMode()
         }
 
         /*-----------------------------------------------------*\
+        | If Brightness Slider is enabled, read the value       |
+        \*-----------------------------------------------------*/
+        if(ui->BrightnessSlider->isEnabled())
+        {
+            /*-----------------------------------------------------*\
+            | If Brightness Slider is inverted, invert value        |
+            \*-----------------------------------------------------*/
+            if(InvertedBrightness)
+            {
+                current_brightness = device->modes[(unsigned int)current_mode].brightness_min - ui->BrightnessSlider->value() + device->modes[current_mode].brightness_max;
+            }
+            else
+            {
+                current_brightness = ui->BrightnessSlider->value();
+            }
+        }
+
+        /*-----------------------------------------------------*\
         | Don't set the mode if the current mode is invalid     |
         \*-----------------------------------------------------*/
         if((unsigned int)current_mode < device->modes.size())
@@ -830,7 +853,8 @@ void Ui::OpenRGBDevicePage::UpdateMode()
             /*-----------------------------------------------------*\
             | Update mode parameters                                |
             \*-----------------------------------------------------*/
-            device->modes[(unsigned int)current_mode].speed  = current_speed;
+            device->modes[(unsigned int)current_mode].speed         = current_speed;
+            device->modes[(unsigned int)current_mode].brightness    = current_brightness;
 
             if(current_per_led)
             {
@@ -952,34 +976,21 @@ void Ui::OpenRGBDevicePage::SetCustomMode(unsigned char red, unsigned char green
     UpdateMode();
 }
 
-void Ui::OpenRGBDevicePage::on_ButtonRed_clicked()
+void Ui::OpenRGBDevicePage::on_SwatchBox_swatchChanged(const QColor color)
 {
-    SetDevice(255, 0, 0);
-}
+    if(UpdatingColor)
+    {
+        return;
+    }
 
-void Ui::OpenRGBDevicePage::on_ButtonYellow_clicked()
-{
-    SetDevice(255, 255, 0);
-}
+    UpdatingColor = true;
+    ui->RedSpinBox->setValue(color.red());
+    ui->GreenSpinBox->setValue(color.green());
+    ui->BlueSpinBox->setValue(color.blue());
+    UpdatingColor = false;
 
-void Ui::OpenRGBDevicePage::on_ButtonGreen_clicked()
-{
-    SetDevice(0, 255, 0);
-}
-
-void Ui::OpenRGBDevicePage::on_ButtonCyan_clicked()
-{
-    SetDevice(0, 255, 255);
-}
-
-void Ui::OpenRGBDevicePage::on_ButtonBlue_clicked()
-{
-    SetDevice(0, 0, 255);
-}
-
-void Ui::OpenRGBDevicePage::on_ButtonMagenta_clicked()
-{
-    SetDevice(255, 0, 255);
+    ui->ColorWheelBox->setColor(color);
+    updateDeviceView();
 }
 
 void Ui::OpenRGBDevicePage::on_ColorWheelBox_colorChanged(const QColor color)
@@ -996,6 +1007,8 @@ void Ui::OpenRGBDevicePage::on_ColorWheelBox_colorChanged(const QColor color)
     UpdatingColor = false;
 
     updateHSV();
+
+    ui->SwatchBox->setCurrentColor(color);
     updateDeviceView();
 }
 
@@ -1066,7 +1079,7 @@ void Ui::OpenRGBDevicePage::updateWheel()
 
 void Ui::OpenRGBDevicePage::updateDeviceView()
 {
-    if(false)//ui->AutoFillCheck->isChecked())
+    if(autoUpdateEnabled())
     {
         /*-----------------------------------------------------*\
         | Read selected mode                                    |
@@ -1106,6 +1119,11 @@ void Ui::OpenRGBDevicePage::updateDeviceView()
                 break;
         }
     }
+}
+
+bool Ui::OpenRGBDevicePage::autoUpdateEnabled()
+{
+    return !(device->modes[device->active_mode].flags & MODE_FLAG_AUTOMATIC_SAVE);
 }
 
 void Ui::OpenRGBDevicePage::on_RedSpinBox_valueChanged(int /*arg1*/)
@@ -1322,5 +1340,13 @@ void Ui::OpenRGBDevicePage::on_SelectAllLEDsButton_clicked()
         ui->LEDBox->setCurrentIndex(0);
         on_LEDBox_currentIndexChanged(0);
         ui->DeviceViewBox->repaint();
+    }
+}
+
+void Ui::OpenRGBDevicePage::on_DeviceSaveButton_clicked()
+{
+    if(device->modes[device->active_mode].flags & MODE_FLAG_MANUAL_SAVE)
+    {
+        device->SaveMode();
     }
 }

@@ -10,10 +10,11 @@
 #include <cstring>
 #include "DuckyKeyboardController.h"
 
-DuckyKeyboardController::DuckyKeyboardController(hid_device* dev_handle, const char* path)
+DuckyKeyboardController::DuckyKeyboardController(hid_device* dev_handle, const char* path, const unsigned short pid)
 {
     dev         = dev_handle;
     location    = path;
+    usb_pid     = pid;
 
     SendInitialize();
 }
@@ -31,12 +32,22 @@ std::string DuckyKeyboardController::GetDeviceLocation()
 std::string DuckyKeyboardController::GetSerialString()
 {
     wchar_t serial_string[128];
-    hid_get_serial_number_string(dev, serial_string, 128);
+    int ret = hid_get_serial_number_string(dev, serial_string, 128);
+
+    if(ret != 0)
+    {
+        return("");
+    }
 
     std::wstring return_wstring = serial_string;
     std::string return_string(return_wstring.begin(), return_wstring.end());
 
     return(return_string);
+}
+
+unsigned short DuckyKeyboardController::GetUSBPID()
+{
+    return(usb_pid);
 }
 
 void DuckyKeyboardController::SendColors

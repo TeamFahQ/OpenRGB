@@ -31,6 +31,7 @@ public:
     unsigned int    GetProtocolVersion();
     bool            GetOnline();
 
+    void            ClearCallbacks();
     void            RegisterClientInfoChangeCallback(NetClientCallback new_callback, void * new_callback_arg);
 
     void            SetIP(const char *new_ip);
@@ -66,6 +67,7 @@ public:
     void        SendRequest_RGBController_SetCustomMode(unsigned int dev_idx);
 
     void        SendRequest_RGBController_UpdateMode(unsigned int dev_idx, unsigned char * data, unsigned int size);
+    void        SendRequest_RGBController_SaveMode(unsigned int dev_idx, unsigned char * data, unsigned int size);
 
 
     std::vector<std::string> * ProcessReply_ProfileList(unsigned int data_size, char * data);

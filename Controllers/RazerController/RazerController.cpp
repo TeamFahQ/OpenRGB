@@ -81,6 +81,7 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_BASE_STATION_CHROMA_PID:
         case RAZER_CHROMA_HDK_PID:
         case RAZER_CORE_PID:
+        case RAZER_CORE_X_PID:
         case RAZER_FIREFLY_PID:
         case RAZER_FIREFLY_HYPERFLUX_PID:
         case RAZER_FIREFLY_V2_PID:
@@ -102,8 +103,10 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_TARTARUS_V2_PID:
         case RAZER_BASE_STATION_CHROMA_PID:
         case RAZER_BASE_STATION_V2_CHROMA_PID:
+        case RAZER_MOUSE_BUNGEE_V3_CHROMA_PID:
         case RAZER_CHARGING_PAD_CHROMA_PID:
         case RAZER_CHROMA_HDK_PID:
+        case RAZER_CORE_X_PID:
         case RAZER_FIREFLY_V2_PID:
             dev_led_id = RAZER_LED_ID_ZERO;
             break;
@@ -112,14 +115,21 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_BLACKWIDOW_ELITE_PID:
         case RAZER_BLACKWIDOW_ESSENTIAL_PID:
         case RAZER_BLACKWIDOW_LITE_PID:
+        case RAZER_BLACKWIDOW_V3_PID:
+        case RAZER_BLACKWIDOW_V3_PRO_WIRED_PID:
+        case RAZER_BLACKWIDOW_V3_PRO_BLUETOOTH_PID:
+        case RAZER_BLACKWIDOW_V3_PRO_WIRELESS_PID:
+        case RAZER_BLACKWIDOW_V3_TKL_PID:
         case RAZER_CYNOSA_CHROMA_PID:
         case RAZER_CYNOSA_LITE_PID:
         case RAZER_CYNOSA_V2_PID:
         case RAZER_HUNTSMAN_ELITE_PID:
         case RAZER_HUNTSMAN_PID:
+        case RAZER_HUNTSMAN_MINI_PID:
         case RAZER_HUNTSMAN_TE_PID:
         case RAZER_ORNATA_CHROMA_PID:
         case RAZER_ORNATA_CHROMA_V2_PID:
+        case RAZER_CORE_PID:
         case RAZER_FIREFLY_PID:
         default:
             dev_led_id = RAZER_LED_ID_BACKLIGHT;
@@ -146,12 +156,17 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_BLADE_2019_STUDIO_PID:
         case RAZER_BLADE_2020_ADVANCED_PID:
         case RAZER_BLADE_2020_BASE_PID:
+        case RAZER_BLADE_LATE_2020_PID:
+        case RAZER_BLADE_2021_ADVANCED_PID:
         case RAZER_BLADE_2021_BASE_PID:
+        case RAZER_BLADE_14_2021_PID:
         case RAZER_BLADE_PRO_2016_PID:
         case RAZER_BLADE_PRO_2017_PID:
         case RAZER_BLADE_PRO_2017_FULLHD_PID:
         case RAZER_BLADE_PRO_2019_PID:
         case RAZER_BLADE_PRO_LATE_2019_PID:
+        case RAZER_BLADE_PRO_17_2020_PID:
+        case RAZER_BLADE_PRO_17_2021_PID:
         case RAZER_BLADE_STEALTH_2016_PID:
         case RAZER_BLADE_STEALTH_LATE_2016_PID:
         case RAZER_BLADE_STEALTH_2017_PID:
@@ -160,7 +175,9 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_BLADE_STEALTH_LATE_2019_PID:
         case RAZER_BLADE_STEALTH_2020_PID:
         case RAZER_BLADE_STEALTH_LATE_2020_PID:
+        case RAZER_BOOK_13_2020_PID:
         case RAZER_NAGA_HEX_V2_PID:
+        case RAZER_CORE_PID:
             matrix_type = RAZER_MATRIX_TYPE_STANDARD;
             break;
 
@@ -171,11 +188,20 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_BASE_STATION_V2_CHROMA_PID:
         case RAZER_BASILISK_PID:
         case RAZER_BASILISK_ESSENTIAL_PID:
+        case RAZER_BASILISK_ULTIMATE_WIRED_PID:
+        case RAZER_BASILISK_ULTIMATE_WIRELESS_PID:
+        case RAZER_BASILISK_V2_PID:
         case RAZER_BLACKWIDOW_2019_PID:
         case RAZER_BLACKWIDOW_ELITE_PID:
+        case RAZER_BLACKWIDOW_V3_PID:
+        case RAZER_BLACKWIDOW_V3_PRO_WIRED_PID:
+        case RAZER_BLACKWIDOW_V3_PRO_BLUETOOTH_PID:
+        case RAZER_BLACKWIDOW_V3_PRO_WIRELESS_PID:
+        case RAZER_BLACKWIDOW_V3_TKL_PID:
         case RAZER_CHARGING_PAD_CHROMA_PID:
         case RAZER_CHROMA_HDK_PID:
         case RAZER_CHROMA_PC_CASE_LIGHTING_KIT_PID:
+        case RAZER_CORE_X_PID:
         case RAZER_CYNOSA_CHROMA_PID:
         case RAZER_CYNOSA_V2_PID:
         case RAZER_DEATHADDER_ELITE_PID:
@@ -191,6 +217,7 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_GOLIATHUS_CHROMA_PID:
         case RAZER_HUNTSMAN_ELITE_PID:
         case RAZER_HUNTSMAN_PID:
+        case RAZER_HUNTSMAN_MINI_PID:
         case RAZER_HUNTSMAN_TE_PID:
         case RAZER_KRAKEN_KITTY_EDITION_PID:
         case RAZER_LANCEHEAD_TE_WIRED_PID:
@@ -202,6 +229,7 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_MAMBA_2018_WIRELESS_PID:
         case RAZER_MAMBA_ELITE_PID:
         case RAZER_MOUSE_BUNGEE_V3_CHROMA_PID:
+        case RAZER_MOUSE_DOCK_CHROMA_PID:
         case RAZER_NAGA_TRINITY_PID:
         case RAZER_NOMMO_CHROMA_PID:
         case RAZER_NOMMO_PRO_PID:
@@ -248,11 +276,6 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
             matrix_type = RAZER_MATRIX_TYPE_CUSTOM;
             break;
     }
-
-    /*-----------------------------------------------------------------*\
-    | Initialize to full brightness                                     |
-    \*-----------------------------------------------------------------*/
-    razer_set_brightness(255);
 }
 
 RazerController::~RazerController()
@@ -295,6 +318,11 @@ void RazerController::SetAddressableZoneSizes(unsigned char zone_1_size, unsigne
     razer_report report     = razer_create_addressable_size_report(zone_1_size, zone_2_size, zone_3_size, zone_4_size, zone_5_size, zone_6_size);
 
     razer_usb_send(&report);
+}
+
+void RazerController::SetBrightness(unsigned char brightness)
+{
+    razer_set_brightness(brightness);
 }
 
 void RazerController::SetLEDs(RGBColor* colors)
@@ -403,6 +431,11 @@ bool RazerController::SupportsWave()
         case RAZER_BLACKWIDOW_CHROMA_TE_PID:
         case RAZER_BLACKWIDOW_CHROMA_V2_PID:
         case RAZER_BLACKWIDOW_OVERWATCH_PID:
+        case RAZER_BLACKWIDOW_V3_PID:
+        case RAZER_BLACKWIDOW_V3_PRO_WIRED_PID:
+        case RAZER_BLACKWIDOW_V3_PRO_BLUETOOTH_PID:
+        case RAZER_BLACKWIDOW_V3_PRO_WIRELESS_PID:
+        case RAZER_BLACKWIDOW_V3_TKL_PID:
         case RAZER_BLACKWIDOW_X_CHROMA_PID:
         case RAZER_BLACKWIDOW_X_CHROMA_TE_PID:
         case RAZER_BLADE_2016_PID:
@@ -414,17 +447,23 @@ bool RazerController::SupportsWave()
         case RAZER_BLADE_2019_MERCURY_PID:
         case RAZER_BLADE_2019_STUDIO_PID:
         case RAZER_BLADE_2020_ADVANCED_PID:
+        case RAZER_BLADE_LATE_2020_PID:
         case RAZER_BLADE_2020_BASE_PID:
+        case RAZER_BLADE_2021_ADVANCED_PID:
         case RAZER_BLADE_2021_BASE_PID:
+        case RAZER_BLADE_14_2021_PID:
         case RAZER_BLADE_PRO_2016_PID:
         case RAZER_BLADE_PRO_2017_PID:
         case RAZER_BLADE_PRO_2017_FULLHD_PID:
         case RAZER_BLADE_PRO_2019_PID:
         case RAZER_BLADE_PRO_LATE_2019_PID:
+        case RAZER_BLADE_PRO_17_2020_PID:
+        case RAZER_BLADE_PRO_17_2021_PID:
         case RAZER_BLADE_STEALTH_2016_PID:
         case RAZER_BLADE_STEALTH_LATE_2016_PID:
         case RAZER_BLADE_STEALTH_2017_PID:
         case RAZER_BLADE_STEALTH_LATE_2017_PID:
+        case RAZER_BOOK_13_2020_PID:
         case RAZER_CYNOSA_CHROMA_PID:
         case RAZER_CYNOSA_V2_PID:
         case RAZER_DEATHSTALKER_CHROMA_PID:
@@ -432,6 +471,7 @@ bool RazerController::SupportsWave()
         case RAZER_ORNATA_CHROMA_V2_PID:
         case RAZER_HUNTSMAN_PID:
         case RAZER_HUNTSMAN_ELITE_PID:
+        case RAZER_HUNTSMAN_MINI_PID:
         case RAZER_HUNTSMAN_TE_PID:
         case RAZER_ORBWEAVER_CHROMA_PID:
         case RAZER_TARTARUS_V2_PID:
@@ -439,6 +479,8 @@ bool RazerController::SupportsWave()
         /*-----------------------------------------------------*\
         | Mice                                                  |
         \*-----------------------------------------------------*/
+        case RAZER_BASILISK_ULTIMATE_WIRED_PID:
+        case RAZER_BASILISK_ULTIMATE_WIRELESS_PID:
         case RAZER_DIAMONDBACK_CHROMA_PID:
         case RAZER_MAMBA_2015_WIRED_PID:
         case RAZER_MAMBA_2015_WIRELESS_PID:
@@ -460,6 +502,7 @@ bool RazerController::SupportsWave()
         case RAZER_CHROMA_HDK_PID:
         case RAZER_CHROMA_PC_CASE_LIGHTING_KIT_PID:
         case RAZER_CORE_PID:
+        case RAZER_CORE_X_PID:
         case RAZER_FIREFLY_PID:
         case RAZER_FIREFLY_V2_PID:
         case RAZER_MOUSE_BUNGEE_V3_CHROMA_PID:
@@ -735,7 +778,7 @@ razer_report RazerController::razer_create_mode_breathing_one_color_extended_mat
     return report;
 }
 
-razer_report RazerController::razer_create_mode_breathing_one_color_standard_matrix_report(unsigned char variable_storage, unsigned char led_id, unsigned char red, unsigned char grn, unsigned char blu)
+razer_report RazerController::razer_create_mode_breathing_one_color_standard_matrix_report(unsigned char /*variable_storage*/, unsigned char /*led_id*/, unsigned char red, unsigned char grn, unsigned char blu)
 {
     razer_report report         = razer_create_report(0x03, 0x0A, 0x08);
 
@@ -759,7 +802,7 @@ razer_report RazerController::razer_create_mode_breathing_random_extended_matrix
     return report;
 }
 
-razer_report RazerController::razer_create_mode_breathing_random_standard_matrix_report(unsigned char variable_storage, unsigned char led_id)
+razer_report RazerController::razer_create_mode_breathing_random_standard_matrix_report(unsigned char /*variable_storage*/, unsigned char /*led_id*/)
 {
     razer_report report         = razer_create_report(0x03, 0x0A, 0x08);
 
@@ -790,7 +833,7 @@ razer_report RazerController::razer_create_mode_breathing_two_colors_extended_ma
     return report;
 }
 
-razer_report RazerController::razer_create_mode_breathing_two_colors_standard_matrix_report(unsigned char variable_storage, unsigned char led_id, unsigned char r1, unsigned char g1, unsigned char b1, unsigned char r2, unsigned char g2, unsigned char b2)
+razer_report RazerController::razer_create_mode_breathing_two_colors_standard_matrix_report(unsigned char /*variable_storage*/, unsigned char /*led_id*/, unsigned char r1, unsigned char g1, unsigned char b1, unsigned char r2, unsigned char g2, unsigned char b2)
 {
     razer_report report         = razer_create_report(0x03, 0x0A, 0x08);
 
@@ -838,7 +881,7 @@ razer_report RazerController::razer_create_mode_none_extended_matrix_report(unsi
     return report;
 }
 
-razer_report RazerController::razer_create_mode_none_standard_matrix_report(unsigned char variable_storage, unsigned char led_id)
+razer_report RazerController::razer_create_mode_none_standard_matrix_report(unsigned char /*variable_storage*/, unsigned char /*led_id*/)
 {
     struct razer_report report  = razer_create_report(0x03, 0x0A, 0x01);
 
@@ -858,7 +901,7 @@ razer_report RazerController::razer_create_mode_spectrum_cycle_extended_matrix_r
     return report;
 }
 
-razer_report RazerController::razer_create_mode_spectrum_cycle_standard_matrix_report(unsigned char variable_storage, unsigned char led_id)
+razer_report RazerController::razer_create_mode_spectrum_cycle_standard_matrix_report(unsigned char /*variable_storage*/, unsigned char /*led_id*/)
 {
     razer_report report         = razer_create_report(0x03, 0x0A, 0x01);
 
@@ -883,7 +926,7 @@ razer_report RazerController::razer_create_mode_static_extended_matrix_report(un
     return report;
 }
 
-razer_report RazerController::razer_create_mode_static_standard_matrix_report(unsigned char variable_storage, unsigned char led_id, unsigned char red, unsigned char grn, unsigned char blu)
+razer_report RazerController::razer_create_mode_static_standard_matrix_report(unsigned char /*variable_storage*/, unsigned char /*led_id*/, unsigned char red, unsigned char grn, unsigned char blu)
 {
     razer_report report         = razer_create_report(0x03, 0x0A, 0x04);
 
@@ -909,7 +952,7 @@ razer_report RazerController::razer_create_mode_wave_extended_matrix_report(unsi
     return report;
 }
 
-razer_report RazerController::razer_create_mode_wave_standard_matrix_report(unsigned char variable_storage, unsigned char led_id, unsigned char direction)
+razer_report RazerController::razer_create_mode_wave_standard_matrix_report(unsigned char /*variable_storage*/, unsigned char /*led_id*/, unsigned char direction)
 {
     razer_report report         = razer_create_report(0x03, 0x0A, 0x02);
 
@@ -1095,6 +1138,8 @@ void RazerController::razer_set_custom_frame(unsigned char row_index, unsigned c
                     report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, rgb_data);
                     razer_usb_send(&report);
 
+                    std::this_thread::sleep_for(1ms);
+
                     report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, &rgb_data[3]);
                     razer_usb_send(&report);
                     break;
@@ -1160,8 +1205,58 @@ void RazerController::razer_set_mode_breathing_one_color(unsigned char red, unsi
             break;
 
         case RAZER_MATRIX_TYPE_CUSTOM:
+            unsigned char rgb_data[6];
+            rgb_data[0]             = red;
+            rgb_data[1]             = grn;
+            rgb_data[2]             = blu;
+            rgb_data[3]             = red;
+            rgb_data[4]             = grn;
+            rgb_data[5]             = blu;
+
             switch(dev_pid)
             {
+                /*-------------------------------------------------*\
+                | These devices use individual LED effect reports   |
+                \*-------------------------------------------------*/
+                case RAZER_TARTARUS_CHROMA_PID:
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, rgb_data);
+                    razer_usb_send(&report);
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, 2);
+                    razer_usb_send(&report);
+                    break;
+
+                case RAZER_DEATHADDER_CHROMA_PID:
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, rgb_data);
+                    razer_usb_send(&report);
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, 2);
+                    razer_usb_send(&report);
+
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_LOGO, &rgb_data[3]);
+                    razer_usb_send(&report);
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_LOGO, 2);
+                    razer_usb_send(&report);
+                break;
+
+                case RAZER_NAGA_EPIC_CHROMA_PID:
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, rgb_data);
+                    razer_usb_send(&report);
+
+                    std::this_thread::sleep_for(1ms);
+
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, 2);
+                    razer_usb_send(&report);
+
+                    std::this_thread::sleep_for(1ms);
+
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, &rgb_data[3]);
+                    razer_usb_send(&report);
+
+                    std::this_thread::sleep_for(1ms);
+
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, 2);
+                    razer_usb_send(&report);
+                    break;
+
                 /*-------------------------------------------------*\
                 | These devices use standard matrix reports         |
                 \*-------------------------------------------------*/
@@ -1283,6 +1378,8 @@ void RazerController::razer_set_mode_custom()
                     report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, 0);
                     razer_usb_send(&report);
 
+                    std::this_thread::sleep_for(1ms);
+
                     report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, 0);
                     razer_usb_send(&report);
                     break;
@@ -1318,8 +1415,58 @@ void RazerController::razer_set_mode_none()
             break;
         
         case RAZER_MATRIX_TYPE_CUSTOM:
+            unsigned char rgb_data[6];
+            rgb_data[0]             = 0x00;
+            rgb_data[1]             = 0x00;
+            rgb_data[2]             = 0x00;
+            rgb_data[3]             = 0x00;
+            rgb_data[4]             = 0x00;
+            rgb_data[5]             = 0x00;
+
             switch(dev_pid)
             {
+                /*-------------------------------------------------*\
+                | These devices use individual LED effect reports   |
+                \*-------------------------------------------------*/
+                case RAZER_TARTARUS_CHROMA_PID:
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, rgb_data);
+                    razer_usb_send(&report);
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, 0);
+                    razer_usb_send(&report);
+                    break;
+
+                case RAZER_DEATHADDER_CHROMA_PID:
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, rgb_data);
+                    razer_usb_send(&report);
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, 0);
+                    razer_usb_send(&report);
+
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_LOGO, &rgb_data[3]);
+                    razer_usb_send(&report);
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_LOGO, 0);
+                    razer_usb_send(&report);
+                break;
+
+                case RAZER_NAGA_EPIC_CHROMA_PID:
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, rgb_data);
+                    razer_usb_send(&report);
+
+                    std::this_thread::sleep_for(1ms);
+
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, 0);
+                    razer_usb_send(&report);
+
+                    std::this_thread::sleep_for(1ms);
+
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, &rgb_data[3]);
+                    razer_usb_send(&report);
+
+                    std::this_thread::sleep_for(1ms);
+
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, 0);
+                    razer_usb_send(&report);
+                    break;
+
                 /*-------------------------------------------------*\
                 | These devices use standard matrix reports         |
                 \*-------------------------------------------------*/
@@ -1354,6 +1501,32 @@ void RazerController::razer_set_mode_spectrum_cycle()
             switch(dev_pid)
             {
                 /*-------------------------------------------------*\
+                | These devices use individual LED effect reports   |
+                \*-------------------------------------------------*/
+                case RAZER_TARTARUS_CHROMA_PID:
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, 4);
+                    razer_usb_send(&report);
+                    break;
+
+                case RAZER_DEATHADDER_CHROMA_PID:
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, 4);
+                    razer_usb_send(&report);
+
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_LOGO, 4);
+                    razer_usb_send(&report);
+                break;
+
+                case RAZER_NAGA_EPIC_CHROMA_PID:
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, 4);
+                    razer_usb_send(&report);
+
+                    std::this_thread::sleep_for(1ms);
+
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, 4);
+                    razer_usb_send(&report);
+                    break;
+
+                /*-------------------------------------------------*\
                 | These devices use standard matrix reports         |
                 \*-------------------------------------------------*/
                 case RAZER_ORBWEAVER_CHROMA_PID:
@@ -1384,8 +1557,58 @@ void RazerController::razer_set_mode_static(unsigned char red, unsigned char grn
             break;
 
         case RAZER_MATRIX_TYPE_CUSTOM:
+            unsigned char rgb_data[6];
+            rgb_data[0]             = red;
+            rgb_data[1]             = grn;
+            rgb_data[2]             = blu;
+            rgb_data[3]             = red;
+            rgb_data[4]             = grn;
+            rgb_data[5]             = blu;
+
             switch(dev_pid)
             {
+                /*-------------------------------------------------*\
+                | These devices use individual LED effect reports   |
+                \*-------------------------------------------------*/
+                case RAZER_TARTARUS_CHROMA_PID:
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, rgb_data);
+                    razer_usb_send(&report);
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, 0);
+                    razer_usb_send(&report);
+                    break;
+
+                case RAZER_DEATHADDER_CHROMA_PID:
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, rgb_data);
+                    razer_usb_send(&report);
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, 0);
+                    razer_usb_send(&report);
+
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_LOGO, &rgb_data[3]);
+                    razer_usb_send(&report);
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_LOGO, 0);
+                    razer_usb_send(&report);
+                break;
+
+                case RAZER_NAGA_EPIC_CHROMA_PID:
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, rgb_data);
+                    razer_usb_send(&report);
+
+                    std::this_thread::sleep_for(1ms);
+
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_SCROLL_WHEEL, 0);
+                    razer_usb_send(&report);
+
+                    std::this_thread::sleep_for(1ms);
+
+                    report                  = razer_create_set_led_rgb_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, &rgb_data[3]);
+                    razer_usb_send(&report);
+
+                    std::this_thread::sleep_for(1ms);
+
+                    report                  = razer_create_set_led_effect_report(RAZER_STORAGE_NO_SAVE, RAZER_LED_ID_BACKLIGHT, 0);
+                    razer_usb_send(&report);
+                    break;
+
                 /*-------------------------------------------------*\
                 | These devices use standard matrix reports         |
                 \*-------------------------------------------------*/

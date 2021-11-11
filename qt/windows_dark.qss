@@ -138,12 +138,29 @@ QDialog QWidget::QLineEdit
 
 /* Buttons and combo boxes */
 
-QPushButton
+QPushButton, QToolButton
 {
     padding: 3px;
     background-color: #404040;
     border: 1px solid #2e2e2e;
     color: white;
+}
+
+QToolButton:hover
+{
+    background-color: #454545;
+}
+
+QMenu
+{
+    background-color: #404040;
+    border: 1px solid #2e2e2e;
+    color: white;
+}
+
+QMenu::item:selected
+{
+    background-color: #454545;
 }
 
 QComboBox
@@ -291,4 +308,20 @@ QTableWidget
 QTableWidget QTableCornerButton::section
 {
     background-color: #444444;
+}
+
+/* QScrollAreas */
+
+QScrollArea QWidget
+{
+    background-color: #5c5c5c;
+    color: white;
+}
+
+/* QListWidgets */
+
+QListWidget
+{
+    background-color: #5c5c5c;
+    color: white;
 }

@@ -15,6 +15,11 @@
 
 typedef unsigned char	polychrome_dev_id;
 
+#define ASROCK_CONTROLLER_NAME  "ASRock Polychrome SMBus Controller"
+#define ASROCK_DETECTOR_NAME    "ASRock Polychrome SMBus Detect"
+#define VENDOR_NAME             "ASRock"
+#define SMBUS_ADDRESS           0x6A
+
 enum
 {
     ASROCK_TYPE_UNKNOWN                     = 0x00,     /* Unknown Type or Not ASRock Device    */
@@ -209,6 +214,7 @@ public:
     
 private:
     unsigned int            asrock_type;
+    unsigned short          fw_version;
     std::string             device_name;
     unsigned char           active_zone;
     unsigned char           active_mode;

@@ -54,15 +54,16 @@ enum
     RGB_FUSION_2_MODE_STATIC        = 0x04,     /* Static color mode                */
     RGB_FUSION_2_MODE_FLASHING      = 0x05,     /* Flashing / Double Flashing mode  */
     RGB_FUSION_2_MODE_TRANSITION    = 0x09,	    /* Gradual transition from current  */
-    RGB_FUSION_2_MODE_DIGITAL_A	    = 0x0A,	    /* Wave mode			            */
-    RGB_FUSION_2_MODE_DIGITAL_B	    = 0x0B,	    /* 				                    */
-    RGB_FUSION_2_MODE_DIGITAL_C	    = 0x0C,	    /* 				                    */
-    RGB_FUSION_2_MODE_DIGITAL_D	    = 0x0D,	    /* 				                    */
-    RGB_FUSION_2_MODE_DIGITAL_E	    = 0x0E,	    /* 				                    */
-    RGB_FUSION_2_MODE_DIGITAL_F	    = 0x0F,	    /* 				                    */
-    RGB_FUSION_2_MODE_DIGITAL_G	    = 0x10,	    /* 				                    */
-    RGB_FUSION_2_MODE_DIGITAL_H	    = 0x11,	    /* 				                    */
-    RGB_FUSION_2_MODE_DIGITAL_I	    = 0x12,	    /* 				                    */
+    RGB_FUSION_2_MODE_DIGITAL_WAVE	= 0x0A,	    /* Wave mode			            */
+    RGB_FUSION_2_MODE_DIGITAL_A	    = 0x0B,	    /* 				                    */
+    RGB_FUSION_2_MODE_DIGITAL_B	    = 0x0C,	    /* 				                    */
+    RGB_FUSION_2_MODE_DIGITAL_C	    = 0x0D,	    /* 				                    */
+    RGB_FUSION_2_MODE_DIGITAL_D	    = 0x0F,	    /* 				                    */
+    RGB_FUSION_2_MODE_DIGITAL_E	    = 0x10,	    /* 				                    */
+    RGB_FUSION_2_MODE_DIGITAL_F	    = 0x11,	    /* 				                    */
+    RGB_FUSION_2_MODE_DIGITAL_G	    = 0x12,	    /* 				                    */
+//    RGB_FUSION_2_MODE_DIGITAL_H	    = 0x11,
+//    RGB_FUSION_2_MODE_DIGITAL_I       = 0x12,   They are variants of DIGITAL F and G
 };
 
 enum
@@ -70,6 +71,15 @@ enum
     RGB_FUSION_2_SPEED_FAST         = 0x01,
     RGB_FUSION_2_SPEED_NORMAL       = 0x02,
     RGB_FUSION_2_SPEED_SLOW         = 0x04,
+    RGB_FUSION_2_DIGITAL_SPEED      = 0x91,
+    RGB_FUSION_2_DIGITAL_SPEED_MIN  = 0xe6,
+    RGB_FUSION_2_DIGITAL_SPEED_MAX  = 0x32,
+};
+
+enum
+{
+    RGB_FUSION_2_BRIGHTNESS_MAX     = 0x64,
+    RGB_FUSION_2_BRIGHTNESS_MIN     = 0x0f,
 };
 
 class RGBFusion2SMBusController
@@ -87,6 +97,7 @@ public:
                         (
                         unsigned int    led,
                         int             mode,
+                        unsigned int    brightness,
                         unsigned int    speed,
                         unsigned char   red,
                         unsigned char   green,
