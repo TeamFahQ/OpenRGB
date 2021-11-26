@@ -78,7 +78,6 @@ INCLUDEPATH +=                                                                  
     Controllers/ASRockPolychromeUSBController/                                                  \
     Controllers/AsusAuraCoreController/                                                         \
     Controllers/AsusAuraGPUController/                                                          \
-    Controllers/AsusAuraSMBusController/                                                        \
     Controllers/AsusAuraUSBController/                                                          \
     Controllers/CoolerMasterController/                                                         \
     Controllers/CorsairCommanderCoreController/                                                 \
@@ -97,6 +96,8 @@ INCLUDEPATH +=                                                                  
     Controllers/DuckyKeyboardController/                                                        \
     Controllers/E131Controller/                                                                 \
     Controllers/EKController/                                                                   \
+    Controllers/ENESMBusController/                                                             \
+    Controllers/ENESMBusController/ENESMBusInterface                                            \
     Controllers/EspurnaController/                                                              \
     Controllers/EVGAGPUController/                                                              \
     Controllers/EVisionKeyboardController/                                                      \
@@ -109,6 +110,7 @@ INCLUDEPATH +=                                                                  
     Controllers/GigabyteRGBFusion2USBController/                                                \
     Controllers/GigabyteRGBFusionController/                                                    \
     Controllers/GigabyteRGBFusionGPUController/                                                 \
+    Controllers/GigabyteRGBFusion2GPUController/                                                \
     Controllers/HoltekController/                                                               \
     Controllers/HPOmen30LController/                                                            \
     Controllers/HyperXDRAMController/                                                           \
@@ -222,8 +224,6 @@ HEADERS +=                                                                      
     Controllers/AsusAuraCoreController/RGBController_AsusAuraCore.h                             \
     Controllers/AsusAuraGPUController/AsusAuraGPUController.h                                   \
     Controllers/AsusAuraGPUController/RGBController_AsusAuraGPU.h                               \
-    Controllers/AsusAuraSMBusController/AsusAuraSMBusController.h                               \
-    Controllers/AsusAuraSMBusController/RGBController_AsusAuraSMBus.h                           \
     Controllers/AsusAuraUSBController/AsusAuraUSBController.h                                   \
     Controllers/AsusAuraUSBController/AsusAuraAddressableController.h                           \
     Controllers/AsusAuraUSBController/AsusAuraHeadsetStandController.h                          \
@@ -285,12 +285,18 @@ HEADERS +=                                                                      
     Controllers/E131Controller/RGBController_E131.h                                             \
     Controllers/EKController/EKController.h                                                     \
     Controllers/EKController/RGBController_EKController.h                                       \
+    Controllers/ENESMBusController/ENESMBusController.h                                         \
+    Controllers/ENESMBusController/RGBController_ENESMBus.h                                     \
+    Controllers/ENESMBusController/ENESMBusInterface/ENESMBusInterface.h                        \
+    Controllers/ENESMBusController/ENESMBusInterface/ENESMBusInterface_i2c_smbus.h              \
     Controllers/EspurnaController/EspurnaController.h                                           \
     Controllers/EspurnaController/RGBController_Espurna.h                                       \
+    Controllers/EVGAGPUController/EVGAGP102Controller.h                                         \
     Controllers/EVGAGPUController/EVGAGPUCommon.h                                               \
     Controllers/EVGAGPUController/EVGAGPUv1Controller.h                                         \
     Controllers/EVGAGPUController/EVGAGPUv2Controller.h                                         \
     Controllers/EVGAGPUController/EVGAGPUv3Controller.h                                         \
+    Controllers/EVGAGPUController/RGBController_EVGAGP102.h                                     \
     Controllers/EVGAGPUController/RGBController_EVGAGPUv1.h                                     \
     Controllers/EVGAGPUController/RGBController_EVGAGPUv2.h                                     \
     Controllers/EVGAGPUController/RGBController_EVGAGPUv3.h                                     \
@@ -317,6 +323,8 @@ HEADERS +=                                                                      
     Controllers/GigabyteRGBFusionController/RGBController_GigabyteRGBFusion.h                   \
     Controllers/GigabyteRGBFusionGPUController/GigabyteRGBFusionGPUController.h                 \
     Controllers/GigabyteRGBFusionGPUController/RGBController_GigabyteRGBFusionGPU.h             \
+    Controllers/GigabyteRGBFusion2GPUController/GigabyteRGBFusion2GPUController.h               \
+    Controllers/GigabyteRGBFusion2GPUController/RGBController_GigabyteRGBFusion2GPU.h           \
     Controllers/HoltekController/HoltekA070Controller.h                                         \
     Controllers/HoltekController/HoltekA1FAController.h                                         \
     Controllers/HoltekController/RGBController_HoltekA070.h                                     \
@@ -577,9 +585,6 @@ SOURCES +=                                                                      
     Controllers/AsusAuraGPUController/AsusAuraGPUController.cpp                                 \
     Controllers/AsusAuraGPUController/AsusAuraGPUControllerDetect.cpp                           \
     Controllers/AsusAuraGPUController/RGBController_AsusAuraGPU.cpp                             \
-    Controllers/AsusAuraSMBusController/AsusAuraSMBusController.cpp                             \
-    Controllers/AsusAuraSMBusController/AsusAuraSMBusControllerDetect.cpp                       \
-    Controllers/AsusAuraSMBusController/RGBController_AsusAuraSMBus.cpp                         \
     Controllers/AsusAuraUSBController/AsusAuraUSBController.cpp                                 \
     Controllers/AsusAuraUSBController/AsusAuraAddressableController.cpp                         \
     Controllers/AsusAuraUSBController/AsusAuraHeadsetStandController.cpp                        \
@@ -659,13 +664,19 @@ SOURCES +=                                                                      
     Controllers/EKController/EKControllerDetect.cpp                                             \
     Controllers/EKController/EKController.cpp                                                   \
     Controllers/EKController/RGBController_EKController.cpp                                     \
+    Controllers/ENESMBusController/ENESMBusController.cpp                                       \
+    Controllers/ENESMBusController/ENESMBusControllerDetect.cpp                                 \
+    Controllers/ENESMBusController/RGBController_ENESMBus.cpp                                   \
+    Controllers/ENESMBusController/ENESMBusInterface/ENESMBusInterface_i2c_smbus.cpp            \
     Controllers/EspurnaController/EspurnaController.cpp                                         \
     Controllers/EspurnaController/EspurnaControllerDetect.cpp                                   \
     Controllers/EspurnaController/RGBController_Espurna.cpp                                     \
+    Controllers/EVGAGPUController/EVGAGP102Controller.cpp                                       \
     Controllers/EVGAGPUController/EVGAGPUv1Controller.cpp                                       \
     Controllers/EVGAGPUController/EVGAGPUv2Controller.cpp                                       \
     Controllers/EVGAGPUController/EVGAGPUv3Controller.cpp                                       \
     Controllers/EVGAGPUController/EVGAGPUControllerDetect.cpp                                   \
+    Controllers/EVGAGPUController/RGBController_EVGAGP102.cpp                                   \
     Controllers/EVGAGPUController/RGBController_EVGAGPUv1.cpp                                   \
     Controllers/EVGAGPUController/RGBController_EVGAGPUv2.cpp                                   \
     Controllers/EVGAGPUController/RGBController_EVGAGPUv3.cpp                                   \
@@ -702,6 +713,9 @@ SOURCES +=                                                                      
     Controllers/GigabyteRGBFusionGPUController/GigabyteRGBFusionGPUController.cpp               \
     Controllers/GigabyteRGBFusionGPUController/GigabyteRGBFusionGPUControllerDetect.cpp         \
     Controllers/GigabyteRGBFusionGPUController/RGBController_GigabyteRGBFusionGPU.cpp           \
+    Controllers/GigabyteRGBFusion2GPUController/GigabyteRGBFusion2GPUController.cpp             \
+    Controllers/GigabyteRGBFusion2GPUController/GigabyteRGBFusion2GPUControllerDetect.cpp       \
+    Controllers/GigabyteRGBFusion2GPUController/RGBController_GigabyteRGBFusion2GPU.cpp         \
     Controllers/HoltekController/HoltekA070Controller.cpp                                       \
     Controllers/HoltekController/HoltekA1FAController.cpp                                       \
     Controllers/HoltekController/HoltekControllerDetect.cpp                                     \
@@ -1032,6 +1046,8 @@ win32:SOURCES +=                                                                
     AutoStart/AutoStart-Windows.cpp                                                             \
     Controllers/AsusTUFLaptopController/AsusTUFLaptopWMIDetect.cpp                              \
     Controllers/AsusTUFLaptopController/RGBController_AsusTUFLaptopWMI.cpp                      \
+    Controllers/ENESMBusController/XPGSpectrixS40GDetect_Windows.cpp                            \
+    Controllers/ENESMBusController/ENESMBusInterface/ENESMBusInterface_SpectrixS40G_Windows.cpp \
     Controllers/OpenRazerController/OpenRazerWindowsDetect.cpp                                  \
     Controllers/OpenRazerController/RGBController_OpenRazerWindows.cpp                          \
 
@@ -1049,6 +1065,7 @@ win32:HEADERS +=                                                                
     wmi/acpiwmi.h                                                                               \
     AutoStart/AutoStart-Windows.h                                                               \
     Controllers/AsusTUFLaptopController/RGBController_AsusTUFLaptopWMI.h                        \
+    Controllers/ENESMBusController/ENESMBusInterface/ENESMBusInterface_SpectrixS40G_Windows.h   \
     Controllers/OpenRazerController/RGBController_OpenRazerWindows.h                            \
 
 win32:contains(QMAKE_TARGET.arch, x86_64) {
@@ -1137,6 +1154,7 @@ unix:!macx {
     HEADERS +=                                                                                  \
     i2c_smbus/i2c_smbus_linux.h                                                                 \
     AutoStart/AutoStart-Linux.h                                                                 \
+    Controllers/ENESMBusController/ENESMBusInterface/ENESMBusInterface_SpectrixS40G.h           \
     Controllers/FaustusController/RGBController_Faustus.h                                       \
     Controllers/LinuxLEDController/LinuxLEDController.h                                         \
     Controllers/LinuxLEDController/RGBController_LinuxLED.h                                     \
@@ -1181,6 +1199,8 @@ unix:!macx {
     i2c_smbus/i2c_smbus_linux.cpp                                                               \
     serial_port/find_usb_serial_port_linux.cpp                                                  \
     AutoStart/AutoStart-Linux.cpp                                                               \
+    Controllers/ENESMBusController/XPGSpectrixS40GDetect.cpp                                    \
+    Controllers/ENESMBusController/ENESMBusInterface/ENESMBusInterface_SpectrixS40G.cpp         \
     Controllers/FaustusController/RGBController_Faustus.cpp                                     \
     Controllers/LinuxLEDController/LinuxLEDController.cpp                                       \
     Controllers/LinuxLEDController/LinuxLEDControllerDetect.cpp                                 \
@@ -1226,6 +1246,9 @@ macx:ICON = qt/OpenRGB.icns
 macx {
     DEFINES +=                                                                                  \
     USE_HID_USAGE                                                                               \
+
+    QMAKE_CXXFLAGS +=                                                                           \
+    -Wno-narrowing                                                                              \
 
     HEADERS +=                                                                                  \
     AutoStart/AutoStart-MacOS.h                                                                 \

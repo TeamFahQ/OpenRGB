@@ -277,7 +277,7 @@ QHeaderView::section
     color: white;
 }
 
-QPlainTextEdit
+QPlainTextEdit, QTextEdit
 {
     background: #454545;
     color: white;
@@ -299,7 +299,7 @@ QDialog
 
 /* QTableWidgets */
 
-QTableWidget
+QTableWidget, QTableWidget *
 {
     background-color: #454545;
     color: white;

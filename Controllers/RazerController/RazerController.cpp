@@ -56,9 +56,11 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_DEATHADDER_CHROMA_PID:
         case RAZER_MAMBA_ELITE_PID:
         case RAZER_NAGA_EPIC_CHROMA_PID:
+        case RAZER_NAGA_LEFT_HANDED_PID:
         case RAZER_KRAKEN_KITTY_EDITION_PID:
         case RAZER_BASE_STATION_V2_CHROMA_PID:
         case RAZER_MOUSE_BUNGEE_V3_CHROMA_PID:
+        case RAZER_O11_DYNAMIC_PID:
             dev_transaction_id = 0x1F;
             break;
 
@@ -108,6 +110,8 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_CHROMA_HDK_PID:
         case RAZER_CORE_X_PID:
         case RAZER_FIREFLY_V2_PID:
+        case RAZER_NAGA_LEFT_HANDED_PID:
+        case RAZER_O11_DYNAMIC_PID:
             dev_led_id = RAZER_LED_ID_ZERO;
             break;
 
@@ -230,11 +234,14 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_MAMBA_ELITE_PID:
         case RAZER_MOUSE_BUNGEE_V3_CHROMA_PID:
         case RAZER_MOUSE_DOCK_CHROMA_PID:
+        case RAZER_NAGA_LEFT_HANDED_PID:
         case RAZER_NAGA_TRINITY_PID:
         case RAZER_NOMMO_CHROMA_PID:
         case RAZER_NOMMO_PRO_PID:
+        case RAZER_O11_DYNAMIC_PID:
         case RAZER_ORNATA_CHROMA_PID:
         case RAZER_ORNATA_CHROMA_V2_PID:
+        case RAZER_SEIREN_EMOTE_PID:
         case RAZER_TARTARUS_V2_PID:
         case RAZER_TIAMAT_71_V2_PID:
         case RAZER_VIPER_MINI_PID:
@@ -485,6 +492,7 @@ bool RazerController::SupportsWave()
         case RAZER_MAMBA_2015_WIRED_PID:
         case RAZER_MAMBA_2015_WIRELESS_PID:
         case RAZER_MAMBA_TE_PID:
+        case RAZER_NAGA_LEFT_HANDED_PID:
 
         /*-----------------------------------------------------*\
         | Headsets                                              |
@@ -508,6 +516,7 @@ bool RazerController::SupportsWave()
         case RAZER_MOUSE_BUNGEE_V3_CHROMA_PID:
         case RAZER_NOMMO_CHROMA_PID:
         case RAZER_NOMMO_PRO_PID:
+        case RAZER_O11_DYNAMIC_PID:
 
             supports_wave = true;
             break;
@@ -1027,6 +1036,14 @@ std::string RazerController::razer_get_serial()
 
     strncpy(&serial_string[0], (const char*)&response_report.arguments[0], 22);
     serial_string[22] = '\0';
+
+    for(size_t i = 0; i < 22; i++)
+    {
+        if(serial_string[i] < 30 || serial_string[i] > 126)
+        {
+            serial_string[i] = ' ';
+        }
+    }
 
     std::string ret_string = serial_string;
     return ret_string;

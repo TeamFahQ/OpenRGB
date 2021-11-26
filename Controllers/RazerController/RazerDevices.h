@@ -131,6 +131,7 @@
 #define RAZER_NAGA_HEX_PID                              0x0041
 #define RAZER_NAGA_HEX_RED_PID                          0x0036
 #define RAZER_NAGA_HEX_V2_PID                           0x0050
+#define RAZER_NAGA_LEFT_HANDED_PID                      0x008D
 #define RAZER_NAGA_TRINITY_PID                          0x0067
 #define RAZER_OROCHI_2011_PID                           0x0013
 #define RAZER_OROCHI_2013_PID                           0x0039
@@ -175,6 +176,8 @@
 #define RAZER_MOUSE_DOCK_CHROMA_PID                     0x007E
 #define RAZER_NOMMO_CHROMA_PID                          0x0517
 #define RAZER_NOMMO_PRO_PID                             0x0518
+#define RAZER_O11_DYNAMIC_PID                           0x0F13
+#define RAZER_SEIREN_EMOTE_PID                          0x0F1B
 
 typedef struct
 {
@@ -5365,6 +5368,7 @@ static const razer_device naga_chroma_device =
     0
 };
 
+
 /*-------------------------------------------------------------*\
 |  Razer Naga Hex V2 1532:0050                                  |
 |                                                               |
@@ -5416,6 +5420,65 @@ static const razer_device naga_hex_v2_device =
         &naga_hex_v2_logo_zone,
         &naga_hex_v2_scroll_wheel_zone,
         &naga_hex_v2_numpad_zone,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Naga Left Handed 1532:008D                             |
+|                                                               |
+|  Zone "Logo"                                                  |
+|       Single                                                  |
+|       1 LED                                                   |
+|                                                               |
+|  Zone "Scroll Wheel"                                          |
+|       Single                                                  |
+|       1 LED                                                   |
+|                                                               |
+|  Zone "Numpad"                                                |
+|       Single                                                  |
+|       1 LED                                                   |
+\*-------------------------------------------------------------*/
+static const razer_zone naga_left_handed_logo_zone =
+{
+    "Logo",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_zone naga_left_handed_scroll_wheel_zone =
+{
+    "Scroll Wheel",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_zone naga_left_handed_numpad_zone =
+{
+    "Numpad",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_device naga_left_handed_device =
+{
+    "Razer Naga Left Handed",
+    RAZER_NAGA_LEFT_HANDED_PID,
+    DEVICE_TYPE_MOUSE,
+    false,
+    1,
+    3,
+    {
+        &naga_left_handed_logo_zone,
+        &naga_left_handed_scroll_wheel_zone,
+        &naga_left_handed_numpad_zone,
         NULL,
         NULL,
         NULL
@@ -6780,6 +6843,78 @@ static const razer_device charging_pad_chroma_device =
     0
 };
 
+/*-------------------------------------------------------------*\
+|  O11 Dynamic - Razer Edition 1532:0F13                        |
+|                                                               |
+|  Zone "Case LEDs"                                             |
+|       Matrix                                                  |
+|       64 LEDs                                                 |
+|                                                               |
+\*-------------------------------------------------------------*/
+static const razer_zone o11_dynamic_case_zone =
+{
+    "Case LEDs",
+    ZONE_TYPE_LINEAR,
+    4,
+    16
+};
+
+static const razer_device o11_dynamic_device =
+{
+    "Lian Li O11 Dynamic - Razer Edition",
+    RAZER_O11_DYNAMIC_PID,
+    DEVICE_TYPE_LEDSTRIP,
+    true,
+    4,
+    16,
+    {
+        &o11_dynamic_case_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Seiren Emote 1532:0F1B                                 |
+|                                                               |
+|  Zone "8-Bit LED Matrix"                                      |
+|       Matrix                                                  |
+|       64 LEDs                                                 |
+|                                                               |
+\*-------------------------------------------------------------*/
+static const razer_zone seiren_emote_zone =
+{
+    "8-Bit LED Matrix",
+    ZONE_TYPE_MATRIX,
+    8,
+    8
+};
+
+static const razer_device seiren_emote_device =
+{
+    "Razer Seiren Emote",
+    RAZER_SEIREN_EMOTE_PID,
+    DEVICE_TYPE_UNKNOWN,
+    true,
+    4,
+    16,
+    {
+        &seiren_emote_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
 /*-------------------------------------------------------------------------*\
 |  DEVICE MASTER LIST                                                       |
 \*-------------------------------------------------------------------------*/
@@ -6881,6 +7016,7 @@ static const razer_device* device_list[] =
     &naga_chroma_device,
     &naga_epic_chroma_device,
     &naga_hex_v2_device,
+    &naga_left_handed_device,
     &naga_trinity_device,
     &viper_mini_device,
     &viper_ultimate_wired_device,
@@ -6924,4 +7060,6 @@ static const razer_device* device_list[] =
     &mouse_dock_chroma_device,
     &nommo_chroma_device,
     &nommo_pro_device,
+    &o11_dynamic_device,
+    &seiren_emote_device,
 };
