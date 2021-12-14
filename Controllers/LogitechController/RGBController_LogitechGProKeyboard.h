@@ -1,35 +1,33 @@
 /*-----------------------------------------*\
-|  RGBController_MSIGPU.h                  |
+|  RGBController_LogitechGPro.h             |
 |                                           |
-|  Generic RGB Interface for MSI GPU        |
+|  Generic RGB Interface for Logitech G Pro |
+|  keyboard                                 |
 |                                           |
+|  sanchezzzs                   20/10/2021  |
 \*-----------------------------------------*/
 
 #pragma once
-
 #include "RGBController.h"
-#include "MSIGPUController.h"
+#include "LogitechGProKeyboardController.h"
 
-class RGBController_MSIGPU : public RGBController
+class RGBController_LogitechGProKeyboard : public RGBController
 {
 public:
-    RGBController_MSIGPU(MSIGPUController* msi_gpu_ptr);
-    ~RGBController_MSIGPU();
+    RGBController_LogitechGProKeyboard(LogitechGProKeyboardController* logitech_ptr);
+    ~RGBController_LogitechGProKeyboard();
 
     void        SetupZones();
 
     void        ResizeZone(int zone, int new_size);
-
+    
     void        DeviceUpdateLEDs();
     void        UpdateZoneLEDs(int zone);
     void        UpdateSingleLED(int led);
 
     void        SetCustomMode();
     void        DeviceUpdateMode();
-    void        DeviceSaveMode();
 
 private:
-    MSIGPUController* msi_gpu;
-
-    int        GetDeviceMode();
+    LogitechGProKeyboardController*   logitech;
 };

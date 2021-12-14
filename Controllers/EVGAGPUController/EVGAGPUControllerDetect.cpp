@@ -40,6 +40,7 @@ static const gpu_pci_device device_list[] =
 {
     { NVIDIA_VEN,   NVIDIA_GTX1070_DEV,         EVGA_SUB_VEN,   EVGA_GTX1070_FTW_DT_GAMING_SUB_DEV,         EVGA_RGB_V1,    "EVGA GeForce GTX 1070 FTW DT Gaming"                   },
     { NVIDIA_VEN,   NVIDIA_GTX1070_DEV,         EVGA_SUB_VEN,   EVGA_GTX1070_FTW_SUB_DEV,                   EVGA_RGB_V1,    "EVGA GeForce GTX 1070 FTW"                             },
+    { NVIDIA_VEN,   NVIDIA_GTX1070_DEV,         EVGA_SUB_VEN,   EVGA_GTX1070_FTW_HYBRID_SUB_DEV,            EVGA_RGB_V1,    "EVGA GeForce GTX 1070 FTW HYBRID"                      },
     { NVIDIA_VEN,   NVIDIA_GTX1070TI_DEV,       EVGA_SUB_VEN,   EVGA_GTX1070TI_FTW2_SUB_DEV,                EVGA_RGB_V1,    "EVGA GeForce GTX 1070 Ti FTW2"                         },
     { NVIDIA_VEN,   NVIDIA_GTX1080_DEV,         EVGA_SUB_VEN,   EVGA_GTX1080_FTW_SUB_DEV,                   EVGA_RGB_V1,    "EVGA GeForce GTX 1080 FTW"                             },
     { NVIDIA_VEN,   NVIDIA_GTX1080_DEV,         EVGA_SUB_VEN,   EVGA_GTX1080_FTW2_SUB_DEV,                  EVGA_RGB_GP102, "EVGA GeForce GTX 1080 FTW2"                            },
@@ -138,7 +139,7 @@ void DetectEVGAGPUControllers(std::vector<i2c_smbus_interface*>& busses)
                 {
                     case EVGA_RGB_V1:
                         {
-                            LOG_DEBUG(EVGA_DETECT_MESSAGE, EVGAGPUV1_CONTROLLER_NAME, bus, device_list[dev_idx].pci_device, device_list[dev_idx].pci_subsystem_device, device_list[dev_idx].name );
+                            LOG_DEBUG(GPU_DETECT_MESSAGE, EVGAGPUV1_CONTROLLER_NAME, bus, device_list[dev_idx].pci_device, device_list[dev_idx].pci_subsystem_device, device_list[dev_idx].name );
                             EVGAGPUv1Controller*     new_controller;
                             RGBController_EVGAGPUv1* new_rgbcontroller;
 
@@ -151,7 +152,7 @@ void DetectEVGAGPUControllers(std::vector<i2c_smbus_interface*>& busses)
 
                     case EVGA_RGB_V2:
                         {
-                            LOG_DEBUG(EVGA_DETECT_MESSAGE, EVGAGPUV2_CONTROLLER_NAME, bus, device_list[dev_idx].pci_device, device_list[dev_idx].pci_subsystem_device, device_list[dev_idx].name );
+                            LOG_DEBUG(GPU_DETECT_MESSAGE, EVGAGPUV2_CONTROLLER_NAME, bus, device_list[dev_idx].pci_device, device_list[dev_idx].pci_subsystem_device, device_list[dev_idx].name );
                             EVGAGPUv2Controller*     new_controller;
                             RGBController_EVGAGPUv2* new_rgbcontroller;
 
@@ -164,7 +165,7 @@ void DetectEVGAGPUControllers(std::vector<i2c_smbus_interface*>& busses)
 
                     case EVGA_RGB_V3:
                         {
-                            LOG_DEBUG(EVGA_DETECT_MESSAGE, EVGAGPUV3_CONTROLLER_NAME, bus, device_list[dev_idx].pci_device, device_list[dev_idx].pci_subsystem_device, device_list[dev_idx].name );
+                            LOG_DEBUG(GPU_DETECT_MESSAGE, EVGAGPUV3_CONTROLLER_NAME, bus, device_list[dev_idx].pci_device, device_list[dev_idx].pci_subsystem_device, device_list[dev_idx].name );
                             EVGAGPUv3Controller*     new_controller;
                             RGBController_EVGAGPUv3* new_rgbcontroller;
 
@@ -186,7 +187,7 @@ void DetectEVGAGPUControllers(std::vector<i2c_smbus_interface*>& busses)
                         break;
                     case EVGA_RGB_GP102:
                         {
-                            LOG_DEBUG(EVGA_DETECT_MESSAGE, EVGA_GP102_CONTROLLER_NAME, bus, device_list[dev_idx].pci_device, device_list[dev_idx].pci_subsystem_device, device_list[dev_idx].name );
+                            LOG_DEBUG(GPU_DETECT_MESSAGE, EVGA_GP102_CONTROLLER_NAME, bus, device_list[dev_idx].pci_device, device_list[dev_idx].pci_subsystem_device, device_list[dev_idx].name );
                             RGBController_EVGAGP102* new_rgbcontroller;
                             std::vector<EVGAGP102Controller*>   controllers;
 

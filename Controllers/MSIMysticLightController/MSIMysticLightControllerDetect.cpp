@@ -63,6 +63,7 @@ void DetectMSIMysticLight185Controllers(hid_device_info* info, const std::string
 /*-------------------------------------------------------------*\
 | MSI Mystic Light 162-byte Devices                             |
 \*-------------------------------------------------------------*/
+REGISTER_HID_DETECTOR_PU("MSI Mystic Light MS_1720",    DetectMSIMysticLight162Controllers,   MSI_USB_VID,    0x1720,   0x0001, 0x00); //MSI MPG Z390 Gaming Edge AC
 REGISTER_HID_DETECTOR_PU("MSI Mystic Light MS_7B12",    DetectMSIMysticLight162Controllers,   MSI_USB_VID,    0x7B12,   0x0001, 0x00);
 REGISTER_HID_DETECTOR_PU("MSI Mystic Light MS_7B17",    DetectMSIMysticLight162Controllers,   MSI_USB_VID,    0x7B17,   0x0001, 0x00);
 REGISTER_HID_DETECTOR_PU("MSI Mystic Light MS_7B18",    DetectMSIMysticLight162Controllers,   MSI_USB_VID,    0x7B18,   0x0001, 0x00);
@@ -96,6 +97,7 @@ REGISTER_HID_DETECTOR_PU("MSI Mystic Light MS_7D07",    DetectMSIMysticLight185C
 REGISTER_HID_DETECTOR_PU("MSI Mystic Light MS_7D09",    DetectMSIMysticLight185Controllers,   MSI_USB_VID,    0x7D09,   0x0001, 0x00);
 REGISTER_HID_DETECTOR_PU("MSI Mystic Light MS_7D13",    DetectMSIMysticLight185Controllers,   MSI_USB_VID,    0x7D13,   0x0001, 0x00);
 REGISTER_HID_DETECTOR_PU("MSI Mystic Light MS_7D15",    DetectMSIMysticLight185Controllers,   MSI_USB_VID,    0x7D15,   0x0001, 0x00);
+REGISTER_HID_DETECTOR_PU("MSI Mystic Light MS_7D25",    DetectMSIMysticLight185Controllers,   MSI_USB_VID,    0x7D25,   0x0001, 0x00); // MSI PRO Z690-A WiFi DDR4
 REGISTER_HID_DETECTOR_PU("MSI Mystic Light MS_7D54",    DetectMSIMysticLight185Controllers,   MSI_USB_VID,    0x7D54,   0x0001, 0x00);
 
 #ifdef ENABLE_UNTESTED_MYSTIC_LIGHT
