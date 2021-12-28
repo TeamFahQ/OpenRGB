@@ -61,7 +61,8 @@
 #define NVIDIA_RTX2060S_OC_DEV                          0x1F06
 #define NVIDIA_RTX2070_DEV                              0x1F02
 #define NVIDIA_RTX2070_OC_DEV                           0x1F07
-#define NVIDIA_RTX2070S_DEV                             0x1E84
+#define NVIDIA_RTX2070S_DEV                             0x1EC7
+#define NVIDIA_RTX2070S_OC_DEV                          0x1E84
 #define NVIDIA_RTX2080_DEV                              0x1E82
 #define NVIDIA_RTX2080_A_DEV                            0x1E87
 #define NVIDIA_RTX2080S_DEV                             0x1E81
@@ -100,6 +101,7 @@
 | ASUS Sub-Device IDs                                   |
 \*-----------------------------------------------------*/
 #define ASUS_GTX1050_STRIX_O2G_GAMING                   0x85D8
+#define ASUS_ROG_STRIX_GTX1050TI_O4G_GAMING             0x85CD
 #define ASUS_GTX1060_STRIX_6G_GAMING                    0x85A4
 #define ASUS_GTX1060_STRIX                              0x85AC
 #define ASUS_GTX1070_STRIX_GAMING                       0x8598
@@ -122,6 +124,7 @@
 #define ASUS_ROG_STRIX_RTX2070_O8G_GAMING               0x8670
 #define ASUS_ROG_STRIX_RTX2070S_A8G_GAMING              0x8728
 #define ASUS_ROG_STRIX_RTX2070S_A8G_GAMING_8706         0x8706
+#define ASUS_ROG_STRIX_RTX2070S_A8G_GAMING_86FF         0x86FF
 #define ASUS_ROG_STRIX_RTX2070S_O8G_GAMING              0x8727
 #define ASUS_ROG_STRIX_RTX2080_O8G_GAMING               0x865F
 #define ASUS_ROG_STRIX_RTX2080S_O8G_GAMING              0x8711
@@ -147,6 +150,7 @@
 #define ASUS_TUF_RTX_3080_O10G_V2_GAMING_8822           0x8822
 #define ASUS_TUF_RTX_3080_O10G_V2_GAMING                0x8823
 #define ASUS_ROG_STRIX_RTX_3080TI_O12G_GAMING           0x8807
+#define ASUS_ROG_STRIX_RTX_3070TI_O8G_GAMING            0x880E
 #define ASUS_ROG_STRIX_RTX_3090_O24G_GAMING             0x87AF
 #define ASUS_ROG_STRIX_RTX_3090_O24G_GAMING_WHITE       0x87D9
 #define ASUS_TUF_RTX_3090_O24G                          0x87B5
@@ -288,6 +292,7 @@
 #define GIGABYTE_RTX3080_VISION_OC_SUB_DEV              0x404B
 #define GIGABYTE_RTX3080_XTREME_WATERFORCE_SUB_DEV      0x4038
 #define GIGABYTE_RTX3080TI_EAGLE_SUB_DEV                0x4085
+#define GIGABYTE_RTX3080TI_VISION_OC_SUB_DEV            0x4087
 #define GIGABYTE_RTX3080TI_XTREME_WATERFORCE_SUB_DEV    0x4083
 #define GIGABYTE_RTX3090_GAMING_OC_24GB_SUB_DEV         0x4043
 #define GIGABYTE_RTX3090_XTREME_WATERFORCE_SUB_DEV      0x403A

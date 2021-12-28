@@ -94,6 +94,7 @@ INCLUDEPATH +=                                                                  
     Controllers/DasKeyboardController/                                                          \
     Controllers/DebugController/                                                                \
     Controllers/DuckyKeyboardController/                                                        \
+    Controllers/DygmaRaiseController/                                                           \
     Controllers/E131Controller/                                                                 \
     Controllers/EKController/                                                                   \
     Controllers/ENESMBusController/                                                             \
@@ -231,11 +232,13 @@ HEADERS +=                                                                      
     Controllers/AsusAuraUSBController/AsusAuraMainboardController.h                             \
     Controllers/AsusAuraUSBController/AsusAuraMouseController.h                                 \
     Controllers/AsusAuraUSBController/AsusAuraMouseDevices.h                                    \
+    Controllers/AsusAuraUSBController/AsusAuraStrixEvolveController.h                           \
     Controllers/AsusAuraUSBController/AsusAuraTUFKeyboardController.h                           \
     Controllers/AsusAuraUSBController/AsusAuraTUFKeyboardLayouts.h                              \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraHeadsetStand.h                      \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraKeyboard.h                          \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraMouse.h                             \
+    Controllers/AsusAuraUSBController/RGBController_AsusAuraStrixEvolve.h                       \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraTUFKeyboard.h                       \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraUSB.h                               \
     Controllers/BlinkyTapeController/BlinkyTapeController.h                                     \
@@ -282,6 +285,8 @@ HEADERS +=                                                                      
     Controllers/DasKeyboardController/RGBController_DasKeyboard.h                               \
     Controllers/DuckyKeyboardController/DuckyKeyboardController.h                               \
     Controllers/DuckyKeyboardController/RGBController_DuckyKeyboard.h                           \
+    Controllers/DygmaRaiseController/DygmaRaiseController.h                                     \
+    Controllers/DygmaRaiseController/RGBController_DygmaRaise.h                                 \
     Controllers/DebugController/RGBController_Debug.h                                           \
     Controllers/E131Controller/RGBController_E131.h                                             \
     Controllers/EKController/EKController.h                                                     \
@@ -414,8 +419,10 @@ HEADERS +=                                                                      
     Controllers/QMKOpenRGBController/QMKOpenRGBController.h                                     \
     Controllers/QMKOpenRGBController/QMKOpenRGBRev9Controller.h                                 \
     Controllers/QMKOpenRGBController/QMKOpenRGBRevBController.h                                 \
+    Controllers/QMKOpenRGBController/QMKOpenRGBRevDController.h                                 \
     Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRev9.h                             \
     Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRevB.h                             \
+    Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRevD.h                             \
     Controllers/RazerController/RazerController.h                                               \
     Controllers/RazerController/RazerKrakenController.h                                         \
     Controllers/RazerController/RazerDevices.h                                                  \
@@ -425,7 +432,9 @@ HEADERS +=                                                                      
     Controllers/RedragonController/RedragonM711Controller.h                                     \
     Controllers/RedragonController/RGBController_RedragonM711.h                                 \
     Controllers/RoccatController/RGBController_RoccatKoneAimo.h                                 \
+    Controllers/RoccatController/RGBController_RoccatVulcanAimo.h                               \
     Controllers/RoccatController/RoccatKoneAimoController.h                                     \
+    Controllers/RoccatController/RoccatVulcanAimoController.h                                   \
     Controllers/SapphireGPUController/SapphireNitroGlowV1Controller.h                           \
     Controllers/SapphireGPUController/SapphireNitroGlowV3Controller.h                           \
     Controllers/SapphireGPUController/RGBController_SapphireNitroGlowV1.h                       \
@@ -594,11 +603,13 @@ SOURCES +=                                                                      
     Controllers/AsusAuraUSBController/AsusAuraKeyboardController.cpp                            \
     Controllers/AsusAuraUSBController/AsusAuraMainboardController.cpp                           \
     Controllers/AsusAuraUSBController/AsusAuraMouseController.cpp                               \
+    Controllers/AsusAuraUSBController/AsusAuraStrixEvolveController.cpp                         \
     Controllers/AsusAuraUSBController/AsusAuraTUFKeyboardController.cpp                         \
     Controllers/AsusAuraUSBController/AsusAuraUSBControllerDetect.cpp                           \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraHeadsetStand.cpp                    \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraKeyboard.cpp                        \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraMouse.cpp                           \
+    Controllers/AsusAuraUSBController/RGBController_AsusAuraStrixEvolve.cpp                     \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraTUFKeyboard.cpp                     \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraUSB.cpp                             \
     Controllers/BlinkyTapeController/BlinkyTapeController.cpp                                   \
@@ -662,6 +673,9 @@ SOURCES +=                                                                      
     Controllers/DuckyKeyboardController/DuckyKeyboardControllerDetect.cpp                       \
     Controllers/DuckyKeyboardController/RGBController_DuckyKeyboard.cpp                         \
     Controllers/DebugController/RGBController_Debug.cpp                                         \
+    Controllers/DygmaRaiseController/DygmaRaiseController.cpp                                   \
+    Controllers/DygmaRaiseController/DygmaRaiseControllerDetect.cpp                             \
+    Controllers/DygmaRaiseController/RGBController_DygmaRaise.cpp                               \
     Controllers/E131Controller/E131ControllerDetect.cpp                                         \
     Controllers/E131Controller/RGBController_E131.cpp                                           \
     Controllers/EKController/EKControllerDetect.cpp                                             \
@@ -827,8 +841,10 @@ SOURCES +=                                                                      
     Controllers/QMKOpenRGBController/QMKOpenRGBControllerDetect.cpp                             \
     Controllers/QMKOpenRGBController/QMKOpenRGBRev9Controller.cpp                               \
     Controllers/QMKOpenRGBController/QMKOpenRGBRevBController.cpp                               \
+    Controllers/QMKOpenRGBController/QMKOpenRGBRevDController.cpp                               \
     Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRev9.cpp                           \
     Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRevB.cpp                           \
+    Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRevD.cpp                           \
     Controllers/RazerController/RazerController.cpp                                             \
     Controllers/RazerController/RazerKrakenController.cpp                                       \
     Controllers/RazerController/RazerControllerDetect.cpp                                       \
@@ -839,7 +855,9 @@ SOURCES +=                                                                      
     Controllers/RedragonController/RedragonControllerDetect.cpp                                 \
     Controllers/RedragonController/RGBController_RedragonM711.cpp                               \
     Controllers/RoccatController/RGBController_RoccatKoneAimo.cpp                               \
+    Controllers/RoccatController/RGBController_RoccatVulcanAimo.cpp                             \
     Controllers/RoccatController/RoccatKoneAimoController.cpp                                   \
+    Controllers/RoccatController/RoccatVulcanAimoController.cpp                                 \
     Controllers/RoccatController/RoccatControllerDetect.cpp                                     \
     Controllers/SapphireGPUController/SapphireNitroGlowV1Controller.cpp                         \
     Controllers/SapphireGPUController/SapphireNitroGlowV3Controller.cpp                         \
@@ -1224,11 +1242,13 @@ unix:!macx {
     target.path=$$PREFIX/bin/
     desktop.path=$$PREFIX/share/applications/
     desktop.files+=qt/OpenRGB.desktop
-    pixmap.path=$$PREFIX/share/pixmaps/
-    pixmap.files+=qt/OpenRGB.png
+    icon.path=$$PREFIX/share/icons/hicolor/128x128/apps/
+    icon.files+=qt/OpenRGB.png
+    metainfo.path=$$PREFIX/share/metainfo/
+    metainfo.files+=qt/org.openrgb.OpenRGB.metainfo.xml
     rules.path=/lib/udev/rules.d/
     rules.files+=60-openrgb.rules
-    INSTALLS += target desktop pixmap rules
+    INSTALLS += target desktop icon metainfo rules
 }
 
 unix:!macx:CONFIG(asan) {
