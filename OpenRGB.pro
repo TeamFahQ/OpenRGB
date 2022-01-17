@@ -32,7 +32,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 #-----------------------------------------------------------------------------------------------#
 # Application Configuration                                                                     #
 #-----------------------------------------------------------------------------------------------#
-VERSION     = 0.61
+VERSION     = 0.71
 TARGET      = OpenRGB
 TEMPLATE    = app
 
@@ -124,6 +124,7 @@ INCLUDEPATH +=                                                                  
     Controllers/MSI3ZoneController/                                                             \
     Controllers/MSIGPUController/                                                               \
     Controllers/MSIMysticLightController/                                                       \
+    Controllers/MSIOptixController/                                                             \
     Controllers/MSIRGBController/                                                               \
     Controllers/NZXTHue2Controller/                                                             \
     Controllers/NZXTHuePlusController/                                                          \
@@ -231,6 +232,7 @@ HEADERS +=                                                                      
     Controllers/AsusAuraUSBController/AsusAuraKeyboardController.h                              \
     Controllers/AsusAuraUSBController/AsusAuraMainboardController.h                             \
     Controllers/AsusAuraUSBController/AsusAuraMouseController.h                                 \
+    Controllers/AsusAuraUSBController/AsusAuraMousematController.h                              \
     Controllers/AsusAuraUSBController/AsusAuraMouseDevices.h                                    \
     Controllers/AsusAuraUSBController/AsusAuraStrixEvolveController.h                           \
     Controllers/AsusAuraUSBController/AsusAuraTUFKeyboardController.h                           \
@@ -238,6 +240,7 @@ HEADERS +=                                                                      
     Controllers/AsusAuraUSBController/RGBController_AsusAuraHeadsetStand.h                      \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraKeyboard.h                          \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraMouse.h                             \
+    Controllers/AsusAuraUSBController/RGBController_AsusAuraMousemat.h                          \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraStrixEvolve.h                       \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraTUFKeyboard.h                       \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraUSB.h                               \
@@ -268,9 +271,11 @@ HEADERS +=                                                                      
     Controllers/CorsairLightingNodeController/CorsairLightingNodeController.h                   \
     Controllers/CorsairLightingNodeController/RGBController_CorsairLightingNode.h               \
     Controllers/CorsairPeripheralController/CorsairPeripheralController.h                       \
-    Controllers/CorsairPeripheralController/CorsairK100Controller.h                             \
+    Controllers/CorsairPeripheralController/CorsairK100Controller.h                             \    
+    Controllers/CorsairPeripheralController/CorsairK55RGBPROController.h                        \
     Controllers/CorsairPeripheralController/RGBController_CorsairPeripheral.h                   \
     Controllers/CorsairPeripheralController/RGBController_CorsairK100.h                         \
+    Controllers/CorsairPeripheralController/RGBController_CorsairK55RGBPRO.h                    \
     Controllers/CorsairVengeanceController/CorsairVengeanceController.h                         \
     Controllers/CorsairVengeanceController/RGBController_CorsairVengeance.h                     \
     Controllers/CorsairVengeanceProController/CorsairVengeanceProController.h                   \
@@ -399,6 +404,8 @@ HEADERS +=                                                                      
     Controllers/MSIMysticLightController/MSIMysticLight185Controller.h                          \
     Controllers/MSIMysticLightController/RGBController_MSIMysticLight162.h                      \
     Controllers/MSIMysticLightController/RGBController_MSIMysticLight185.h                      \
+    Controllers/MSIOptixController/MSIOptixController.h                                         \
+    Controllers/MSIOptixController/RGBController_MSIOptix.h                                     \
     Controllers/MSIRGBController/MSIRGBController.h                                             \
     Controllers/MSIRGBController/RGBController_MSIRGB.h                                         \
     Controllers/NZXTHue2Controller/NZXTHue2Controller.h                                         \
@@ -603,12 +610,14 @@ SOURCES +=                                                                      
     Controllers/AsusAuraUSBController/AsusAuraKeyboardController.cpp                            \
     Controllers/AsusAuraUSBController/AsusAuraMainboardController.cpp                           \
     Controllers/AsusAuraUSBController/AsusAuraMouseController.cpp                               \
+    Controllers/AsusAuraUSBController/AsusAuraMousematController.cpp                            \
     Controllers/AsusAuraUSBController/AsusAuraStrixEvolveController.cpp                         \
     Controllers/AsusAuraUSBController/AsusAuraTUFKeyboardController.cpp                         \
     Controllers/AsusAuraUSBController/AsusAuraUSBControllerDetect.cpp                           \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraHeadsetStand.cpp                    \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraKeyboard.cpp                        \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraMouse.cpp                           \
+    Controllers/AsusAuraUSBController/RGBController_AsusAuraMousemat.cpp                        \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraStrixEvolve.cpp                     \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraTUFKeyboard.cpp                     \
     Controllers/AsusAuraUSBController/RGBController_AsusAuraUSB.cpp                             \
@@ -648,8 +657,10 @@ SOURCES +=                                                                      
     Controllers/CorsairPeripheralController/CorsairPeripheralController.cpp                     \
     Controllers/CorsairPeripheralController/CorsairPeripheralControllerDetect.cpp               \
     Controllers/CorsairPeripheralController/CorsairK100Controller.cpp                           \
+    Controllers/CorsairPeripheralController/CorsairK55RGBPROController.cpp                      \
     Controllers/CorsairPeripheralController/RGBController_CorsairPeripheral.cpp                 \
     Controllers/CorsairPeripheralController/RGBController_CorsairK100.cpp                       \
+    Controllers/CorsairPeripheralController/RGBController_CorsairK55RGBPRO.cpp                  \
     Controllers/CorsairVengeanceController/CorsairVengeanceController.cpp                       \
     Controllers/CorsairVengeanceController/CorsairVengeanceControllerDetect.cpp                 \
     Controllers/CorsairVengeanceController/RGBController_CorsairVengeance.cpp                   \
@@ -812,6 +823,9 @@ SOURCES +=                                                                      
     Controllers/MSIMysticLightController/MSIMysticLightControllerDetect.cpp                     \
     Controllers/MSIMysticLightController/RGBController_MSIMysticLight162.cpp                    \
     Controllers/MSIMysticLightController/RGBController_MSIMysticLight185.cpp                    \
+    Controllers/MSIOptixController/MSIOptixController.cpp                                       \
+    Controllers/MSIOptixController/MSIOptixControllerDetect.cpp                                 \
+    Controllers/MSIOptixController/RGBController_MSIOptix.cpp                                   \
     Controllers/MSIRGBController/MSIRGBController.cpp                                           \
     Controllers/MSIRGBController/MSIRGBControllerDetect.cpp                                     \
     Controllers/MSIRGBController/RGBController_MSIRGB.cpp                                       \
@@ -1246,7 +1260,7 @@ unix:!macx {
     icon.files+=qt/OpenRGB.png
     metainfo.path=$$PREFIX/share/metainfo/
     metainfo.files+=qt/org.openrgb.OpenRGB.metainfo.xml
-    rules.path=/lib/udev/rules.d/
+    rules.path=$$PREFIX/lib/udev/rules.d/
     rules.files+=60-openrgb.rules
     INSTALLS += target desktop icon metainfo rules
 }

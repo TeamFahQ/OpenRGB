@@ -22,6 +22,8 @@
 #define RAZER_BLACKWIDOW_LITE_PID                       0x0235
 #define RAZER_BLACKWIDOW_OVERWATCH_PID                  0x0211
 #define RAZER_BLACKWIDOW_V3_PID                         0x024E
+#define RAZER_BLACKWIDOW_V3_MINI_WIRED_PID              0x0258
+#define RAZER_BLACKWIDOW_V3_MINI_WIRELESS_PID           0x0271
 #define RAZER_BLACKWIDOW_V3_PRO_WIRED_PID               0x025A
 #define RAZER_BLACKWIDOW_V3_PRO_BLUETOOTH_PID           0x025B
 #define RAZER_BLACKWIDOW_V3_PRO_WIRELESS_PID            0x025C
@@ -74,6 +76,7 @@
 #define RAZER_HUNTSMAN_TE_PID                           0x0243
 #define RAZER_HUNTSMAN_V2_ANALOG_PID                    0x0266
 #define RAZER_HUNTSMAN_V2_TKL_PID                       0x026B
+#define RAZER_HUNTSMAN_V2_PID                           0x026C
 #define RAZER_ORBWEAVER_CHROMA_PID                      0x0207
 #define RAZER_ORNATA_CHROMA_PID                         0x021E
 #define RAZER_ORNATA_CHROMA_V2_PID                      0x025D
@@ -97,6 +100,7 @@
 #define RAZER_BASILISK_ULTIMATE_WIRELESS_PID            0x0088
 #define RAZER_BASILISK_X_HYPERSPEED_PID                 0x0083
 #define RAZER_BASILISK_V2_PID                           0x0085
+#define RAZER_BASILISK_V3_PID                           0x0099
 #define RAZER_DEATHADDER_1800_PID                       0x0038
 #define RAZER_DEATHADDER_2000_PID                       0x004F
 #define RAZER_DEATHADDER_2013_PID                       0x0037
@@ -140,6 +144,7 @@
 #define RAZER_OROCHI_CHROMA_PID                         0x0048
 #define RAZER_OUROBOROS_PID                             0x0032
 #define RAZER_TAIPAN_PID                                0x0034
+#define RAZER_VIPER_8KHZ_PID                            0x0091
 #define RAZER_VIPER_MINI_PID                            0x008A
 #define RAZER_VIPER_PID                                 0x0078
 #define RAZER_VIPER_ULTIMATE_WIRED_PID                  0x007A
@@ -151,6 +156,7 @@
 #define RAZER_KRAKEN_CLASSIC_ALT_PID                    0x0506
 #define RAZER_KRAKEN_CLASSIC_PID                        0x0501
 #define RAZER_KRAKEN_KITTY_EDITION_PID                  0x0F19
+#define RAZER_KRAKEN_KITTY_BLACK_EDITION_PID            0x0F21
 #define RAZER_KRAKEN_PID                                0x0504
 #define RAZER_KRAKEN_ULTIMATE_PID                       0x0527
 #define RAZER_KRAKEN_V2_PID                             0x0510
@@ -525,6 +531,86 @@ static const razer_key blackwidow_v3_tkl_keymap[] =
     {   0,      5,      17,             "Key: Right Arrow"                  },
 };
 
+#define BLACKWIDOW_V3_MINI_KEYMAP_SIZE (sizeof(blackwidow_v3_mini_keymap) / sizeof(blackwidow_v3_mini_keymap[0]))
+
+static const razer_key blackwidow_v3_mini_keymap[] =
+{
+    /*---------------------------------------------------------------------*\
+    |   Zone,   Row,    Column,         Key                                 |
+    \*---------------------------------------------------------------------*/
+    {   0,      0,      0,              "Key: Escape"                       },
+    {   0,      0,      1,              "Key: 1"                            },
+    {   0,      0,      2,              "Key: 2"                            },
+    {   0,      0,      3,              "Key: 3"                            },
+    {   0,      0,      4,              "Key: 4"                            },
+    {   0,      0,      5,              "Key: 5"                            },
+    {   0,      0,      6,              "Key: 6"                            },
+    {   0,      0,      7,              "Key: 7"                            },
+    {   0,      0,      8,              "Key: 8"                            },
+    {   0,      0,      9,              "Key: 9"                            },
+    {   0,      0,      10,             "Key: 0"                            },
+    {   0,      0,      11,             "Key: -"                            },
+    {   0,      0,      12,             "Key: ="                            },
+    {   0,      0,      14,             "Key: Backspace"                    },
+    {   0,      0,      15,             "Key: Delete"                       },
+    {   0,      1,      0,              "Key: Tab"                          },
+    {   0,      1,      1,              "Key: Q"                            },
+    {   0,      1,      2,              "Key: W"                            },
+    {   0,      1,      3,              "Key: E"                            },
+    {   0,      1,      4,              "Key: R"                            },
+    {   0,      1,      5,              "Key: T"                            },
+    {   0,      1,      6,              "Key: Y"                            },
+    {   0,      1,      7,              "Key: U"                            },
+    {   0,      1,      8,              "Key: I"                            },
+    {   0,      1,      9,              "Key: O"                            },
+    {   0,      1,      10,             "Key: P"                            },
+    {   0,      1,      11,             "Key: ["                            },
+    {   0,      1,      12,             "Key: ]"                            },
+    {   0,      1,      13,             "Key: \\ (ANSI)"                    },
+    {   0,      1,      15,             "Key: Page Up"                      },
+    {   0,      2,      0,              "Key: Caps Lock"                    },
+    {   0,      2,      1,              "Key: A"                            },
+    {   0,      2,      2,              "Key: S"                            },
+    {   0,      2,      3,              "Key: D"                            },
+    {   0,      2,      4,              "Key: F"                            },
+    {   0,      2,      5,              "Key: G"                            },
+    {   0,      2,      6,              "Key: H"                            },
+    {   0,      2,      7,              "Key: J"                            },
+    {   0,      2,      8,              "Key: K"                            },
+    {   0,      2,      9,              "Key: L"                            },
+    {   0,      2,      10,             "Key: ;"                            },
+    {   0,      2,      11,             "Key: '"                            },
+    {   0,      2,      12,             "Key: #"                            },
+    {   0,      2,      13,             "Key: Enter"                        },
+    {   0,      2,      15,             "Key: Page Down"                    },
+    {   0,      3,      0,              "Key: Left Shift"                   },
+    {   0,      3,      1,              "Key: \\ (ISO)"                     },
+    {   0,      3,      2,              "Key: Z"                            },
+    {   0,      3,      3,              "Key: X"                            },
+    {   0,      3,      4,              "Key: C"                            },
+    {   0,      3,      5,              "Key: V"                            },
+    {   0,      3,      6,              "Key: B"                            },
+    {   0,      3,      7,              "Key: N"                            },
+    {   0,      3,      8,              "Key: M"                            },
+    {   0,      3,      9,              "Key: ,"                            },
+    {   0,      3,      10,             "Key: ."                            },
+    {   0,      3,      11,             "Key: /"                            },
+    {   0,      3,      13,             "Key: Right Shift"                  },
+    {   0,      3,      14,             "Key: Up Arrow"                     },
+    {   0,      3,      15,             "Key: Insert"                       },
+    {   0,      4,      0,              "Key: Left Control"                 },
+    {   0,      4,      1,              "Key: Left Windows"                 },
+    {   0,      4,      2,              "Key: Left Alt"                     },
+    {   0,      4,      6,              "Key: Space"                        },
+    {   0,      4,      7,              "Logo"                              },
+    {   0,      4,      10,             "Key: Right Alt"                    },
+    {   0,      4,      11,             "Key: Right Fn"                     },
+    {   0,      4,      12,             "Key: Right Control"                },
+    {   0,      4,      13,             "Key: Left Arrow"                   },
+    {   0,      4,      14,             "Key: Down Arrow"                   },
+    {   0,      4,      15,             "Key: Right Arrow"                  },
+};
+
 #define BOOK_13_2020_KEYMAP_SIZE (sizeof(book_13_2020_keymap) / sizeof(book_13_2020_keymap[0]))
 
 static const razer_key book_13_2020_keymap[] =
@@ -692,6 +778,96 @@ static const razer_key blade_14_2021_keymap[] =
     {   0,      5,      3,              "Key: Left Windows"                 },
     {   0,      5,      5,              "Key: Left Alt"                     },
     {   0,      5,      9,              "Key: Right Alt"                    },
+    {   0,      5,      11,             "Key: Right Control"                },
+    {   0,      5,      12,             "Key: Left Arrow"                   },
+    {   0,      5,      13,             "Key: Up Arrow"                     },
+    {   0,      5,      14,             "Key: Right Arrow"                  },
+    {   0,      5,      15,             "Key: Down Arrow"                   },
+};
+
+#define BLADE_17_PRO_2021_KEYMAP_SIZE (sizeof(blade_17_pro_2021_keymap) / sizeof(blade_17_pro_2021_keymap[0]))
+
+static const razer_key blade_17_pro_2021_keymap[] =
+{
+    /*---------------------------------------------------------------------*\
+    |   Zone,   Row,    Column,         Key                                 |
+    \*---------------------------------------------------------------------*/
+    {   0,      0,      1,              "Key: Escape"                       },
+    {   0,      0,      2,              "Key: F1"                           },
+    {   0,      0,      3,              "Key: F2"                           },
+    {   0,      0,      4,              "Key: F3"                           },
+    {   0,      0,      5,              "Key: F4"                           },
+    {   0,      0,      6,              "Key: F5"                           },
+    {   0,      0,      7,              "Key: F6"                           },
+    {   0,      0,      8,              "Key: F7"                           },
+    {   0,      0,      9,              "Key: F8"                           },
+    {   0,      0,      10,             "Key: F9"                           },
+    {   0,      0,      11,             "Key: F10"                          },
+    {   0,      0,      12,             "Key: F11"                          },
+    {   0,      0,      13,             "Key: F12"                          },
+    {   0,      0,      14,             "Key: Insert"                       },
+    {   0,      0,      15,             "Key: Delete"                       },
+    {   0,      1,      1,              "Key: `"                            },
+    {   0,      1,      2,              "Key: 1"                            },
+    {   0,      1,      3,              "Key: 2"                            },
+    {   0,      1,      4,              "Key: 3"                            },
+    {   0,      1,      5,              "Key: 4"                            },
+    {   0,      1,      6,              "Key: 5"                            },
+    {   0,      1,      7,              "Key: 6"                            },
+    {   0,      1,      8,              "Key: 7"                            },
+    {   0,      1,      9,              "Key: 8"                            },
+    {   0,      1,      10,             "Key: 9"                            },
+    {   0,      1,      11,             "Key: 0"                            },
+    {   0,      1,      12,             "Key: -"                            },
+    {   0,      1,      13,             "Key: ="                            },
+    {   0,      1,      15,             "Key: Backspace"                    },
+    {   0,      2,      1,              "Key: Tab"                          },
+    {   0,      2,      2,              "Key: Q"                            },
+    {   0,      2,      3,              "Key: W"                            },
+    {   0,      2,      4,              "Key: E"                            },
+    {   0,      2,      5,              "Key: R"                            },
+    {   0,      2,      6,              "Key: T"                            },
+    {   0,      2,      7,              "Key: Y"                            },
+    {   0,      2,      8,              "Key: U"                            },
+    {   0,      2,      9,              "Key: I"                            },
+    {   0,      2,      10,             "Key: O"                            },
+    {   0,      2,      11,             "Key: P"                            },
+    {   0,      2,      12,             "Key: ["                            },
+    {   0,      2,      13,             "Key: ]"                            },
+    {   0,      2,      14,             "Key: Enter"                        },
+    {   0,      2,      15,             "Key: \\ (ANSI)"                    },
+    {   0,      3,      1,              "Key: Caps Lock"                    },
+    {   0,      3,      2,              "Key: A"                            },
+    {   0,      3,      3,              "Key: S"                            },
+    {   0,      3,      4,              "Key: D"                            },
+    {   0,      3,      5,              "Key: F"                            },
+    {   0,      3,      6,              "Key: G"                            },
+    {   0,      3,      7,              "Key: H"                            },
+    {   0,      3,      8,              "Key: J"                            },
+    {   0,      3,      9,              "Key: K"                            },
+    {   0,      3,      10,             "Key: L"                            },
+    {   0,      3,      11,             "Key: ;"                            },
+    {   0,      3,      12,             "Key: '"                            },
+    {   0,      3,      13,             "Key: #"                            },
+    {   0,      4,      1,              "Key: Left Shift"                   },
+    {   0,      4,      2,              "Key: \\ (ISO)"                     },
+    {   0,      4,      3,              "Key: Z"                            },
+    {   0,      4,      4,              "Key: X"                            },
+    {   0,      4,      5,              "Key: C"                            },
+    {   0,      4,      6,              "Key: V"                            },
+    {   0,      4,      7,              "Key: B"                            },
+    {   0,      4,      8,              "Key: N"                            },
+    {   0,      4,      9,              "Key: M"                            },
+    {   0,      4,      10,             "Key: ,"                            },
+    {   0,      4,      11,             "Key: ."                            },
+    {   0,      4,      12,             "Key: /"                            },
+    {   0,      4,      15,             "Key: Right Shift"                  },
+    {   0,      5,      1,              "Key: Left Control"                 },
+    {   0,      5,      2,              "Key: Left Fn"                      },
+    {   0,      5,      3,              "Key: Left Windows"                 },
+    {   0,      5,      5,              "Key: Left Alt"                     },
+    {   0,      5,      9,              "Key: Right Alt"                    },
+    {   0,      5,      10,             "Key: Right Fn"                     },
     {   0,      5,      11,             "Key: Right Control"                },
     {   0,      5,      12,             "Key: Left Arrow"                   },
     {   0,      5,      13,             "Key: Up Arrow"                     },
@@ -1526,6 +1702,125 @@ static const razer_key huntsman_te_keymap[] =
     {   0,      5,      15,             "Key: Left Arrow"                   },
     {   0,      5,      16,             "Key: Down Arrow"                   },
     {   0,      5,      17,             "Key: Right Arrow"                  },
+};
+
+#define HUNTSMAN_V2_KEYMAP_SIZE (sizeof(huntsman_v2_keymap) / sizeof(huntsman_v2_keymap[0]))
+
+static const razer_key huntsman_v2_keymap[] =
+{
+    /*---------------------------------------------------------------------*\
+    |   Zone,   Row,    Column,         Key                                 |
+    \*---------------------------------------------------------------------*/
+    {   0,      0,      0,              "Key: Escape"                       },
+    {   0,      0,      2,              "Key: F1"                           },
+    {   0,      0,      3,              "Key: F2"                           },
+    {   0,      0,      4,              "Key: F3"                           },
+    {   0,      0,      5,              "Key: F4"                           },
+    {   0,      0,      6,              "Key: F5"                           },
+    {   0,      0,      7,              "Key: F6"                           },
+    {   0,      0,      8,              "Key: F7"                           },
+    {   0,      0,      9,              "Key: F8"                           },
+    {   0,      0,      10,             "Key: F9"                           },
+    {   0,      0,      11,             "Key: F10"                          },
+    {   0,      0,      12,             "Key: F11"                          },
+    {   0,      0,      13,             "Key: F12"                          },
+    {   0,      0,      14,             "Key: Print Screen"                 },
+    {   0,      0,      15,             "Key: Scroll Lock"                  },
+    {   0,      0,      16,             "Key: Pause/Break"                  },
+    {   0,      0,      17,             "Key: Media Previous"               },
+    {   0,      0,      18,             "Key: Media Play/Pause"             },
+    {   0,      0,      19,             "Key: Media Next"                   },
+    {   0,      0,      20,             "Key: Media Mute"                   },
+    {   0,      1,      0,              "Key: `"                            },
+    {   0,      1,      1,              "Key: 1"                            },
+    {   0,      1,      2,              "Key: 2"                            },
+    {   0,      1,      3,              "Key: 3"                            },
+    {   0,      1,      4,              "Key: 4"                            },
+    {   0,      1,      5,              "Key: 5"                            },
+    {   0,      1,      6,              "Key: 6"                            },
+    {   0,      1,      7,              "Key: 7"                            },
+    {   0,      1,      8,              "Key: 8"                            },
+    {   0,      1,      9,              "Key: 9"                            },
+    {   0,      1,      10,             "Key: 0"                            },
+    {   0,      1,      11,             "Key: -"                            },
+    {   0,      1,      12,             "Key: ="                            },
+    {   0,      1,      13,             "Key: Backspace"                    },
+    {   0,      1,      14,             "Key: Insert"                       },
+    {   0,      1,      15,             "Key: Home"                         },
+    {   0,      1,      16,             "Key: Page Up"                      },
+    {   0,      1,      17,             "Key: Num Lock"                     },
+    {   0,      1,      18,             "Key: Number Pad /"                 },
+    {   0,      1,      19,             "Key: Number Pad *"                 },
+    {   0,      1,      20,             "Key: Number Pad -"                 },
+    {   0,      2,      0,              "Key: Tab"                          },
+    {   0,      2,      1,              "Key: Q"                            },
+    {   0,      2,      2,              "Key: W"                            },
+    {   0,      2,      3,              "Key: E"                            },
+    {   0,      2,      4,              "Key: R"                            },
+    {   0,      2,      5,              "Key: T"                            },
+    {   0,      2,      6,              "Key: Y"                            },
+    {   0,      2,      7,              "Key: U"                            },
+    {   0,      2,      8,              "Key: I"                            },
+    {   0,      2,      9,              "Key: O"                            },
+    {   0,      2,      10,             "Key: P"                            },
+    {   0,      2,      11,             "Key: ["                            },
+    {   0,      2,      12,             "Key: ]"                            },
+    {   0,      2,      13,             "Key: \\ (ANSI)"                    },
+    {   0,      2,      14,             "Key: Delete"                       },
+    {   0,      2,      15,             "Key: End"                          },
+    {   0,      2,      16,             "Key: Page Down"                    },
+    {   0,      2,      17,             "Key: Number Pad 7"                 },
+    {   0,      2,      18,             "Key: Number Pad 8"                 },
+    {   0,      2,      19,             "Key: Number Pad 9"                 },
+    {   0,      2,      20,             "Key: Number Pad +"                 },
+    {   0,      3,      0,              "Key: Caps Lock"                    },
+    {   0,      3,      1,              "Key: A"                            },
+    {   0,      3,      2,              "Key: S"                            },
+    {   0,      3,      3,              "Key: D"                            },
+    {   0,      3,      4,              "Key: F"                            },
+    {   0,      3,      5,              "Key: G"                            },
+    {   0,      3,      6,              "Key: H"                            },
+    {   0,      3,      7,              "Key: J"                            },
+    {   0,      3,      8,              "Key: K"                            },
+    {   0,      3,      9,              "Key: L"                            },
+    {   0,      3,      10,             "Key: ;"                            },
+    {   0,      3,      11,             "Key: '"                            },
+    {   0,      3,      12,             "Key: #"                            },
+    {   0,      3,      13,             "Key: Enter"                        },
+    {   0,      3,      17,             "Key: Number Pad 4"                 },
+    {   0,      3,      18,             "Key: Number Pad 5"                 },
+    {   0,      3,      19,             "Key: Number Pad 6"                 },
+    {   0,      4,      0,              "Key: Left Shift"                   },
+    {   0,      4,      1,              "Key: \\ (ISO)"                     },
+    {   0,      4,      2,              "Key: Z"                            },
+    {   0,      4,      3,              "Key: X"                            },
+    {   0,      4,      4,              "Key: C"                            },
+    {   0,      4,      5,              "Key: V"                            },
+    {   0,      4,      6,              "Key: B"                            },
+    {   0,      4,      7,              "Key: N"                            },
+    {   0,      4,      8,              "Key: M"                            },
+    {   0,      4,      9,              "Key: ,"                            },
+    {   0,      4,      10,             "Key: ."                            },
+    {   0,      4,      11,             "Key: /"                            },
+    {   0,      4,      13,             "Key: Right Shift"                  },
+    {   0,      4,      15,             "Key: Up Arrow"                     },
+    {   0,      4,      17,             "Key: Number Pad 1"                 },
+    {   0,      4,      18,             "Key: Number Pad 2"                 },
+    {   0,      4,      19,             "Key: Number Pad 3"                 },
+    {   0,      4,      20,             "Key: Number Pad Enter"             },
+    {   0,      5,      0,              "Key: Left Control"                 },
+    {   0,      5,      1,              "Key: Left Windows"                 },
+    {   0,      5,      2,              "Key: Left Alt"                     },
+    {   0,      5,      6,              "Key: Space"                        },
+    {   0,      5,      10,             "Key: Right Alt"                    },
+    {   0,      5,      11,             "Key: Right Fn"                     },
+    {   0,      5,      12,             "Key: Menu"                         },
+    {   0,      5,      13,             "Key: Right Control"                },
+    {   0,      5,      14,             "Key: Left Arrow"                   },
+    {   0,      5,      15,             "Key: Down Arrow"                   },
+    {   0,      5,      16,             "Key: Right Arrow"                  },
+    {   0,      5,      18,             "Key: Number Pad 0"                 },
+    {   0,      5,      19,             "Key: Number Pad ."                 },
 };
 
 #define HUNTSMAN_V2_TKL_KEYMAP_SIZE (sizeof(huntsman_v2_tkl_keymap) / sizeof(huntsman_v2_tkl_keymap[0]))
@@ -2631,6 +2926,68 @@ static const razer_device blackwidow_v3_tkl_device =
 };
 
 /*-------------------------------------------------------------*\
+|  Razer Blackwidow V3 Mini (Wired) 1532:0258                   |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       5 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone blackwidow_v3_mini_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    5,
+    16
+};
+
+static const razer_device blackwidow_v3_mini_wired_device =
+{
+    "Razer BlackWidow V3 Mini (Wired)",
+    RAZER_BLACKWIDOW_V3_MINI_WIRED_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    5,
+    16,
+    {
+        &blackwidow_v3_mini_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    blackwidow_v3_mini_keymap,
+    BLACKWIDOW_V3_MINI_KEYMAP_SIZE
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Blackwidow V3 Mini (Wireless) 1532:0271                |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       5 Rows, 16 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_device blackwidow_v3_mini_wireless_device =
+{
+    "Razer BlackWidow V3 Mini (Wireless)",
+    RAZER_BLACKWIDOW_V3_MINI_WIRELESS_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    5,
+    16,
+    {
+        &blackwidow_v3_mini_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    blackwidow_v3_mini_keymap,
+    BLACKWIDOW_V3_MINI_KEYMAP_SIZE
+};
+
+/*-------------------------------------------------------------*\
 |  Razer Blackwidow X Chroma 1532:0216                          |
 |                                                               |
 |  Zone "Keyboard"                                              |
@@ -3107,6 +3464,41 @@ static const razer_device huntsman_v2_tkl_device =
     },
     huntsman_v2_tkl_keymap,
     HUNTSMAN_V2_TKL_KEYMAP_SIZE
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Huntsman V2 1532:026C                                  |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Matrix                                                  |
+|       6 Rows, 22 Columns                                      |
+\*-------------------------------------------------------------*/
+static const razer_zone huntsman_v2_keyboard_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_MATRIX,
+    6,
+    22
+};
+
+static const razer_device huntsman_v2_device =
+{
+    "Razer Huntsman V2",
+    RAZER_HUNTSMAN_V2_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    9,
+    22,
+    {
+        &huntsman_v2_keyboard_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    huntsman_v2_keymap,
+    HUNTSMAN_V2_KEYMAP_SIZE
 };
 
 /*-------------------------------------------------------------------------*\
@@ -3914,8 +4306,8 @@ static const razer_device blade_pro_17_2021_device =
         NULL,
         NULL
     },
-    NULL,
-    0
+    blade_17_pro_2021_keymap,
+    BLADE_17_PRO_2021_KEYMAP_SIZE
 };
 
 /*-------------------------------------------------------------*\
@@ -4532,9 +4924,68 @@ static const razer_device basilisk_v2_device =
     1,
     2,
     {
-        &basilisk_scroll_wheel_zone,
-        &basilisk_logo_zone,
+        &basilisk_v2_scroll_wheel_zone,
+        &basilisk_v2_logo_zone,
         NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Basilisk V3 1532:0099                                  |
+|                                                               |
+|  Zone "Scroll Wheel"                                          |
+|       Single                                                  |
+|       1 LED                                                   |
+|                                                               |
+|  Zone "Logo"                                                  |
+|       Single                                                  |
+|       1 LED                                                   |
+|                                                               |
+|  Zone "LED Strip"                                             |
+|       Linear                                                  |
+|       9 LED                                                   |
+\*-------------------------------------------------------------*/
+static const razer_zone basilisk_v3_scroll_wheel_zone =
+{
+    "Scroll Wheel",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_zone basilisk_v3_logo_zone =
+{
+    "Logo",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_zone basilisk_v3_ledstrip_zone =
+{
+    "LED Strip",
+    ZONE_TYPE_LINEAR,
+    1,
+    9
+};
+
+static const razer_device basilisk_v3_device =
+{
+    "Razer Basilisk V3",
+    RAZER_BASILISK_V3_PID,
+    DEVICE_TYPE_MOUSE,
+    false,
+    1,
+    11,
+    {
+        &basilisk_v3_scroll_wheel_zone,
+        &basilisk_v3_logo_zone,
+        &basilisk_v3_ledstrip_zone,
         NULL,
         NULL,
         NULL
@@ -5869,6 +6320,41 @@ static const razer_device naga_trinity_device =
         &naga_trinity_scroll_wheel_zone,
         &naga_trinity_logo_zone,
         &naga_trinity_numpad_zone,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
+|  Razer Viper 8kHz 1532:0091                                   |
+|                                                               |
+|  Zone "Logo"                                                  |
+|       Matrix                                                  |
+|       1 LED                                                   |
+\*-------------------------------------------------------------*/
+static const razer_zone viper_8khz_logo_zone =
+{
+    "Logo",
+    ZONE_TYPE_SINGLE,
+    1,
+    1
+};
+
+static const razer_device viper_8khz_device =
+{
+    "Razer Viper 8kHz",
+    RAZER_VIPER_8KHZ_PID,
+    DEVICE_TYPE_MOUSE,
+    true,
+    1,
+    1,
+    {
+        &viper_8khz_logo_zone,
+        NULL,
+        NULL,
         NULL,
         NULL,
         NULL
@@ -7267,6 +7753,8 @@ static const razer_device* device_list[] =
     &blackwidow_v3_pro_wireless_device,
     &blackwidow_v3_pro_bluetooth_device,
     &blackwidow_v3_tkl_device,
+    &blackwidow_v3_mini_wired_device,
+    &blackwidow_v3_mini_wireless_device,
     &blackwidow_x_chroma_device,
     &blackwidow_x_chroma_te_device,
     &cynosa_chroma_device,
@@ -7325,6 +7813,7 @@ static const razer_device* device_list[] =
     &basilisk_ultimate_wired_device,
     &basilisk_ultimate_wireless_device,
     &basilisk_v2_device,
+    &basilisk_v3_device,
     &deathadder_chroma_device,
     &deathadder_elite_device,
     &deathadder_essential_device,
@@ -7351,6 +7840,7 @@ static const razer_device* device_list[] =
     &naga_hex_v2_device,
     &naga_left_handed_device,
     &naga_trinity_device,
+    &viper_8khz_device,
     &viper_mini_device,
     &viper_ultimate_wired_device,
     &viper_ultimate_wireless_device,

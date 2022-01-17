@@ -47,8 +47,10 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
     \*-----------------------------------------------------------------*/
     switch(dev_pid)
     {
+        case RAZER_BASILISK_V3_PID:
         case RAZER_BLACKWIDOW_ELITE_PID:
         case RAZER_BLACKWIDOW_2019_PID:
+        case RAZER_BLACKWIDOW_V3_MINI_WIRED_PID:
         case RAZER_CYNOSA_V2_PID:
         case RAZER_ORNATA_CHROMA_V2_PID:
         case RAZER_TARTARUS_CHROMA_PID:
@@ -61,6 +63,7 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_BASE_STATION_V2_CHROMA_PID:
         case RAZER_MOUSE_BUNGEE_V3_CHROMA_PID:
         case RAZER_O11_DYNAMIC_PID:
+        case RAZER_VIPER_8KHZ_PID:
             dev_transaction_id = 0x1F;
             break;
 
@@ -77,6 +80,12 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
             dev_transaction_id = 0x3F;
             }
             break;
+            
+        case RAZER_BLACKWIDOW_V3_MINI_WIRELESS_PID:
+            {
+            dev_transaction_id = 0x9F;
+            break;
+            }
 
         case RAZER_GOLIATHUS_CHROMA_PID:
         case RAZER_GOLIATHUS_CHROMA_EXTENDED_PID:
@@ -99,20 +108,20 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
     \*-----------------------------------------------------------------*/
     switch(dev_pid)
     {
-        case RAZER_GOLIATHUS_CHROMA_EXTENDED_PID:
-        case RAZER_GOLIATHUS_CHROMA_PID:
-        case RAZER_MAMBA_ELITE_PID:
-        case RAZER_TARTARUS_V2_PID:
         case RAZER_BASE_STATION_CHROMA_PID:
         case RAZER_BASE_STATION_V2_CHROMA_PID:
-        case RAZER_MOUSE_BUNGEE_V3_CHROMA_PID:
         case RAZER_CHARGING_PAD_CHROMA_PID:
         case RAZER_CHROMA_HDK_PID:
         case RAZER_CORE_X_PID:
         case RAZER_DEATHADDER_ELITE_PID:
         case RAZER_FIREFLY_V2_PID:
+        case RAZER_GOLIATHUS_CHROMA_EXTENDED_PID:
+        case RAZER_GOLIATHUS_CHROMA_PID:
+        case RAZER_MAMBA_ELITE_PID:
+        case RAZER_MOUSE_BUNGEE_V3_CHROMA_PID:
         case RAZER_NAGA_LEFT_HANDED_PID:
         case RAZER_O11_DYNAMIC_PID:
+        case RAZER_TARTARUS_V2_PID:
             dev_led_id = RAZER_LED_ID_ZERO;
             break;
 
@@ -125,6 +134,8 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_BLACKWIDOW_V3_PRO_BLUETOOTH_PID:
         case RAZER_BLACKWIDOW_V3_PRO_WIRELESS_PID:
         case RAZER_BLACKWIDOW_V3_TKL_PID:
+        case RAZER_BLACKWIDOW_V3_MINI_WIRED_PID:
+        case RAZER_BLACKWIDOW_V3_MINI_WIRELESS_PID:
         case RAZER_CYNOSA_CHROMA_PID:
         case RAZER_CYNOSA_LITE_PID:
         case RAZER_CYNOSA_V2_PID:
@@ -134,6 +145,7 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_HUNTSMAN_TE_PID:
         case RAZER_HUNTSMAN_V2_ANALOG_PID:
         case RAZER_HUNTSMAN_V2_TKL_PID:
+        case RAZER_HUNTSMAN_V2_PID:
         case RAZER_ORNATA_CHROMA_PID:
         case RAZER_ORNATA_CHROMA_V2_PID:
         case RAZER_CORE_PID:
@@ -198,6 +210,7 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_BASILISK_ULTIMATE_WIRED_PID:
         case RAZER_BASILISK_ULTIMATE_WIRELESS_PID:
         case RAZER_BASILISK_V2_PID:
+        case RAZER_BASILISK_V3_PID:
         case RAZER_BLACKWIDOW_2019_PID:
         case RAZER_BLACKWIDOW_ELITE_PID:
         case RAZER_BLACKWIDOW_V3_PID:
@@ -205,6 +218,8 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_BLACKWIDOW_V3_PRO_BLUETOOTH_PID:
         case RAZER_BLACKWIDOW_V3_PRO_WIRELESS_PID:
         case RAZER_BLACKWIDOW_V3_TKL_PID:
+        case RAZER_BLACKWIDOW_V3_MINI_WIRED_PID:
+        case RAZER_BLACKWIDOW_V3_MINI_WIRELESS_PID:
         case RAZER_CHARGING_PAD_CHROMA_PID:
         case RAZER_CHROMA_HDK_PID:
         case RAZER_CHROMA_PC_CASE_LIGHTING_KIT_PID:
@@ -228,6 +243,7 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_HUNTSMAN_TE_PID:
         case RAZER_HUNTSMAN_V2_ANALOG_PID:
         case RAZER_HUNTSMAN_V2_TKL_PID:
+        case RAZER_HUNTSMAN_V2_PID:
         case RAZER_KRAKEN_KITTY_EDITION_PID:
         case RAZER_LANCEHEAD_TE_WIRED_PID:
         case RAZER_LANCEHEAD_2017_WIRED_PID:
@@ -249,6 +265,7 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_SEIREN_EMOTE_PID:
         case RAZER_TARTARUS_V2_PID:
         case RAZER_TIAMAT_71_V2_PID:
+        case RAZER_VIPER_8KHZ_PID:
         case RAZER_VIPER_MINI_PID:
         case RAZER_VIPER_PID:
         case RAZER_VIPER_ULTIMATE_WIRED_PID:
@@ -448,6 +465,8 @@ bool RazerController::SupportsWave()
         case RAZER_BLACKWIDOW_V3_PRO_BLUETOOTH_PID:
         case RAZER_BLACKWIDOW_V3_PRO_WIRELESS_PID:
         case RAZER_BLACKWIDOW_V3_TKL_PID:
+        case RAZER_BLACKWIDOW_V3_MINI_WIRED_PID:
+        case RAZER_BLACKWIDOW_V3_MINI_WIRELESS_PID:
         case RAZER_BLACKWIDOW_X_CHROMA_PID:
         case RAZER_BLACKWIDOW_X_CHROMA_TE_PID:
         case RAZER_BLADE_2016_PID:
@@ -487,6 +506,7 @@ bool RazerController::SupportsWave()
         case RAZER_HUNTSMAN_TE_PID:
         case RAZER_HUNTSMAN_V2_ANALOG_PID:
         case RAZER_HUNTSMAN_V2_TKL_PID:
+        case RAZER_HUNTSMAN_V2_PID:
         case RAZER_ORBWEAVER_CHROMA_PID:
         case RAZER_TARTARUS_V2_PID:
 
@@ -495,6 +515,7 @@ bool RazerController::SupportsWave()
         \*-----------------------------------------------------*/
         case RAZER_BASILISK_ULTIMATE_WIRED_PID:
         case RAZER_BASILISK_ULTIMATE_WIRELESS_PID:
+        case RAZER_BASILISK_V3_PID:
         case RAZER_DIAMONDBACK_CHROMA_PID:
         case RAZER_MAMBA_2015_WIRED_PID:
         case RAZER_MAMBA_2015_WIRELESS_PID:
@@ -580,9 +601,9 @@ razer_report RazerController::razer_create_report(unsigned char command_class, u
     new_report.transaction_id.id    = dev_transaction_id;
     new_report.remaining_packets    = 0x00;
     new_report.protocol_type        = 0x00;
+    new_report.data_size            = data_size;
     new_report.command_class        = command_class;
     new_report.command_id.id        = command_id;
-    new_report.data_size            = data_size;
 
     return new_report;
 }

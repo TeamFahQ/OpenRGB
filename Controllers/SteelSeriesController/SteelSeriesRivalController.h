@@ -45,10 +45,11 @@ public:
     std::string GetDeviceLocation();
     char*       GetDeviceName();
     std::string GetSerialString();
+    std::string GetFirmwareVersion();
 
     steelseries_type GetMouseType();
 
-    void Save();
+    void SaveMode();
 
     void SetLightEffect
             (
