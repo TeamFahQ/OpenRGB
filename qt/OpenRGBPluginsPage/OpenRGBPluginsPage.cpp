@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 
 #include "filesystem.h"
+#include "LogManager.h"
 #include "OpenRGBPluginsPage.h"
 #include "ui_OpenRGBPluginsPage.h"
 
@@ -86,7 +87,7 @@ void Ui::OpenRGBPluginsPage::on_InstallPluginButton_clicked()
     /*-----------------------------------------------------*\
     | Open a file selection prompt to choose the plugin file|
     \*-----------------------------------------------------*/
-    QString     install_file    = QFileDialog::getOpenFileName(this, "Install OpenRGB Plugin", "", "Plugin files (*.dll; *.dylib; *.so; *.so.*)");
+    QString     install_file    = QFileDialog::getOpenFileName(this, tr("Install OpenRGB Plugin"), "", tr("Plugin files (*.dll; *.dylib; *.so; *.so.*)"));
 
     bool installed = InstallPlugin(install_file.toStdString());
 
@@ -102,6 +103,8 @@ bool Ui::OpenRGBPluginsPage::InstallPlugin(std::string install_file)
     std::string to_path         = ResourceManager::get()->GetConfigurationDirectory() + "plugins/";
     std::string to_file         = to_path + filesystem::path(from_path).filename().string();
     bool        match           = false;
+
+    LOG_TRACE("[OpenRGBPluginsPage] Installing plugin %s", install_file.c_str());
 
     /*-----------------------------------------------------*\
     | Check if a plugin with this path already exists       |
@@ -122,7 +125,7 @@ bool Ui::OpenRGBPluginsPage::InstallPlugin(std::string install_file)
     {
         QMessageBox::StandardButton reply;
 
-        reply = QMessageBox::question(this, "Replace Plugin", "A plugin with this filename is already installed.  Are you sure you want to replace this plugin?", QMessageBox::Yes | QMessageBox::No);
+        reply = QMessageBox::question(this, tr("Replace Plugin"), tr("A plugin with this filename is already installed.  Are you sure you want to replace this plugin?"), QMessageBox::Yes | QMessageBox::No);
 
         if(reply != QMessageBox::Yes)
         {
@@ -138,15 +141,16 @@ bool Ui::OpenRGBPluginsPage::InstallPlugin(std::string install_file)
     {
         plugin_manager->RemovePlugin(to_file);
 
-        filesystem::copy(from_path, to_path, filesystem::copy_options::update_existing);
+        LOG_TRACE("[OpenRGBPluginsPage] Copying from %s to %s", from_path.c_str(), to_path.c_str());
+        filesystem::copy(from_path, to_path, filesystem::copy_options::overwrite_existing);
 
         plugin_manager->AddPlugin(to_file);
 
         return true;
     }
-    catch(std::exception& e)
+    catch(const std::exception& e)
     {
-
+        LOG_ERROR("[OpenRGBPluginsPage] Failed to install plugin: %s", e.what());
     }
 
     return false;
@@ -159,7 +163,7 @@ void Ui::OpenRGBPluginsPage::on_RemovePluginButton_clicked()
     /*-----------------------------------------------------*\
     | Confirm plugin removal with message box               |
     \*-----------------------------------------------------*/
-    reply = QMessageBox::question(this, "Remove Plugin", "Are you sure you want to remove this plugin?", QMessageBox::Yes | QMessageBox::No);
+    reply = QMessageBox::question(this, tr("Remove Plugin"), tr("Are you sure you want to remove this plugin?"), QMessageBox::Yes | QMessageBox::No);
 
     if(reply != QMessageBox::Yes)
     {
@@ -192,7 +196,7 @@ void Ui::OpenRGBPluginsPage::on_RemovePluginButton_clicked()
              &&(plugin_settings["plugins"][plugin_idx].contains("description")))
             {
                 if((plugin_settings["plugins"][plugin_idx]["name"] == entries[cur_row]->ui->NameValue->text().toStdString())
-                 &&(plugin_settings["plugins"][plugin_idx]["description"] == entries[cur_row]->ui->DescriptionValue->text().toStdString()))   
+                 &&(plugin_settings["plugins"][plugin_idx]["description"] == entries[cur_row]->ui->DescriptionValue->text().toStdString()))
                 {
                     plugin_settings["plugins"].erase(plugin_idx);
 

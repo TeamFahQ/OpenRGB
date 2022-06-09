@@ -14,9 +14,8 @@ OpenRGBSettingsPage::OpenRGBSettingsPage(QWidget *parent) :
     ui->setupUi(this);
 
     /*---------------------------------------------------------*\
-    | Load theme settings (Windows only)                        |
+    | Load theme settings                                       |
     \*---------------------------------------------------------*/
-#ifdef _WIN32
     ui->ComboBoxTheme->addItems({"auto", "light", "dark"});
 
     json theme_settings = ResourceManager::get()->GetSettingsManager()->GetSettings("Theme");
@@ -32,15 +31,16 @@ OpenRGBSettingsPage::OpenRGBSettingsPage(QWidget *parent) :
     }
 
     theme_initialized = true;
-#else
-    ui->ComboBoxTheme->hide();
-    ui->ThemeLabel->hide();
-#endif
 
     /*---------------------------------------------------------*\
     | Load user interface settings                              |
     \*---------------------------------------------------------*/
     json ui_settings = ResourceManager::get()->GetSettingsManager()->GetSettings("UserInterface");
+
+    if(ui_settings.contains("greyscale_tray_icon"))
+    {
+        ui->CheckboxTrayIconGreyscale->setChecked(ui_settings["greyscale_tray_icon"]);
+    }
 
     if(ui_settings.contains("minimize_on_close"))
     {
@@ -81,6 +81,21 @@ OpenRGBSettingsPage::OpenRGBSettingsPage(QWidget *parent) :
     {
         ui->CheckboxLogConsole->setChecked(log_manager_settings["log_console"]);
     }
+
+    /*---------------------------------------------------------*\
+    | Load drivers settings (Windows only)                      |
+    \*---------------------------------------------------------*/
+#ifdef _WIN32
+    json drivers_settings = ResourceManager::get()->GetSettingsManager()->GetSettings("Drivers");
+
+    if(drivers_settings.contains("amd_smbus_reduce_cpu"))
+    {
+        ui->CheckboxAMDSMBusReduceCPU->setChecked(drivers_settings["amd_smbus_reduce_cpu"]);
+    }
+#else
+    ui->DriversSettingsLabel->hide();
+    ui->CheckboxAMDSMBusReduceCPU->hide();
+#endif
 
     /*---------------------------------------------------------*\
     | Load AutoStart settings                                   |
@@ -156,6 +171,18 @@ void OpenRGBSettingsPage::on_ComboBoxTheme_currentTextChanged(const QString them
     }
 }
 
+void OpenRGBSettingsPage::on_CheckboxTrayIconGreyscale_clicked()
+{
+    json ui_settings    = ResourceManager::get()->GetSettingsManager()->GetSettings("UserInterface");
+    bool tray_icon      = ui->CheckboxTrayIconGreyscale->isChecked();
+
+    ui_settings["greyscale_tray_icon"] = tray_icon;
+    ResourceManager::get()->GetSettingsManager()->SetSettings("UserInterface", ui_settings);
+    SaveSettings();
+
+    emit TrayIconChanged(tray_icon);
+}
+
 void OpenRGBSettingsPage::on_CheckboxMinimizeOnClose_clicked()
 {
     json ui_settings = ResourceManager::get()->GetSettingsManager()->GetSettings("UserInterface");
@@ -194,7 +221,7 @@ void Ui::OpenRGBSettingsPage::on_CheckboxAutoStart_clicked()
     {
         json autostart_settings = ResourceManager::get()->GetSettingsManager()->GetSettings("AutoStart");
         autostart_settings["enabled"] = ui->CheckboxAutoStart->isChecked();
-        
+
         if(autostart_settings["enabled"])
         {
             RemediateAutoStartProfile(autostart_settings);
@@ -406,7 +433,7 @@ void OpenRGBSettingsPage::ConfigureAutoStart()
 
         if (!auto_start.EnableAutoStart(auto_start_info))
         {
-            ui->AutoStartStatusLabel->setText("A problem occurred enabling Start At Login.");
+            ui->AutoStartStatusLabel->setText(tr("A problem occurred enabling Start At Login."));
             ui->AutoStartStatusLabel->show();
             SetAutoStartVisibility(true);
         }
@@ -492,13 +519,13 @@ void OpenRGBSettingsPage::RemediateAutoStartProfile(json &autostart_settings)
             ui->ComboBoxAutoStartProfile->findText(QString::fromStdString(autostart_settings["profile"])) == -1))
     {
         autostart_settings["profile"] = ui->ComboBoxAutoStartProfile->itemText(0).toStdString();
-        
+
         if(autostart_settings["enabled"])
         {
             autostart_settings["setprofile"] = false;
-            
+
             ResourceManager::get()->GetSettingsManager()->SetSettings("AutoStart", autostart_settings);
-            
+
             ConfigureAutoStart();
             SaveSettings();
         }
@@ -527,6 +554,14 @@ void Ui::OpenRGBSettingsPage::on_CheckboxLogConsole_clicked()
     json log_manager_settings = ResourceManager::get()->GetSettingsManager()->GetSettings("LogManager");
     log_manager_settings["log_console"] = ui->CheckboxLogConsole->isChecked();
     ResourceManager::get()->GetSettingsManager()->SetSettings("LogManager", log_manager_settings);
+    SaveSettings();
+}
+
+void Ui::OpenRGBSettingsPage::on_CheckboxAMDSMBusReduceCPU_clicked()
+{
+    json drivers_settings = ResourceManager::get()->GetSettingsManager()->GetSettings("Drivers");
+    drivers_settings["amd_smbus_reduce_cpu"] = ui->CheckboxAMDSMBusReduceCPU->isChecked();
+    ResourceManager::get()->GetSettingsManager()->SetSettings("Drivers", drivers_settings);
     SaveSettings();
 }
 

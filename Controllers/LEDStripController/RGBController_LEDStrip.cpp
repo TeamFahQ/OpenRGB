@@ -9,15 +9,25 @@
 
 #include "RGBController_LEDStrip.h"
 
+/**------------------------------------------------------------------*\
+    @name Serial LED Strip
+    @category LEDStrip
+    @type Serial
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectLEDStripControllers
+    @comment
+\*-------------------------------------------------------------------*/
 
-RGBController_LEDStrip::RGBController_LEDStrip(LEDStripController* ledstrip_ptr)
+RGBController_LEDStrip::RGBController_LEDStrip(LEDStripController* controller_ptr)
 {
-    strip = ledstrip_ptr;
+    controller  = controller_ptr;
 
     name        = "LED Strip";
     type        = DEVICE_TYPE_LEDSTRIP;
     description = "Serial LED Strip Device";
-    location    = strip->GetLocation();
+    location    = controller->GetLocation();
 
     mode Direct;
     Direct.name       = "Direct";
@@ -31,7 +41,7 @@ RGBController_LEDStrip::RGBController_LEDStrip(LEDStripController* ledstrip_ptr)
 
 RGBController_LEDStrip::~RGBController_LEDStrip()
 {
-    delete strip;
+    delete controller;
 }
 
 void RGBController_LEDStrip::SetupZones()
@@ -39,16 +49,16 @@ void RGBController_LEDStrip::SetupZones()
     zone led_zone;
     led_zone.name       = "LED Strip";
     led_zone.type       = ZONE_TYPE_LINEAR;
-    led_zone.leds_min   = strip->num_leds;
-    led_zone.leds_max   = strip->num_leds;
-    led_zone.leds_count = strip->num_leds;
+    led_zone.leds_min   = controller->num_leds;
+    led_zone.leds_max   = controller->num_leds;
+    led_zone.leds_count = controller->num_leds;
     led_zone.matrix_map = NULL;
     zones.push_back(led_zone);
 
-    for(int led_idx = 0; led_idx < strip->num_leds; led_idx++)
+    for(int led_idx = 0; led_idx < controller->num_leds; led_idx++)
     {
         led new_led;
-        new_led.name = "LED ";
+        new_led.name    = "LED ";
         new_led.name.append(std::to_string(led_idx));
 
         leds.push_back(new_led);
@@ -66,17 +76,17 @@ void RGBController_LEDStrip::ResizeZone(int /*zone*/, int /*new_size*/)
 
 void RGBController_LEDStrip::DeviceUpdateLEDs()
 {
-    strip->SetLEDs(colors);
+    controller->SetLEDs(colors);
 }
 
 void RGBController_LEDStrip::UpdateZoneLEDs(int /*zone*/)
 {
-    strip->SetLEDs(colors);
+    controller->SetLEDs(colors);
 }
 
 void RGBController_LEDStrip::UpdateSingleLED(int /*led*/)
 {
-    strip->SetLEDs(colors);
+    controller->SetLEDs(colors);
 }
 
 void RGBController_LEDStrip::SetCustomMode()

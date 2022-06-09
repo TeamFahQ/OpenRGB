@@ -8,6 +8,17 @@
 
 #include "RGBController_ENESMBus.h"
 
+/**------------------------------------------------------------------*\
+    @name ENE SMBus Device
+    @category RAM,Motherboard,GPU,Storage
+    @type SMBus
+    @save :white_check_mark:
+    @direct :white_check_mark:
+    @effects :white_check_mark:
+    @detectors DetectENESMBusDRAMControllers,DetectENESMBusMotherboardControllers,DetectENESMBusGPUControllers
+    @comment
+\*-------------------------------------------------------------------*/
+
 RGBController_ENESMBus::RGBController_ENESMBus(ENESMBusController * controller_ptr)
 {
     controller  = controller_ptr;
@@ -54,7 +65,7 @@ RGBController_ENESMBus::RGBController_ENESMBus(ENESMBusController * controller_p
     Static.flags      = MODE_FLAG_HAS_PER_LED_COLOR | MODE_FLAG_MANUAL_SAVE;
     Static.color_mode = MODE_COLORS_PER_LED;
     modes.push_back(Static);
-    
+
     mode Breathing;
     Breathing.name       = "Breathing";
     Breathing.value      = ENE_MODE_BREATHING;
@@ -351,7 +362,7 @@ void RGBController_ENESMBus::SetupZones()
             }
 
             new_zone->matrix_map = NULL;
-            
+
             /*---------------------------------------------------------*\
             | Push new zone to zones vector                             |
             \*---------------------------------------------------------*/

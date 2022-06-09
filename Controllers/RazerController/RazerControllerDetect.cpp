@@ -152,7 +152,7 @@ void DetectRazerARGBControllers(hid_device_info* info, const std::string& name)
          }
          info_temp = info_temp->next;
      }
-     
+
      hid_free_enumeration(info_full);
 
      if(dev_interface_0 && dev_interface_1)
@@ -321,6 +321,7 @@ REGISTER_HID_DETECTOR_IPU("Razer Deathadder Elite",                          Det
 REGISTER_HID_DETECTOR_IPU("Razer Deathadder Essential",                      DetectRazerControllers,        RAZER_VID,  RAZER_DEATHADDER_ESSENTIAL_PID,                 0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Deathadder Essential White Edition",        DetectRazerControllers,        RAZER_VID,  RAZER_DEATHADDER_ESSENTIAL_WHITE_EDITION_PID,   0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Deathadder V2",                             DetectRazerControllers,        RAZER_VID,  RAZER_DEATHADDER_V2_PID,                        0x00,   0x01,   0x02);
+REGISTER_HID_DETECTOR_IPU("Razer Deathadder V2 Mini",                        DetectRazerControllers,        RAZER_VID,  RAZER_DEATHADDER_V2_MINI_PID,                   0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Deathadder V2 Pro (Wired)",                 DetectRazerControllers,        RAZER_VID,  RAZER_DEATHADDER_V2_PRO_WIRED_PID,              0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Deathadder V2 Pro (Wireless)",              DetectRazerControllers,        RAZER_VID,  RAZER_DEATHADDER_V2_PRO_WIRELESS_PID,           0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Diamondback",                               DetectRazerControllers,        RAZER_VID,  RAZER_DIAMONDBACK_CHROMA_PID,                   0x00,   0x01,   0x02);
@@ -342,6 +343,8 @@ REGISTER_HID_DETECTOR_IPU("Razer Naga Epic Chroma",                          Det
 REGISTER_HID_DETECTOR_IPU("Razer Naga Left Handed",                          DetectRazerControllers,        RAZER_VID,  RAZER_NAGA_LEFT_HANDED_PID,                     0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Naga Hex V2",                               DetectRazerControllers,        RAZER_VID,  RAZER_NAGA_HEX_V2_PID,                          0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Naga Trinity",                              DetectRazerControllers,        RAZER_VID,  RAZER_NAGA_TRINITY_PID,                         0x00,   0x01,   0x02);
+REGISTER_HID_DETECTOR_IPU("Razer Naga Pro (Wired)",                          DetectRazerControllers,        RAZER_VID,  RAZER_NAGA_PRO_WIRED_PID,                       0x00,   0x01,   0x02);
+REGISTER_HID_DETECTOR_IPU("Razer Naga Pro (Wireless)",                       DetectRazerControllers,        RAZER_VID,  RAZER_NAGA_PRO_WIRELESS_PID,                    0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Viper",                                     DetectRazerControllers,        RAZER_VID,  RAZER_VIPER_PID,                                0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Viper 8kHz",                                DetectRazerControllers,        RAZER_VID,  RAZER_VIPER_8KHZ_PID,                           0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Viper Mini",                                DetectRazerControllers,        RAZER_VID,  RAZER_VIPER_MINI_PID,                           0x00,   0x01,   0x02);
@@ -383,7 +386,6 @@ REGISTER_HID_DETECTOR_IPU("Razer Base Station Chroma",                       Det
 REGISTER_HID_DETECTOR_IPU("Razer Base Station V2 Chroma",                    DetectRazerControllers,        RAZER_VID,  RAZER_BASE_STATION_V2_CHROMA_PID,               0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Charging Pad Chroma",                       DetectRazerControllers,        RAZER_VID,  RAZER_CHARGING_PAD_CHROMA_PID,                  0x00,   0x0C,   0x01);
 REGISTER_HID_DETECTOR_I  ("Razer Chroma Addressable RGB Controller",         DetectRazerARGBControllers,    RAZER_VID,  RAZER_CHROMA_ADDRESSABLE_RGB_CONTROLLER_PID,    0x00                );
-REGISTER_DYNAMIC_DETECTOR("Razer Chrome Addressable RGB Controller Setup",   ResetRazerARGBControllersPaths                                                                                 );
 REGISTER_HID_DETECTOR_IPU("Razer Chroma HDK",                                DetectRazerControllers,        RAZER_VID,  RAZER_CHROMA_HDK_PID,                           0x02,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Chroma Mug Holder",                         DetectRazerControllers,        RAZER_VID,  RAZER_CHROMA_MUG_PID,                           0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Chroma PC Case Lighting Kit",               DetectRazerControllers,        RAZER_VID,  RAZER_CHROMA_PC_CASE_LIGHTING_KIT_PID,          0x02,   0x01,   0x02);
@@ -407,3 +409,7 @@ REGISTER_HID_DETECTOR_IPU("Razer Nommo Chroma",                              Det
 REGISTER_HID_DETECTOR_IPU("Razer Nommo Pro",                                 DetectRazerControllers,        RAZER_VID,  RAZER_NOMMO_PRO_PID,                            0x00,   0x01,   0x00);
 #endif
 
+/*-----------------------------------------------------------------------------------------------------*\
+| Need to clean up some stuff before we scan/rescan                                                     |
+\*-----------------------------------------------------------------------------------------------------*/
+REGISTER_PRE_DETECTION_HOOK(ResetRazerARGBControllersPaths);

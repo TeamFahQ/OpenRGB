@@ -81,6 +81,17 @@ static const ZoneDescription led_zones[] =
     ZoneDescription{"Onboard LEDs",     ZoneList_Onboard    },
 };
 
+/**------------------------------------------------------------------*\
+    @name MSI Mystic Light (185 Byte)
+    @category Motherboard
+    @type USB
+    @save :warning:
+    @direct :white_check_mark:
+    @effects :white_check_mark:
+    @detectors DetectMSIMysticLight185Controllers
+    @comment
+\*-------------------------------------------------------------------*/
+
 RGBController_MSIMysticLight185::RGBController_MSIMysticLight185(MSIMysticLight185Controller* controller_ptr)
 {
     controller = controller_ptr;
@@ -111,7 +122,7 @@ void RGBController_MSIMysticLight185::SetupZones()
     for(std::size_t zone_idx = 0; zone_idx < NUM_ZONES; zone_idx++)
     {
         ZoneDescription zd      = led_zones[zone_idx];
-        
+
         zone new_zone;
 
         unsigned int led_count = 0;
@@ -136,7 +147,7 @@ void RGBController_MSIMysticLight185::SetupZones()
         for(std::size_t led_idx = 0; led_idx < new_zone.leds_count; led_idx++)
         {
             led new_led;
-            
+
             new_led.name = new_zone.name + " LED ";
             if(new_zone.leds_count > 1)
             {
@@ -245,7 +256,7 @@ void RGBController_MSIMysticLight185::UpdateLed(int zone, int led)
     unsigned char blu   = RGBGetBValue(zones[zone].colors[led]);
     MSI_MODE      mode  = (MSI_MODE)(modes[active_mode].value);
     MSI_SPEED     speed = (MSI_SPEED)(modes[active_mode].speed);
-    
+
     controller->SetMode((MSI_ZONE)zones[zone].leds[led].value, mode, speed, MSI_BRIGHTNESS_LEVEL_100, random);
     controller->SetZoneColor((MSI_ZONE)zones[zone].leds[led].value, red, grn, blu, red, grn, blu);
 }

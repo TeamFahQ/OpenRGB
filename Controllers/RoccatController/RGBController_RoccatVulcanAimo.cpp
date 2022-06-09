@@ -7,6 +7,7 @@
 |  Mola19 17/12/2021                        |
 \*-----------------------------------------*/
 
+#include "RGBControllerKeyNames.h"
 #include "RGBController_RoccatVulcanAimo.h"
 #include <vector>
 
@@ -24,139 +25,150 @@ static const unsigned int zone_size = 132;
 
 static const char *led_names[] =
 {
-    "Key: Escape",
+    KEY_EN_ESCAPE,
     "Key: ^",
-    "Key: Tab",
-    "Key: Caps Lock",
-    "Key: Left Shift",
-    "Key: Left Control",
-    "Key: 1",
-    "Key: Q",
-    "Key: A",
+    KEY_EN_TAB,
+    KEY_EN_CAPS_LOCK,
+    KEY_EN_LEFT_SHIFT,
+    KEY_EN_LEFT_CONTROL,
+    KEY_EN_1,
+    KEY_EN_Q,
+    KEY_EN_A,
     "Key: <",
-    "Key: Left Windows",
-    "Key: F1",
-    "Key: 2",
-    "Key: W",
-    "Key: S",
-    "Key: Y",
-    "Key: Left Alt",
-    "Key: F2",
-    "Key: 3",
-    "Key: E",
-    "Key: D",
-    "Key: X",
-    "Unused",
-    "Key: F3",
-    "Key: 4",
-    "Key: R",
-    "Key: F",
-    "Key: C",
-    "Key: F4",
-    "Key: 5",
-    "Key: T",
-    "Key: G",
-    "Key: V",
-    "Key: 6",
-    "Key: Z",
-    "Key: H",
-    "Key: B",
-    "Key: Space",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Key: F5",
-    "Key: 7",
-    "Key: U",
-    "Key: J",
-    "Key: N",
-    "Key: F6",
-    "Key: 8",
-    "Key: I",
-    "Key: K",
-    "Key: M",
-    "Unused",
-    "Key: F7",
-    "Key: 9",
-    "Key: O",
-    "Key: L",
-    "Key: ,",
-    "Unused",
-    "Key: F8",
-    "Key: 0",
-    "Key: P",
+    KEY_EN_LEFT_WINDOWS,
+    KEY_EN_F1,
+    KEY_EN_2,
+    KEY_EN_W,
+    KEY_EN_S,
+    KEY_EN_Y,
+    KEY_EN_LEFT_ALT,
+    KEY_EN_F2,
+    KEY_EN_3,
+    KEY_EN_E,
+    KEY_EN_D,
+    KEY_EN_X,
+    KEY_EN_UNUSED,
+    KEY_EN_F3,
+    KEY_EN_4,
+    KEY_EN_R,
+    KEY_EN_F,
+    KEY_EN_C,
+    KEY_EN_F4,
+    KEY_EN_5,
+    KEY_EN_T,
+    KEY_EN_G,
+    KEY_EN_V,
+    KEY_EN_6,
+    KEY_EN_Z,
+    KEY_EN_H,
+    KEY_EN_B,
+    KEY_EN_SPACE,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_F5,
+    KEY_EN_7,
+    KEY_EN_U,
+    KEY_EN_J,
+    KEY_EN_N,
+    KEY_EN_F6,
+    KEY_EN_8,
+    KEY_EN_I,
+    KEY_EN_K,
+    KEY_EN_M,
+    KEY_EN_UNUSED,
+    KEY_EN_F7,
+    KEY_EN_9,
+    KEY_EN_O,
+    KEY_EN_L,
+    KEY_EN_COMMA,
+    KEY_EN_UNUSED,
+    KEY_EN_F8,
+    KEY_EN_0,
+    KEY_EN_P,
     "Key: Ö",
-    "Key: .",
-    "Key: Right Alt",
-    "Unused",
+    KEY_EN_PERIOD,
+    KEY_EN_RIGHT_ALT,
+    KEY_EN_UNUSED,
     "Key: ß",
     "Key: Ü",
     "Key: Ä",
-    "Key: -",
-    "Key: Right Fn",
-    "Unused",
-    "Key: F9",
+    KEY_EN_MINUS,
+    KEY_EN_RIGHT_FUNCTION,
+    KEY_EN_UNUSED,
+    KEY_EN_F9,
     "Key: ´",
     "Key: +",
-    "Unused",
-    "Key: Right Shift",
-    "Key: Menu",
-    "Key: F10",
-    "Key: F11",
-    "Key: F12",
-    "Key: Backspace",
-    "Key: Enter",
-    "Key: Right Control",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Key: #",
-    "Unused",
-    "Unused",
-    "Key: Print Screen",
-    "Key: Insert",
-    "Key: Delete",
-    "Key: Left Arrow",
-    "Key: Scroll Lock",
-    "Key: Home",
-    "Key: End",
-    "Key: Up Arrow",
-    "Key: Down Arrow",
-    "Key: Pause/Break",
-    "Key: Page Up",
-    "Key: Page Down",
-    "Key: Right Arrow",
-    "Unused",
-    "Key: Num Lock",
-    "Key: Number Pad 7",
-    "Key: Number Pad 4",
-    "Key: Number Pad 1",
-    "Key: Number Pad 0",
-    "Unused",
-    "Key: Number Pad /",
-    "Key: Number Pad 8",
-    "Key: Number Pad 5",
-    "Key: Number Pad 2",
-    "Unused",
-    "Key: Number Pad *",
-    "Key: Number Pad 9",
-    "Key: Number Pad 6",
-    "Key: Number Pad 3",
+    KEY_EN_UNUSED,
+    KEY_EN_RIGHT_SHIFT,
+    KEY_EN_MENU,
+    KEY_EN_F10,
+    KEY_EN_F11,
+    KEY_EN_F12,
+    KEY_EN_BACKSPACE,
+    KEY_EN_ANSI_ENTER,
+    KEY_EN_RIGHT_CONTROL,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_POUND,
+    KEY_EN_UNUSED,
+    KEY_EN_UNUSED,
+    KEY_EN_PRINT_SCREEN,
+    KEY_EN_INSERT,
+    KEY_EN_DELETE,
+    KEY_EN_LEFT_ARROW,
+    KEY_EN_SCROLL_LOCK,
+    KEY_EN_HOME,
+    KEY_EN_END,
+    KEY_EN_UP_ARROW,
+    KEY_EN_DOWN_ARROW,
+    KEY_EN_PAUSE_BREAK,
+    KEY_EN_PAGE_UP,
+    KEY_EN_PAGE_DOWN,
+    KEY_EN_RIGHT_ARROW,
+    KEY_EN_UNUSED,
+    KEY_EN_NUMPAD_LOCK,
+    KEY_EN_NUMPAD_7,
+    KEY_EN_NUMPAD_4,
+    KEY_EN_NUMPAD_1,
+    KEY_EN_NUMPAD_0,
+    KEY_EN_UNUSED,
+    KEY_EN_NUMPAD_DIVIDE,
+    KEY_EN_NUMPAD_8,
+    KEY_EN_NUMPAD_5,
+    KEY_EN_NUMPAD_2,
+    KEY_EN_UNUSED,
+    KEY_EN_NUMPAD_TIMES,
+    KEY_EN_NUMPAD_9,
+    KEY_EN_NUMPAD_6,
+    KEY_EN_NUMPAD_3,
     "Key: Number Pad ,",
-    "Key: Number Pad -",
-    "Key: Number Pad +",
-    "Key: Number Pad Enter",
+    KEY_EN_NUMPAD_MINUS,
+    KEY_EN_NUMPAD_PLUS,
+    KEY_EN_NUMPAD_ENTER,
 };
+
+/**------------------------------------------------------------------*\
+    @name Roccat Vulcan Aimo
+    @category Keyboard
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectRoccatKeyboardControllers
+    @comment
+\*-------------------------------------------------------------------*/
 
 RGBController_RoccatVulcanAimo::RGBController_RoccatVulcanAimo(RoccatVulcanAimoController* controller_ptr)
 {
@@ -166,14 +178,39 @@ RGBController_RoccatVulcanAimo::RGBController_RoccatVulcanAimo(RoccatVulcanAimoC
     vendor      = "Roccat";
     type        = DEVICE_TYPE_KEYBOARD;
     description = "Roccat Vulcan Aimo Keyboard";
+    version     = controller->GetVersion();
     location    = controller->GetLocation();
     serial      = controller->GetSerial();
 
     mode Direct;
     Direct.name       = "Direct";
+    Direct.value      = ROCCAT_VULCAN_MODE_DIRECT;
     Direct.flags      = MODE_FLAG_HAS_PER_LED_COLOR;
     Direct.color_mode = MODE_COLORS_PER_LED;
     modes.push_back(Direct);
+
+    mode Static;
+    Static.name             = "Static";
+    Static.value            = ROCCAT_VULCAN_MODE_STATIC;
+    Static.flags            = MODE_FLAG_HAS_PER_LED_COLOR | MODE_FLAG_HAS_BRIGHTNESS | MODE_FLAG_AUTOMATIC_SAVE;
+    Static.brightness_min   = ROCCAT_VULCAN_BRIGHTNESS_MIN;
+    Static.brightness_max   = ROCCAT_VULCAN_BRIGHTNESS_MAX;
+    Static.brightness       = ROCCAT_VULCAN_BRIGHTNESS_DEFAULT;
+    Static.color_mode       = MODE_COLORS_PER_LED;
+    modes.push_back(Static);
+
+    mode Wave;
+    Wave.name           = "Rainbow Wave";
+    Wave.value          = ROCCAT_VULCAN_MODE_WAVE;
+    Wave.flags          = MODE_FLAG_HAS_SPEED | MODE_FLAG_HAS_BRIGHTNESS | MODE_FLAG_AUTOMATIC_SAVE;
+    Wave.speed_min      = ROCCAT_VULCAN_SPEED_MIN;
+    Wave.speed_max      = ROCCAT_VULCAN_SPEED_MAX;
+    Wave.speed          = ROCCAT_VULCAN_SPEED_DEFAULT;
+    Wave.brightness_min = ROCCAT_VULCAN_BRIGHTNESS_MIN;
+    Wave.brightness_max = ROCCAT_VULCAN_BRIGHTNESS_MAX;
+    Wave.brightness     = ROCCAT_VULCAN_BRIGHTNESS_DEFAULT;
+    Wave.color_mode     = MODE_COLORS_NONE;
+    modes.push_back(Wave);
 
     SetupZones();
 }
@@ -219,7 +256,14 @@ void RGBController_RoccatVulcanAimo::ResizeZone(int /*zone*/, int /*new_size*/)
 
 void RGBController_RoccatVulcanAimo::DeviceUpdateLEDs()
 {
-    controller->SendColors(colors);
+    if (modes[active_mode].value == ROCCAT_VULCAN_MODE_DIRECT)
+    {
+        controller->SendColors(colors);
+    }
+    else
+    {
+        DeviceUpdateMode();
+    }
 }
 
 void RGBController_RoccatVulcanAimo::UpdateZoneLEDs(int /*zone_idx*/)
@@ -239,7 +283,5 @@ void RGBController_RoccatVulcanAimo::SetCustomMode()
 
 void RGBController_RoccatVulcanAimo::DeviceUpdateMode()
 {
-    /*---------------------------------------------------------*\
-    | Changing modes is currently not implemented               |
-    \*---------------------------------------------------------*/
+    controller->SendMode(modes[active_mode].value, modes[active_mode].speed, modes[active_mode].brightness, colors);
 }

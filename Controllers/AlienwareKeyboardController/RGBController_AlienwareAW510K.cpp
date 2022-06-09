@@ -7,6 +7,7 @@
 |  Mohamad Sallal - msallal      05/22/2021 |
 \*-----------------------------------------*/
 
+#include "RGBControllerKeyNames.h"
 #include "RGBController_AlienwareAW510K.h"
 #include <iterator>
 
@@ -49,124 +50,135 @@ typedef struct
 static const led_type led_names[] =
 {
     /* Key Label                Zone,                                      Index  */
-    { "Key: Escape",            ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xB0    },
-    { "Key: F1",                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x98    },
-    { "Key: F2",                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x90    },
-    { "Key: F3",                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x88    },
-    { "Key: F4",                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x80    },
-    { "Key: F5",                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x70    },
-    { "Key: F6",                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x68    },
-    { "Key: F7",                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x60    },
-    { "Key: F8",                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x58    },
-    { "Key: F9",                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x50    },
-    { "Key: F10",               ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x48    },
-    { "Key: F11",               ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x40    },
-    { "Key: F12",               ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x38    },
-    { "Key: Print Screen",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x30    },
-    { "Key: Scroll Lock",       ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x28    },
-    { "Key: Pause/Break",       ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x20    },
-    { "Key: Media Mute",        ALIENWARE_AW510K_ZONE_DIRECT_MEDIA,        0x18    },
-    { "Key: `",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xB1    },
-    { "Key: 1",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xA1    },
-    { "Key: 2",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x99    },
-    { "Key: 3",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x91    },
-    { "Key: 4",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x89    },
-    { "Key: 5",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x81    },
-    { "Key: 6",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x79    },
-    { "Key: 7",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x71    },
-    { "Key: 8",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x69    },
-    { "Key: 9",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x61    },
-    { "Key: 0",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x59    },
-    { "Key: -",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x51    },
-    { "Key: =",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x49    },
-    { "Key: Backspace",         ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x39    },
-    { "Key: Insert",            ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x31    },
-    { "Key: Home",              ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x29    },
-    { "Key: Page Up",           ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x21    },
-    { "Key: Num Lock",          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x19    },
-    { "Key: Number Pad /",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x11    },
-    { "Key: Number Pad *",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x09    },
-    { "Key: Number Pad -",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x01    },
-    { "Key: Tab",               ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xB2    },
-    { "Key: Q",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xA2    },
-    { "Key: W",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x9A    },
-    { "Key: E",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x92    },
-    { "Key: R",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x8A    },
-    { "Key: T",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x82    },
-    { "Key: Y",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x7A    },
-    { "Key: U",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x72    },
-    { "Key: I",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x6A    },
-    { "Key: O",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x62    },
-    { "Key: P",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x5A    },
-    { "Key: [",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x52    },
-    { "Key: ]",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x4A    },
-    { "Key: \\ (ANSI)",         ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x42    },//ANSI only
-    { "Key: Delete",            ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x32    },
-    { "Key: End",               ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x2A    },
-    { "Key: Page Down",         ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x22    },
-    { "Key: Number Pad 7",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x1A    },
-    { "Key: Number Pad 8",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x12    },
-    { "Key: Number Pad 9",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x0A    },
-    { "Key: Caps Lock",         ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xB3    },
-    { "Key: A",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xA3    },
-    { "Key: S",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x9B    },
-    { "Key: D",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x93    },
-    { "Key: F",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x8B    },
-    { "Key: G",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x83    },
-    { "Key: H",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x7B    },
-    { "Key: J",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x73    },
-    { "Key: K",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x6B    },
-    { "Key: L",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x63    },
-    { "Key: ;",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x5B    },
-    { "Key: '",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x53    },
-    { "Key: Enter",             ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x43    },
-    { "Key: Number Pad 4",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x1B    },
-    { "Key: Number Pad 5",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x13    },
-    { "Key: Number Pad 6",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x0B    },
-    { "Key: Number Pad +",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x03    },
-    { "Key: Left Shift",        ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xB4    },
-    { "Key: Z",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xA4    },
-    { "Key: X",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x9C    },
-    { "Key: C",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x94    },
-    { "Key: V",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x8C    },
-    { "Key: B",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x84    },
-    { "Key: N",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x7C    },
-    { "Key: M",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x74    },
-    { "Key: ,",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x6C    },
-    { "Key: .",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x64    },
-    { "Key: /",                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x5C    },
-    { "Key: Right Shift",       ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x4C    },
-    { "Key: Up Arrow",          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x2C    },
-    { "Key: Number Pad 1",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x1C    },
-    { "Key: Number Pad 2",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x14    },
-    { "Key: Number Pad 3",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x0C    },
-    { "Key: Left Control",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xB5    },
-    { "Key: Left Windows",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xAD    },
-    { "Key: Left Alt",          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xA5    },
-    { "Key: Space",             ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x85    },
-    { "Key: Right Alt",         ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x65    },
-    { "Key: Right Fn",          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x5D    },
-    { "Key: Menu",              ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x55    },
-    { "Key: Right Control",     ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x4D    },
-    { "Key: Left Arrow",        ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x35    },
-    { "Key: Down Arrow",        ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x2D    },
-    { "Key: Right Arrow",       ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x25    },
-    { "Key: Number Pad 0",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x1D    },
-    { "Key: Number Pad .",      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x0D    },
-    { "Key: Number Pad Enter",  ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x05    },
+    { KEY_EN_ESCAPE,            ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xB0    },
+    { KEY_EN_F1,                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x98    },
+    { KEY_EN_F2,                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x90    },
+    { KEY_EN_F3,                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x88    },
+    { KEY_EN_F4,                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x80    },
+    { KEY_EN_F5,                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x70    },
+    { KEY_EN_F6,                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x68    },
+    { KEY_EN_F7,                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x60    },
+    { KEY_EN_F8,                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x58    },
+    { KEY_EN_F9,                ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x50    },
+    { KEY_EN_F10,               ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x48    },
+    { KEY_EN_F11,               ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x40    },
+    { KEY_EN_F12,               ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x38    },
+    { KEY_EN_PRINT_SCREEN,      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x30    },
+    { KEY_EN_SCROLL_LOCK,       ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x28    },
+    { KEY_EN_PAUSE_BREAK,       ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x20    },
+    { KEY_EN_MEDIA_MUTE,        ALIENWARE_AW510K_ZONE_DIRECT_MEDIA,        0x18    },
+    { KEY_EN_BACK_TICK,         ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xB1    },
+    { KEY_EN_1,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xA1    },
+    { KEY_EN_2,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x99    },
+    { KEY_EN_3,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x91    },
+    { KEY_EN_4,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x89    },
+    { KEY_EN_5,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x81    },
+    { KEY_EN_6,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x79    },
+    { KEY_EN_7,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x71    },
+    { KEY_EN_8,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x69    },
+    { KEY_EN_9,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x61    },
+    { KEY_EN_0,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x59    },
+    { KEY_EN_MINUS,             ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x51    },
+    { KEY_EN_EQUALS,            ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x49    },
+    { KEY_EN_BACKSPACE,         ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x39    },
+    { KEY_EN_INSERT,            ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x31    },
+    { KEY_EN_HOME,              ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x29    },
+    { KEY_EN_PAGE_UP,           ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x21    },
+    { KEY_EN_NUMPAD_LOCK,       ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x19    },
+    { KEY_EN_NUMPAD_DIVIDE,     ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x11    },
+    { KEY_EN_NUMPAD_TIMES,      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x09    },
+    { KEY_EN_NUMPAD_MINUS,      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x01    },
+    { KEY_EN_TAB,               ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xB2    },
+    { KEY_EN_Q,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xA2    },
+    { KEY_EN_W,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x9A    },
+    { KEY_EN_E,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x92    },
+    { KEY_EN_R,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x8A    },
+    { KEY_EN_T,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x82    },
+    { KEY_EN_Y,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x7A    },
+    { KEY_EN_U,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x72    },
+    { KEY_EN_I,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x6A    },
+    { KEY_EN_O,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x62    },
+    { KEY_EN_P,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x5A    },
+    { KEY_EN_LEFT_BRACKET,      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x52    },
+    { KEY_EN_RIGHT_BRACKET,     ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x4A    },
+    { KEY_EN_ANSI_BACK_SLASH,   ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x42    },//ANSI only
+    { KEY_EN_DELETE,            ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x32    },
+    { KEY_EN_END,               ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x2A    },
+    { KEY_EN_PAGE_DOWN,         ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x22    },
+    { KEY_EN_NUMPAD_7,          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x1A    },
+    { KEY_EN_NUMPAD_8,          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x12    },
+    { KEY_EN_NUMPAD_9,          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x0A    },
+    { KEY_EN_CAPS_LOCK,         ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xB3    },
+    { KEY_EN_A,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xA3    },
+    { KEY_EN_S,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x9B    },
+    { KEY_EN_D,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x93    },
+    { KEY_EN_F,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x8B    },
+    { KEY_EN_G,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x83    },
+    { KEY_EN_H,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x7B    },
+    { KEY_EN_J,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x73    },
+    { KEY_EN_K,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x6B    },
+    { KEY_EN_L,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x63    },
+    { KEY_EN_SEMICOLON,         ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x5B    },
+    { KEY_EN_QUOTE,             ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x53    },
+    { KEY_EN_ANSI_ENTER,        ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x43    },
+    { KEY_EN_NUMPAD_4,          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x1B    },
+    { KEY_EN_NUMPAD_5,          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x13    },
+    { KEY_EN_NUMPAD_6,          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x0B    },
+    { KEY_EN_NUMPAD_PLUS,       ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x03    },
+    { KEY_EN_LEFT_SHIFT,        ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xB4    },
+    { KEY_EN_Z,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xA4    },
+    { KEY_EN_X,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x9C    },
+    { KEY_EN_C,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x94    },
+    { KEY_EN_V,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x8C    },
+    { KEY_EN_B,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x84    },
+    { KEY_EN_N,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x7C    },
+    { KEY_EN_M,                 ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x74    },
+    { KEY_EN_COMMA,             ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x6C    },
+    { KEY_EN_PERIOD,            ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x64    },
+    { KEY_EN_FORWARD_SLASH,     ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x5C    },
+    { KEY_EN_RIGHT_SHIFT,       ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x4C    },
+    { KEY_EN_UP_ARROW,          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x2C    },
+    { KEY_EN_NUMPAD_1,          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x1C    },
+    { KEY_EN_NUMPAD_2,          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x14    },
+    { KEY_EN_NUMPAD_3,          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x0C    },
+    { KEY_EN_LEFT_CONTROL,      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xB5    },
+    { KEY_EN_LEFT_WINDOWS,      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xAD    },
+    { KEY_EN_LEFT_ALT,          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0xA5    },
+    { KEY_EN_SPACE,             ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x85    },
+    { KEY_EN_RIGHT_ALT,         ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x65    },
+    { KEY_EN_RIGHT_FUNCTION,    ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x5D    },
+    { KEY_EN_MENU,              ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x55    },
+    { KEY_EN_RIGHT_CONTROL,     ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x4D    },
+    { KEY_EN_LEFT_ARROW,        ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x35    },
+    { KEY_EN_DOWN_ARROW,        ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x2D    },
+    { KEY_EN_RIGHT_ARROW,       ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x25    },
+    { KEY_EN_NUMPAD_0,          ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x1D    },
+    { KEY_EN_NUMPAD_PERIOD,     ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x0D    },
+    { KEY_EN_NUMPAD_ENTER,      ALIENWARE_AW510K_ZONE_DIRECT_KEYBOARD,     0x05    },
     { "Logo",                   ALIENWARE_AW510K_ZONE_DIRECT_LOGO,         0x07    }
 };
 
-RGBController_AlienwareAW510K::RGBController_AlienwareAW510K(AlienwareAW510KController* alienware_ptr)
+/**------------------------------------------------------------------*\
+    @name Alienware AW510 Keyboard
+    @category Keyboard
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :white_check_mark:
+    @detectors DetectAlienwareAW510KControllers
+    @comment
+\*-------------------------------------------------------------------*/
+
+RGBController_AlienwareAW510K::RGBController_AlienwareAW510K(AlienwareAW510KController* controller_ptr)
 {
-    alienware   = alienware_ptr;
+    controller  = controller_ptr;
 
     name        = "Alienware AW510K Keyboard Device";
     vendor      = "Alienware";
     type        = DEVICE_TYPE_KEYBOARD;
     description = "Alienware AW510K Keyboard Device";
-    location    = alienware->GetDeviceLocation();
-    serial      = alienware->GetSerialString();
+    location    = controller->GetDeviceLocation();
+    serial      = controller->GetSerialString();
 
     mode Direct_Per_LED;
     Direct_Per_LED.name             = "Direct";
@@ -274,7 +286,7 @@ RGBController_AlienwareAW510K::~RGBController_AlienwareAW510K()
         }
     }
 
-    delete alienware;
+    delete controller;
 }
 
 void RGBController_AlienwareAW510K::SetupZones()
@@ -349,10 +361,10 @@ void RGBController_AlienwareAW510K::DeviceUpdateLEDs()
         {
             SelectedKeys key;
 
-            key.idx = (unsigned char)leds[led_idx].value;
-            key.red = RGBGetRValue(colors[led_idx]);
-            key.green = RGBGetGValue(colors[led_idx]);
-            key.blue = RGBGetBValue(colors[led_idx]);
+            key.idx     = (unsigned char)leds[led_idx].value;
+            key.red     = RGBGetRValue(colors[led_idx]);
+            key.green   = RGBGetGValue(colors[led_idx]);
+            key.blue    = RGBGetBValue(colors[led_idx]);
 
             frame_buf_keys.push_back(key);
         }
@@ -360,22 +372,22 @@ void RGBController_AlienwareAW510K::DeviceUpdateLEDs()
         {
             SelectedKeys key;
 
-            key.idx = (unsigned char)leds[led_idx].value;
-            key.red = RGBGetRValue(colors[led_idx]);
-            key.green = RGBGetGValue(colors[led_idx]);
-            key.blue = RGBGetBValue(colors[led_idx]);
+            key.idx     = (unsigned char)leds[led_idx].value;
+            key.red     = RGBGetRValue(colors[led_idx]);
+            key.green   = RGBGetGValue(colors[led_idx]);
+            key.blue    = RGBGetBValue(colors[led_idx]);
 
             frame_buf_keys.push_back(key);
         }
     }
 
-    alienware->SendInitialize();
-    alienware->SendfeatureReport(0x05, 0x01, 0x51, 0x00);
-    alienware->SendCommit();
+    controller->SendInitialize();
+    controller->SendfeatureReport(0x05, 0x01, 0x51, 0x00);
+    controller->SendCommit();
 
     if(frame_buf_keys.size() > 0)
     {
-        alienware->SendDirectOn(frame_buf_keys);
+        controller->SendDirectOn(frame_buf_keys);
     }
 
     std::copy(new_colors.begin(), new_colors.end(),current_colors.begin());
@@ -383,12 +395,12 @@ void RGBController_AlienwareAW510K::DeviceUpdateLEDs()
 
 void RGBController_AlienwareAW510K::UpdateZoneLEDs(int zone)
 {
-    alienware->SetDirect((unsigned char) zone, RGBGetRValue(zones[zone].colors[0]), RGBGetGValue(zones[zone].colors[0]), RGBGetBValue(zones[zone].colors[0]));
+    controller->SetDirect((unsigned char) zone, RGBGetRValue(zones[zone].colors[0]), RGBGetGValue(zones[zone].colors[0]), RGBGetBValue(zones[zone].colors[0]));
 }
 
 void RGBController_AlienwareAW510K::UpdateSingleLED(int led)
 {
-    alienware->UpdateSingleLED(leds[led].value, RGBGetRValue(colors[led]), RGBGetGValue(colors[led]), RGBGetBValue(colors[led]));
+    controller->UpdateSingleLED(leds[led].value, RGBGetRValue(colors[led]), RGBGetGValue(colors[led]), RGBGetBValue(colors[led]));
 }
 
 void RGBController_AlienwareAW510K::SetCustomMode()
@@ -404,7 +416,7 @@ void RGBController_AlienwareAW510K::DeviceUpdateMode()
         return;
     }
 
-    alienware->SendfeatureReport(0x05, 0x01, 0x51, 0x00);
+    controller->SendfeatureReport(0x05, 0x01, 0x51, 0x00);
     unsigned char red = 0;
     unsigned char grn = 0;
     unsigned char blu = 0;
@@ -427,7 +439,7 @@ void RGBController_AlienwareAW510K::DeviceUpdateMode()
                 unsigned char grn2 = RGBGetGValue(modes[active_mode].colors[1]);
                 unsigned char blu2 = RGBGetBValue(modes[active_mode].colors[1]);
 
-                alienware->SetMorphMode(modes[active_mode].value, modes[active_mode].speed, red, grn, blu, red2, grn2, blu2);
+                controller->SetMorphMode(modes[active_mode].value, modes[active_mode].speed, red, grn, blu, red2, grn2, blu2);
             }
             break;
 
@@ -435,7 +447,7 @@ void RGBController_AlienwareAW510K::DeviceUpdateMode()
             /*-------------------------------------------------------------*\
             | Spectrum only set mode, speed and colorMode                   |
             \*-------------------------------------------------------------*/
-            alienware->SetMode(modes[active_mode].value, modes[active_mode].speed, 0x00, ALIENWARE_AW510K_RANBOW_COLOR_MODE, 0x00, 0x00, 0x00);
+            controller->SetMode(modes[active_mode].value, modes[active_mode].speed, 0x00, ALIENWARE_AW510K_RANBOW_COLOR_MODE, 0x00, 0x00, 0x00);
             break;
 
         case ALIENWARE_AW510K_MODE_SINGLE_WAVE:
@@ -444,7 +456,7 @@ void RGBController_AlienwareAW510K::DeviceUpdateMode()
             \*-------------------------------------------------------------*/
             {
                 int waveDirection = GetAW520K_WaveDirection(modes[active_mode].direction);
-                alienware->SetMode(modes[active_mode].value, modes[active_mode].speed, waveDirection, ALIENWARE_AW510K_SINGLE_COLOR_MODE, red, grn, blu);
+                controller->SetMode(modes[active_mode].value, modes[active_mode].speed, waveDirection, ALIENWARE_AW510K_SINGLE_COLOR_MODE, red, grn, blu);
             }
             break;
 
@@ -454,13 +466,13 @@ void RGBController_AlienwareAW510K::DeviceUpdateMode()
             \*-------------------------------------------------------------*/
             {
             int waveDirection = GetAW520K_WaveDirection(modes[active_mode].direction);
-            alienware->SetMode(modes[active_mode].value, modes[active_mode].speed, waveDirection, ALIENWARE_AW510K_RANBOW_COLOR_MODE, 0x00, 0x00, 0x00);
+            controller->SetMode(modes[active_mode].value, modes[active_mode].speed, waveDirection, ALIENWARE_AW510K_RANBOW_COLOR_MODE, 0x00, 0x00, 0x00);
             }
             break;
 
 
         default:
-            alienware->SetMode(modes[active_mode].value, modes[active_mode].speed, 0x00, ALIENWARE_AW510K_SINGLE_COLOR_MODE, red, grn, blu);
+            controller->SetMode(modes[active_mode].value, modes[active_mode].speed, 0x00, ALIENWARE_AW510K_SINGLE_COLOR_MODE, red, grn, blu);
             break;
     }
 }

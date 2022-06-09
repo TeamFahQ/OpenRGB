@@ -18,8 +18,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <thread>
+#include <QTranslator>
+
+#ifdef _MACOSX_X86_X64
+#include "macUSPCIOAccess.h"
+io_connect_t macUSPCIO_driver_connection;
+#endif
 
 #include "OpenRGBDialog2.h"
+
+#ifdef __APPLE__
+#include "macutils.h"
+#endif
 
 using namespace std::chrono_literals;
 
@@ -148,6 +158,80 @@ bool AttemptLocalConnection()
 
 /******************************************************************************************\
 *                                                                                          *
+*   Install SMBus Driver WinRing0, If not already installed (Win32)                        *
+*                                                                                          *
+\******************************************************************************************/
+#ifdef _WIN32
+void InstallWinRing0()
+{
+    TCHAR winring0_install_location[MAX_PATH]; // driver final location usually C:\windows\system32\drivers\WinRing0x64.sys
+    uint system_path_length = GetSystemDirectory(winring0_install_location, MAX_PATH);
+    std::string winring0_filename = "WinRing0.sys";
+    BOOL bIsWow64 = false;
+#if _WIN64
+    winring0_filename = "WinRing0x64.sys";
+#else
+    BOOL (*fnIsWow64Process)(HANDLE, PBOOL) = (BOOL (__cdecl *)(HANDLE, PBOOL))GetProcAddress(GetModuleHandle(TEXT("kernel32")),"IsWow64Process");
+    if (fnIsWow64Process)
+    {
+        fnIsWow64Process(GetCurrentProcess(),&bIsWow64);
+    }
+    if(bIsWow64)
+    {
+        winring0_filename = "WinRing0x64.sys";
+    }
+#endif
+    std::strncat(winring0_install_location, "\\drivers\\", MAX_PATH - system_path_length - 1);
+    std::strncat(winring0_install_location, winring0_filename.c_str(), MAX_PATH - system_path_length - 10);
+
+    std::string driver_name = winring0_filename.substr(0, winring0_filename.size() - 4); // driver name: WinRing0 or WinRing0x64
+    SC_HANDLE manager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    if (manager)
+    {
+        PVOID wow64_fsredirection_OldValue = NULL;
+        if(bIsWow64)
+        {
+            Wow64DisableWow64FsRedirection(&wow64_fsredirection_OldValue);
+        }
+        if(INVALID_FILE_ATTRIBUTES == GetFileAttributes(winring0_install_location) && GetLastError()==ERROR_FILE_NOT_FOUND)
+        {
+            char module_path_buffer[MAX_PATH];
+            GetModuleFileNameA(NULL, module_path_buffer, MAX_PATH);
+            std::string::size_type exe_loc = std::string(module_path_buffer).find_last_of("\\/");
+            std::string driver_source_path = std::string(module_path_buffer).substr(0, exe_loc + 1) + winring0_filename;
+            CopyFile(driver_source_path.c_str(), winring0_install_location, true);
+        }
+        if(bIsWow64)
+        {
+            Wow64RevertWow64FsRedirection(wow64_fsredirection_OldValue);
+        }
+
+        SC_HANDLE service = OpenService(manager, driver_name.c_str(), SERVICE_ALL_ACCESS);
+        if(!service)
+        {
+            std::string service_sys_path = "System32\\Drivers\\" + winring0_filename;
+            service = CreateService(manager,
+               driver_name.c_str(),
+               driver_name.c_str(),
+               SERVICE_ALL_ACCESS,
+               SERVICE_KERNEL_DRIVER,
+               SERVICE_AUTO_START,
+               SERVICE_ERROR_NORMAL,
+               service_sys_path.c_str(),
+               NULL,
+               NULL,
+               NULL,
+               NULL,
+               NULL);
+        }
+        CloseServiceHandle(service);
+        CloseServiceHandle(manager);
+    }
+}
+#endif
+
+/******************************************************************************************\
+*                                                                                          *
 *   main                                                                                   *
 *                                                                                          *
 *       Main function.  Detects busses and Aura controllers, then opens the main window    *
@@ -177,6 +261,18 @@ int main(int argc, char* argv[])
     std::thread * InitializeTimerResolutionThread;
     InitializeTimerResolutionThread = new std::thread(InitializeTimerResolutionThreadFunction);
     InitializeTimerResolutionThread->detach();
+
+    /*---------------------------------------------------------*\
+    | Windows only - Install SMBus Driver WinRing0              |
+    \*---------------------------------------------------------*/
+    InstallWinRing0();
+#endif
+
+    /*---------------------------------------------------------*\
+    | Mac x86/x64 only - Install SMBus Driver macUSPCIO         |
+    \*---------------------------------------------------------*/
+#ifdef _MACOSX_X86_X64
+    InitMacUSPCIODriver();
 #endif
 
     /*---------------------------------------------------------*\
@@ -250,6 +346,44 @@ int main(int argc, char* argv[])
         QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         QApplication a(argc, argv);
 
+        /*---------------------------------------------------------*\
+        | App translation                                           |
+        | To add a new language:                                    |
+        | Create a file under qt/i18n/OpenRGB_<locale>.ts           |
+        | Add it to TRANSLATIONS in OpenRGB.pro                     |
+        | Edit this file (manually or with                          |
+        |   linguist qt/i18n/OpenRGB_en.ts qt/i18n/OpenRGB_XX.ts    |
+        \*---------------------------------------------------------*/
+        QTranslator translator;
+
+        QString defaultLocale = QLocale::system().name();
+        defaultLocale.truncate(defaultLocale.lastIndexOf('_'));
+
+        // For local tests without changing the PC locale, override this value.
+        //defaultLocale="fr";
+
+        QLocale locale = QLocale(defaultLocale);
+        QLocale::setDefault(locale);
+
+        QString languageName = QLocale::languageToString(locale.language());
+
+        a.removeTranslator(&translator);
+
+        QString path = ":/i18n/";
+
+        if(translator.load(path + QString("OpenRGB_%1.qm").arg(defaultLocale)))
+        {
+            a.installTranslator(&translator);
+            printf("Current Language changed to %s\n", languageName.toStdString().c_str());
+        }
+        else
+        {
+            printf("Failed to load translation file for default locale '%s'\n", defaultLocale.toStdString().c_str());
+        }
+
+        /*---------------------------------------------------------*\
+        | Main UI widget                                            |
+        \*---------------------------------------------------------*/
         Ui::OpenRGBDialog2 dlg;
 
         if(ret_flags & RET_FLAG_I2C_TOOLS)
@@ -258,16 +392,19 @@ int main(int argc, char* argv[])
         }
 
         dlg.AddClientTab();
-        
+
         if(ret_flags & RET_FLAG_START_MINIMIZED)
         {
+#ifdef __APPLE__
+            MacUtils::ToggleApplicationDocklessState(false);
+#endif
             dlg.hide();
         }
         else
         {
             dlg.show();
         }
-        
+
         return a.exec();
     }
     else
@@ -276,15 +413,24 @@ int main(int argc, char* argv[])
         {
             if(!ResourceManager::get()->GetServer()->GetOnline())
             {
+#ifdef _MACOSX_X86_X64
+                CloseMacUSPCIODriver();
+#endif
                 return 1;
             }
             else
             {
                 WaitWhileServerOnline(ResourceManager::get()->GetServer());
+#ifdef _MACOSX_X86_X64
+                CloseMacUSPCIODriver();
+#endif
             }
         }
         else
         {
+#ifdef _MACOSX_X86_X64
+            CloseMacUSPCIODriver();
+#endif
             return 0;
         }
     }

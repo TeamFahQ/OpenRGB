@@ -9,17 +9,28 @@
 
 using namespace std::chrono_literals;
 
-RGBController_CorsairK55RGBPRO::RGBController_CorsairK55RGBPRO(CorsairK55RGBPROController* corsair_ptr)
-{
-    corsair         = corsair_ptr;
+/**------------------------------------------------------------------*\
+    @name Corsair K55 RGB Pro
+    @category Keyboard
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectCorsairK55RGBPROControllers
+    @comment
+\*-------------------------------------------------------------------*/
 
-    name            = corsair->GetName();
+RGBController_CorsairK55RGBPRO::RGBController_CorsairK55RGBPRO(CorsairK55RGBPROController* controller_ptr)
+{
+    controller      = controller_ptr;
+
+    name            = controller->GetName();
     vendor          = "Corsair";
     description     = "Corsair K55 RGB PRO Keyboard Device";
     type            = DEVICE_TYPE_KEYBOARD;
-    version         = corsair->GetFirmwareString();
-    location        = corsair->GetDeviceLocation();
-    serial          = corsair->GetSerialString();
+    version         = controller->GetFirmwareString();
+    location        = controller->GetDeviceLocation();
+    serial          = controller->GetSerialString();
 
     mode Direct;
     Direct.name       = "Direct";
@@ -59,7 +70,7 @@ RGBController_CorsairK55RGBPRO::~RGBController_CorsairK55RGBPRO()
         }
     }
 
-    delete corsair;
+    delete controller;
 }
 
 void RGBController_CorsairK55RGBPRO::SetupZones()
@@ -96,17 +107,17 @@ void RGBController_CorsairK55RGBPRO::DeviceUpdateLEDs()
 {
     last_update_time = std::chrono::steady_clock::now();
 
-    corsair->SetLEDs(colors);
+    controller->SetLEDs(colors);
 }
 
 void RGBController_CorsairK55RGBPRO::UpdateZoneLEDs(int /*zone*/)
 {
-    corsair->SetLEDs(colors);
+    controller->SetLEDs(colors);
 }
 
 void RGBController_CorsairK55RGBPRO::UpdateSingleLED(int /*led*/)
 {
-    corsair->SetLEDs(colors);
+    controller->SetLEDs(colors);
 }
 
 void RGBController_CorsairK55RGBPRO::SetCustomMode()

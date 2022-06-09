@@ -7,6 +7,7 @@
 #include "RGBController_CorsairPeripheral.h"
 #include "RGBController_CorsairK100.h"
 #include "RGBController_CorsairK55RGBPRO.h"
+#include "RGBController_CorsairK65Mini.h"
 #include <hidapi/hidapi.h>
 
 #define CORSAIR_PERIPHERAL_CONTROLLER_NAME "Corsair peripheral"
@@ -56,7 +57,9 @@
 #define CORSAIR_M65_PRO_PID             0x1B2E
 #define CORSAIR_M65_RGB_ELITE_PID       0x1B5A
 #define CORSAIR_NIGHTSWORD_PID          0x1B5C
+#define CORSAIR_SCIMITAR_RGB_PID        0x1B1E
 #define CORSAIR_SCIMITAR_PRO_RGB_PID    0x1B3E
+#define CORSAIR_SCIMITAR_ELITE_RGB_PID  0x1B8B
 #define CORSAIR_SABRE_RGB_PID           0x1B2F
 
 /*-----------------------------------------------------*\
@@ -110,12 +113,32 @@ void DetectCorsairK55RGBPROControllers(hid_device_info* info, const std::string&
 
     if(dev)
     {
-        CorsairK55RGBPROController* controller = new CorsairK55RGBPROController(dev, info->path);
+        CorsairK55RGBPROController*     controller     = new CorsairK55RGBPROController(dev, info->path);
         controller->SetName(name);
         RGBController_CorsairK55RGBPRO* rgb_controller = new RGBController_CorsairK55RGBPRO(controller);
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 }   /* DetectCorsairK55RGBPROControllers() */
+
+/*-----------------------------------------------------*\
+| Corsair K65 Mini Keyboard product ID                  |
+| This keyboard uses a separate driver                  |
+\*-----------------------------------------------------*/
+#define CORSAIR_K65_MINI_PID            0x1BAF
+
+void DetectCorsairK65MiniControllers(hid_device_info* info, const std::string& name)
+{
+    hid_device* dev = hid_open_path(info->path);
+
+    if(dev)
+    {
+        CorsairK65MiniController*     controller        = new CorsairK65MiniController(dev, info->path);       
+        RGBController_CorsairK65Mini* rgb_controller    = new RGBController_CorsairK65Mini(controller);
+        rgb_controller->name                            = name;
+        ResourceManager::get()->RegisterRGBController(rgb_controller);
+    }
+}   /* DetectCorsairK65MiniControllers() */
+
 
 /******************************************************************************************\
 *                                                                                          *
@@ -179,7 +202,9 @@ REGISTER_HID_DETECTOR_IP("Corsair M65",                     DetectCorsairPeriphe
 REGISTER_HID_DETECTOR_IP("Corsair M65 PRO",                 DetectCorsairPeripheralControllers, CORSAIR_VID, CORSAIR_M65_PRO_PID,           1, 0xFFC2);
 REGISTER_HID_DETECTOR_IP("Corsair M65 RGB Elite",           DetectCorsairPeripheralControllers, CORSAIR_VID, CORSAIR_M65_RGB_ELITE_PID,     1, 0xFFC2);
 REGISTER_HID_DETECTOR_IP("Corsair Nightsword",              DetectCorsairPeripheralControllers, CORSAIR_VID, CORSAIR_NIGHTSWORD_PID,        1, 0xFFC2);
+REGISTER_HID_DETECTOR_IP("Corsair Scimitar RGB",            DetectCorsairPeripheralControllers, CORSAIR_VID, CORSAIR_SCIMITAR_RGB_PID,      1, 0xFFC2);
 REGISTER_HID_DETECTOR_IP("Corsair Scimitar PRO RGB",        DetectCorsairPeripheralControllers, CORSAIR_VID, CORSAIR_SCIMITAR_PRO_RGB_PID,  1, 0xFFC2);
+REGISTER_HID_DETECTOR_IP("Corsair Scimitar Elite RGB",      DetectCorsairPeripheralControllers, CORSAIR_VID, CORSAIR_SCIMITAR_ELITE_RGB_PID,1, 0xFFC2);
 REGISTER_HID_DETECTOR_IP("Corsair Sabre RGB",               DetectCorsairPeripheralControllers, CORSAIR_VID, CORSAIR_SABRE_RGB_PID,         1, 0xFFC2);
 
 /*-----------------------------------------------------------------------------------------------------*\
@@ -208,3 +233,8 @@ REGISTER_HID_DETECTOR_IP("Corsair K100",                    DetectCorsairK100Con
 | Corsair K55 RGB PRO Keyboard                                                                          |
 \*-----------------------------------------------------------------------------------------------------*/
 REGISTER_HID_DETECTOR_IP("Corsair K55 RGB PRO",             DetectCorsairK55RGBPROControllers,  CORSAIR_VID, CORSAIR_K55_RGB_PRO_PID,       1, 0xFF42);
+
+/*-----------------------------------------------------------------------------------------------------*\
+| Corsair K65 Mini Keyboard                                                                             |
+\*-----------------------------------------------------------------------------------------------------*/
+REGISTER_HID_DETECTOR_IPU("Corsair K65 Mini",                DetectCorsairK65MiniControllers,    CORSAIR_VID, CORSAIR_K65_MINI_PID,         1, 0, 0);

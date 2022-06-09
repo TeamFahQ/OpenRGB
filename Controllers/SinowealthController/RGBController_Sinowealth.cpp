@@ -9,6 +9,17 @@
 
 #include "RGBController_Sinowealth.h"
 
+/**------------------------------------------------------------------*\
+    @name Sinowealth Mice
+    @category Mouse
+    @type USB
+    @save :warning:
+    @direct :x:
+    @effects :white_check_mark:
+    @detectors DetectSinowealthMouse
+    @comment
+\*-------------------------------------------------------------------*/
+
 RGBController_Sinowealth::RGBController_Sinowealth(SinowealthController* sinowealth_ptr)
 {
     sinowealth = sinowealth_ptr;
@@ -18,6 +29,7 @@ RGBController_Sinowealth::RGBController_Sinowealth(SinowealthController* sinowea
     description = "Sinowealth Device";
     location    = sinowealth->GetLocation();
     serial      = sinowealth->GetSerialString();
+    version     = sinowealth->GetFirmwareVersion();
 
     mode Static;
     Static.name       = "Static";

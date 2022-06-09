@@ -9,21 +9,35 @@
 
 #include "RGBController_AMDWraithPrism.h"
 
-RGBController_AMDWraithPrism::RGBController_AMDWraithPrism(AMDWraithPrismController* wraith_ptr)
+/**------------------------------------------------------------------*\
+    @name AMD Wraith Prism
+    @category Cooler
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :warning:
+    @detectors DetectAMDWraithPrismControllers
+    @comment The Wraith Prism comes with 2 cables but is only detectable
+        and controlable when using the USB cable. `Morse Code` and `Mirage`
+        modes have not been implemented. Saving to flash is supported by
+        the device but not yet implemented.
+\*-------------------------------------------------------------------*/
+
+RGBController_AMDWraithPrism::RGBController_AMDWraithPrism(AMDWraithPrismController* controller_ptr)
 {
-    wraith = wraith_ptr;
+    controller  = controller_ptr;
 
     name        = "AMD Wraith Prism";
     vendor      = "Cooler Master";
     type        = DEVICE_TYPE_COOLER;
     description = "AMD Wraith Prism Device";
-    version     = wraith->GetFirmwareVersionString();
-    location    = wraith->GetLocationString();
+    version     = controller->GetFirmwareVersionString();
+    location    = controller->GetLocationString();
     /*-----------------------------------------------------*\
     | Don't use HID serial string, it is inconsistent on my |
     | Wraith Prism                                          |
     \*-----------------------------------------------------*/
-    serial      = "";//wraith->GetSerialString();
+    serial      = "";//controller->GetSerialString();
 
     mode Direct;
     Direct.name                 = "Direct";
@@ -49,7 +63,7 @@ RGBController_AMDWraithPrism::RGBController_AMDWraithPrism(AMDWraithPrismControl
     modes.push_back(Breathing);
 
     mode ColorCycle;
-    ColorCycle.name             = "Color Cycle";
+    ColorCycle.name             = "Spectrum Cycle";
     ColorCycle.value            = AMD_WRAITH_PRISM_EFFECT_CHANNEL_COLOR_CYCLE;
     ColorCycle.flags            = MODE_FLAG_HAS_SPEED | MODE_FLAG_HAS_BRIGHTNESS;
     ColorCycle.speed_min        = AMD_WRAITH_PRISM_SPEED_SLOWEST;
@@ -62,7 +76,7 @@ RGBController_AMDWraithPrism::RGBController_AMDWraithPrism(AMDWraithPrismControl
     modes.push_back(ColorCycle);
 
     mode Rainbow;
-    Rainbow.name                = "Rainbow";
+    Rainbow.name                = "Rainbow Wave";
     Rainbow.value               = AMD_WRAITH_PRISM_EFFECT_CHANNEL_RAINBOW;
     Rainbow.flags               = MODE_FLAG_HAS_SPEED | MODE_FLAG_HAS_BRIGHTNESS;
     Rainbow.speed_min           = AMD_WRAITH_PRISM_SPEED_SLOWEST;
@@ -118,7 +132,7 @@ RGBController_AMDWraithPrism::RGBController_AMDWraithPrism(AMDWraithPrismControl
 
 RGBController_AMDWraithPrism::~RGBController_AMDWraithPrism()
 {
-    delete wraith;
+    delete controller;
 }
 
 void RGBController_AMDWraithPrism::SetupZones()
@@ -183,17 +197,17 @@ void RGBController_AMDWraithPrism::DeviceUpdateLEDs()
     unsigned char red = RGBGetRValue(colors[0]);
     unsigned char grn = RGBGetGValue(colors[0]);
     unsigned char blu = RGBGetBValue(colors[0]);
-    wraith->SetLogoColor(red, grn, blu);
+    controller->SetLogoColor(red, grn, blu);
 
     red = RGBGetRValue(colors[1]);
     grn = RGBGetGValue(colors[1]);
     blu = RGBGetBValue(colors[1]);
-    wraith->SetFanColor(red, grn, blu);
+    controller->SetFanColor(red, grn, blu);
 
     red = RGBGetRValue(colors[2]);
     grn = RGBGetGValue(colors[2]);
     blu = RGBGetBValue(colors[2]);
-    wraith->SetRingColor(red, grn, blu);
+    controller->SetRingColor(red, grn, blu);
 }
 
 void RGBController_AMDWraithPrism::UpdateZoneLEDs(int zone)
@@ -205,15 +219,15 @@ void RGBController_AMDWraithPrism::UpdateZoneLEDs(int zone)
 
     if(zone == 0)
     {
-        wraith->SetLogoColor(red, grn, blu);
+        controller->SetLogoColor(red, grn, blu);
     }
     else if(zone == 1)
     {
-        wraith->SetFanColor(red, grn, blu);
+        controller->SetFanColor(red, grn, blu);
     }
     else if(zone == 2)
     {
-        wraith->SetRingColor(red, grn, blu);
+        controller->SetRingColor(red, grn, blu);
     }
 }
 
@@ -231,36 +245,36 @@ void RGBController_AMDWraithPrism::DeviceUpdateMode()
 {
     bool random = (modes[active_mode].color_mode == MODE_COLORS_RANDOM);
 
-    wraith->SetRingMode(modes[active_mode].value, modes[active_mode].speed, modes[active_mode].brightness, modes[active_mode].direction, random);
+    controller->SetRingMode(modes[active_mode].value, modes[active_mode].speed, modes[active_mode].brightness, modes[active_mode].direction, random);
 
     switch(modes[active_mode].value)
     {
         case AMD_WRAITH_PRISM_EFFECT_CHANNEL_COLOR_CYCLE:
-            wraith->SetFanMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_COLOR_CYCLE, modes[active_mode].speed, modes[active_mode].brightness, random);
-            wraith->SetLogoMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_COLOR_CYCLE, modes[active_mode].speed, modes[active_mode].brightness, random);
+            controller->SetFanMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_COLOR_CYCLE, modes[active_mode].speed, modes[active_mode].brightness, random);
+            controller->SetLogoMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_COLOR_CYCLE, modes[active_mode].speed, modes[active_mode].brightness, random);
             break;
 
         case AMD_WRAITH_PRISM_EFFECT_CHANNEL_RAINBOW:
         case AMD_WRAITH_PRISM_EFFECT_CHANNEL_BOUNCE:
-            wraith->SetFanMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_COLOR_CYCLE, modes[active_mode].speed, (modes[active_mode].brightness >> 1), random);
-            wraith->SetLogoMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_COLOR_CYCLE, modes[active_mode].speed, (modes[active_mode].brightness >> 1), random);
+            controller->SetFanMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_COLOR_CYCLE, modes[active_mode].speed, (modes[active_mode].brightness >> 1), random);
+            controller->SetLogoMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_COLOR_CYCLE, modes[active_mode].speed, (modes[active_mode].brightness >> 1), random);
             break;
-        
+
         case AMD_WRAITH_PRISM_EFFECT_CHANNEL_BREATHING:
-            wraith->SetFanMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_BREATHING, modes[active_mode].speed, modes[active_mode].brightness, random);
-            wraith->SetLogoMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_BREATHING, modes[active_mode].speed, modes[active_mode].brightness, random);
+            controller->SetFanMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_BREATHING, modes[active_mode].speed, modes[active_mode].brightness, random);
+            controller->SetLogoMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_BREATHING, modes[active_mode].speed, modes[active_mode].brightness, random);
             break;
 
         default:
             if(random)
             {
-                wraith->SetFanMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_COLOR_CYCLE, modes[active_mode].speed, modes[active_mode].brightness, random);
-                wraith->SetLogoMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_COLOR_CYCLE, modes[active_mode].speed, modes[active_mode].brightness, random);
+                controller->SetFanMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_COLOR_CYCLE, modes[active_mode].speed, modes[active_mode].brightness, random);
+                controller->SetLogoMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_COLOR_CYCLE, modes[active_mode].speed, modes[active_mode].brightness, random);
             }
             else
             {
-                wraith->SetFanMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_STATIC, modes[active_mode].speed, modes[active_mode].brightness, random);
-                wraith->SetLogoMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_STATIC, modes[active_mode].speed, modes[active_mode].brightness, random);
+                controller->SetFanMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_STATIC, modes[active_mode].speed, modes[active_mode].brightness, random);
+                controller->SetLogoMode(AMD_WRAITH_PRISM_FAN_LOGO_MODE_STATIC, modes[active_mode].speed, modes[active_mode].brightness, random);
             }
             break;
     }

@@ -9,6 +9,17 @@
 
 #include "RGBController_AsusAuraStrixEvolve.h"
 
+/**------------------------------------------------------------------*\
+    @name Asus Aura Strix Evolve
+    @category Mouse
+    @type USB
+    @save :white_check_mark:
+    @direct :white_check_mark:
+    @effects :white_check_mark:
+    @detectors DetectAsusAuraUSBStrixEvolve
+    @comment
+\*-------------------------------------------------------------------*/
+
 RGBController_AuraStrixEvolve::RGBController_AuraStrixEvolve(AuraStrixEvolveController* controller_ptr)
 {
     controller                  = controller_ptr;

@@ -10,6 +10,17 @@
 
 using namespace std::chrono_literals;
 
+/**------------------------------------------------------------------*\
+    @name Asus TUF Laptop
+    @category Keyboard
+    @type WMI
+    @save :x:
+    @direct :white_check_mark:
+    @effects :white_check_mark:
+    @detectors DetectAsusTUFLaptopWMIControllers
+    @comment
+\*-------------------------------------------------------------------*/
+
 RGBController_AsusTUFLaptopWMI::RGBController_AsusTUFLaptopWMI()
 {
     name        = "ASUS TUF Keyboard";

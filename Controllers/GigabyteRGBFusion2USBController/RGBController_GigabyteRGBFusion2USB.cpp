@@ -112,7 +112,7 @@ static KnownLayout knownLayoutsLookup
                 }
             }
         }
-    },    
+    },
     {
         "STD_ATX",
         {
@@ -187,6 +187,18 @@ static KnownLayout knownLayoutsLookup
         }
     },
 };
+
+/**------------------------------------------------------------------*\
+    @name Gigabyte RGB Fusion 2 USB
+    @category Motherboard
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :white_check_mark:
+    @detectors DetectGigabyteRGBFusion2USBControllers
+    @comment The Fusion 2 USB controller applies to most AMD and
+        Intel mainboards from the x570 and z390 chipsets onwards.
+\*-------------------------------------------------------------------*/
 
 RGBController_RGBFusion2USB::RGBController_RGBFusion2USB(RGBFusion2USBController* controller_ptr, std::string detector)
 {
@@ -544,7 +556,7 @@ void RGBController_RGBFusion2USB::UpdateZoneLEDs(int zone)
         unsigned char red = 0;
         unsigned char grn = 0;
         unsigned char blu = 0;
-        
+
         for(std::size_t led_idx = 0; led_idx < zones[zone].leds_count; led_idx++)
         {
             /*---------------------------------------------------------*\
@@ -579,7 +591,7 @@ void RGBController_RGBFusion2USB::UpdateZoneLEDs(int zone)
             \*---------------------------------------------------------*/
             controller->SetLEDEffect(zones[zone].leds[led_idx].value, mode_value, modes[active_mode].speed, modes[active_mode].brightness, random, red, grn, blu);
         }
-        
+
         controller->ApplyEffect();
     }
     /*---------------------------------------------------------*\
@@ -647,7 +659,7 @@ void RGBController_RGBFusion2USB::UpdateSingleLED(int led)
         unsigned char red = 0;
         unsigned char grn = 0;
         unsigned char blu = 0;
-        
+
         /*---------------------------------------------------------*\
         | Motherboard LEDs always use effect mode, so use static for|
         | direct mode but get colors from zone                      |

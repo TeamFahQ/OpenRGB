@@ -1,14 +1,25 @@
 #include "RGBController_CreativeSoundBlasterXG6.h"
 
-RGBController_CreativeSoundBlasterXG6::RGBController_CreativeSoundBlasterXG6(CreativeSoundBlasterXG6Controller* creative_device)
+/**------------------------------------------------------------------*\
+    @name Creative Sound BlasterX G6
+    @category Headset
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectCreativeDevice
+    @comment
+\*-------------------------------------------------------------------*/
+
+RGBController_CreativeSoundBlasterXG6::RGBController_CreativeSoundBlasterXG6(CreativeSoundBlasterXG6Controller* controller_ptr)
 {
-    creative    = creative_device;
+    controller  = controller_ptr;
 
     name        = "Creative SoundBlasterX G6 Device";
     vendor      = "Creative";
     type        = DEVICE_TYPE_HEADSET;
     description = "Creative SoundBlasterX G6 Device";
-    location    = creative_device->GetDeviceLocation();
+    location    = controller->GetDeviceLocation();
     serial      = "";
 
     mode Static;
@@ -23,7 +34,7 @@ RGBController_CreativeSoundBlasterXG6::RGBController_CreativeSoundBlasterXG6(Cre
 
 RGBController_CreativeSoundBlasterXG6::~RGBController_CreativeSoundBlasterXG6()
 {
-    delete creative;
+    delete controller;
 }
 
 void RGBController_CreativeSoundBlasterXG6::SetupZones()
@@ -38,7 +49,7 @@ void RGBController_CreativeSoundBlasterXG6::SetupZones()
     zones.push_back(logo_zone);
 
     led logo_led;
-    logo_led.name = "Logo";
+    logo_led.name                   = "Logo";
     leds.push_back(logo_led);
 
     SetupColors();
@@ -57,7 +68,7 @@ void RGBController_CreativeSoundBlasterXG6::DeviceUpdateLEDs()
     unsigned char grn = RGBGetGValue(colors[0]);
     unsigned char blu = RGBGetBValue(colors[0]);
 
-    creative->SetLedColor(red, grn, blu);
+    controller->SetLedColor(red, grn, blu);
 }
 
 void RGBController_CreativeSoundBlasterXG6::UpdateZoneLEDs(int /*zone*/)

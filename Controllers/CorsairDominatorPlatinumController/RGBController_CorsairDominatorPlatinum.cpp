@@ -8,15 +8,26 @@
 
 #include "RGBController_CorsairDominatorPlatinum.h"
 
-RGBController_CorsairDominatorPlatinum::RGBController_CorsairDominatorPlatinum(CorsairDominatorPlatinumController* corsair_ptr)
-{
-    corsair = corsair_ptr;
+/**------------------------------------------------------------------*\
+    @name Corsair Dominator Platinum
+    @category RAM
+    @type SMBus
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectCorsairDominatorPlatinumControllers
+    @comment
+\*-------------------------------------------------------------------*/
 
-    name        = corsair->GetDeviceName();
+RGBController_CorsairDominatorPlatinum::RGBController_CorsairDominatorPlatinum(CorsairDominatorPlatinumController* controller_ptr)
+{
+    controller  = controller_ptr;
+
+    name        = controller->GetDeviceName();
     vendor      = "Corsair";
     type        = DEVICE_TYPE_DRAM;
     description = "Corsair Dominator Platinum RGB Device";
-    location    = corsair->GetDeviceLocation();
+    location    = controller->GetDeviceLocation();
 
     mode Direct;
     Direct.name       = "Direct";
@@ -35,7 +46,7 @@ RGBController_CorsairDominatorPlatinum::RGBController_CorsairDominatorPlatinum(C
 
 RGBController_CorsairDominatorPlatinum::~RGBController_CorsairDominatorPlatinum()
 {
-    delete corsair;
+    delete controller;
 }
 
 void RGBController_CorsairDominatorPlatinum::SetupZones()
@@ -46,9 +57,9 @@ void RGBController_CorsairDominatorPlatinum::SetupZones()
     zone new_zone;
     new_zone.name       = "Corsair Platinum Zone";
     new_zone.type       = ZONE_TYPE_LINEAR;
-    new_zone.leds_min   = corsair->GetLEDCount();
-    new_zone.leds_max   = corsair->GetLEDCount();
-    new_zone.leds_count = corsair->GetLEDCount();
+    new_zone.leds_min   = controller->GetLEDCount();
+    new_zone.leds_max   = controller->GetLEDCount();
+    new_zone.leds_count = controller->GetLEDCount();
     new_zone.matrix_map = NULL;
     zones.push_back(new_zone);
 
@@ -57,8 +68,8 @@ void RGBController_CorsairDominatorPlatinum::SetupZones()
     \*---------------------------------------------------------*/
     for(std::size_t led_idx = 0; led_idx < zones[0].leds_count; led_idx++)
     {
-        led *new_led  = new led();
-        new_led->name = "Corsair Platinum LED ";
+        led *new_led    = new led();
+        new_led->name   = "Corsair Platinum LED ";
         new_led->name.append(std::to_string(led_idx));
         leds.push_back(*new_led);
     }
@@ -81,10 +92,11 @@ void RGBController_CorsairDominatorPlatinum::DeviceUpdateLEDs()
         unsigned char red = RGBGetRValue(color);
         unsigned char grn = RGBGetGValue(color);
         unsigned char blu = RGBGetBValue(color);
-        corsair->SetLEDColor(led, red, grn, blu);
+
+        controller->SetLEDColor(led, red, grn, blu);
     }
 
-    corsair->ApplyColors();
+    controller->ApplyColors();
 }
 
 void RGBController_CorsairDominatorPlatinum::UpdateZoneLEDs(int /*zone*/)
@@ -99,8 +111,8 @@ void RGBController_CorsairDominatorPlatinum::UpdateSingleLED(int led)
     unsigned char grn = RGBGetGValue(color);
     unsigned char blu = RGBGetBValue(color);
 
-    corsair->SetLEDColor(led, red, grn, blu);
-    corsair->ApplyColors();
+    controller->SetLEDColor(led, red, grn, blu);
+    controller->ApplyColors();
 }
 
 void RGBController_CorsairDominatorPlatinum::SetCustomMode()

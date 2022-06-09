@@ -11,21 +11,32 @@
 
 using namespace std::chrono_literals;
 
-RGBController_HyperXPulsefireHaste::RGBController_HyperXPulsefireHaste(HyperXPulsefireHasteController* hyperx_ptr)
+/**------------------------------------------------------------------*\
+    @name HyperX Pulsefire Haste
+    @category Mouse
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectHyperXPulsefireHasteControllers
+    @comment
+\*-------------------------------------------------------------------*/
+
+RGBController_HyperXPulsefireHaste::RGBController_HyperXPulsefireHaste(HyperXPulsefireHasteController* controller_ptr)
 {
-    hyperx = hyperx_ptr;
+    controller  = controller_ptr;
 
     name        = "HyperX Pulsefire Haste Device";
     vendor      = "HyperX";
     type        = DEVICE_TYPE_MOUSE;
     description = "HyperX Pulsefire Haste Device";
-    location    = hyperx->GetDeviceLocation();
-    serial      = hyperx->GetSerialString();
+    location    = controller->GetDeviceLocation();
+    serial      = controller->GetSerialString();
 
     mode Direct;
-    Direct.name = "Direct";
-    Direct.value = 0xFFFF;
-    Direct.flags = MODE_FLAG_HAS_PER_LED_COLOR;
+    Direct.name       = "Direct";
+    Direct.value      = 0xFFFF;
+    Direct.flags      = MODE_FLAG_HAS_PER_LED_COLOR;
     Direct.color_mode = MODE_COLORS_PER_LED;
     modes.push_back(Direct);
 
@@ -47,7 +58,7 @@ RGBController_HyperXPulsefireHaste::~RGBController_HyperXPulsefireHaste()
     keepalive_thread->join();
     delete keepalive_thread;
 
-    delete hyperx;
+    delete controller;
 }
 
 void RGBController_HyperXPulsefireHaste::SetupZones()
@@ -66,14 +77,14 @@ void RGBController_HyperXPulsefireHaste::SetupZones()
         for(unsigned int led_idx = 0; led_idx < zones[zone_idx].leds_count; led_idx++)
         {
             led new_led;
-            
+
             new_led.name = zones[zone_idx].name;
 
             if(zones[zone_idx].leds_count > 1)
             {
                 new_led.name.append(" LED ");
                 new_led.name.append(std::to_string(led_idx + 1));
-            }  
+            }
 
             leds.push_back(new_led);
         }
@@ -95,7 +106,7 @@ void RGBController_HyperXPulsefireHaste::DeviceUpdateLEDs()
 
     if(active_mode == 0)
     {
-        hyperx->SendDirect(&colors[0]);
+        controller->SendDirect(&colors[0]);
     }
     else
     {

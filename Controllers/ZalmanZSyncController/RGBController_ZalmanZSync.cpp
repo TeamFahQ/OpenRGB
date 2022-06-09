@@ -9,6 +9,16 @@
 
 #include "RGBController_ZalmanZSync.h"
 
+/**------------------------------------------------------------------*\
+    @name Zalmna Z Sync
+    @category LEDStrip
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :white_check_mark:
+    @detectors DetectZalmanZSyncControllers
+    @comment
+\*-------------------------------------------------------------------*/
 
 RGBController_ZalmanZSync::RGBController_ZalmanZSync(ZalmanZSyncController* controller_ptr)
 {
@@ -209,7 +219,7 @@ void RGBController_ZalmanZSync::SetupZones()
         | can support is 200.                               |
         \*-------------------------------------------------*/
         zones[channel_idx].leds_min   = 0;
-        zones[channel_idx].leds_max   = 204;
+        zones[channel_idx].leds_max   = 40;
 
         if(first_run)
         {
@@ -217,7 +227,7 @@ void RGBController_ZalmanZSync::SetupZones()
         }
 
         zones[channel_idx].matrix_map = NULL;
-        
+
         for (unsigned int led_ch_idx = 0; led_ch_idx < zones[channel_idx].leds_count; led_ch_idx++)
         {
             char led_idx_string[4];
@@ -254,7 +264,10 @@ void RGBController_ZalmanZSync::DeviceUpdateLEDs()
 {
     for(std::size_t zone_idx = 0; zone_idx < zones.size(); zone_idx++)
     {
-        controller->SetChannelLEDs(zone_idx, zones[zone_idx].colors, zones[zone_idx].leds_count);
+        if(zones[zone_idx].leds_count > 0)
+        {
+            controller->SetChannelLEDs(zone_idx, zones[zone_idx].colors, zones[zone_idx].leds_count);
+        }
     }
 }
 

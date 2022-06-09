@@ -82,6 +82,15 @@ std::string AuraMouseController::GetVersion(bool wireless, int protocol)
                 str = "0." + str.substr(0, 2) + "." + str.substr(2, 2);
             }
             break;
+
+        case 3:
+            {
+                char version[9];
+                int offset = (wireless ? 13 : 4);
+                snprintf(version, 9, "%2d.%02d.%02d", usb_buf_out[offset + 1], usb_buf_out[offset + 2], usb_buf_out[offset + 3]);
+                str = std::string(version);
+            }
+            break;
     }
 
     return str;
@@ -125,28 +134,41 @@ void AuraMouseController::SendUpdate
     /*-----------------------------------------------------*\
     | Set up message packet                                 |
     \*-----------------------------------------------------*/
-    usb_buf[0x00]   = 0x00;
-    usb_buf[0x01]   = 0x51;
-    usb_buf[0x02]   = 0x28;
-    usb_buf[0x03]   = zone;
-    usb_buf[0x04]   = 0x00;
-    usb_buf[0x05]   = mode;
-    usb_buf[0x06]   = brightness;
-    usb_buf[0x07]   = red;
-    usb_buf[0x08]   = grn;
-    usb_buf[0x09]   = blu;
-
+    
     if (device_pid == AURA_ROG_GLADIUS_II_ORIGIN_PNK_LTD_PID)
     {
-        usb_buf[0x0A]   = 0;
-        usb_buf[0x0B]   = 0;
-        usb_buf[0x0C]   = 0;
-        usb_buf[0x0D]   = dir;
-        usb_buf[0x0E]   = random;
-        usb_buf[0x0F]   = speed;
+        // this device supports 2 color for breathing,
+        // but since this mode is per led and openrgb doesn't support 2 colors per led this feature is not implemented
+        usb_buf[0x00]   = 0x00;
+        usb_buf[0x01]   = 0x51;
+        usb_buf[0x02]   = 0x28;
+        usb_buf[0x03]   = zone;
+        usb_buf[0x04]   = 0x00;
+        usb_buf[0x05]   = mode;
+        usb_buf[0x06]   = brightness;
+        usb_buf[0x07]   = 0x00; // boolean signaling if the 2nd set of colors is in use
+        usb_buf[0x08]   = red;
+        usb_buf[0x09]   = grn;
+        usb_buf[0x0A]   = blu;
+        usb_buf[0x0B]   = 0; // 2nd red
+        usb_buf[0x0C]   = 0; // 2nd green
+        usb_buf[0x0D]   = 0; // 2nd blue
+        usb_buf[0x0E]   = dir;
+        usb_buf[0x0F]   = random;
+        usb_buf[0x10]   = speed;
     }
     else
     {
+        usb_buf[0x00]   = 0x00;
+        usb_buf[0x01]   = 0x51;
+        usb_buf[0x02]   = 0x28;
+        usb_buf[0x03]   = zone;
+        usb_buf[0x04]   = 0x00;
+        usb_buf[0x05]   = mode;
+        usb_buf[0x06]   = brightness;
+        usb_buf[0x07]   = red;
+        usb_buf[0x08]   = grn;
+        usb_buf[0x09]   = blu;
         usb_buf[0x0A]   = dir;
         usb_buf[0x0B]   = random;
         usb_buf[0x0C]   = speed;
@@ -158,5 +180,5 @@ void AuraMouseController::SendUpdate
     hid_write(dev, usb_buf, ASUS_AURA_MOUSE_PACKET_SIZE);
 
     unsigned char usb_buf_out[ASUS_AURA_MOUSE_PACKET_SIZE];
-    hid_read(dev, usb_buf_out, ASUS_AURA_MOUSE_PACKET_SIZE);
+    hid_read_timeout(dev, usb_buf_out, ASUS_AURA_MOUSE_PACKET_SIZE, 10);
 }

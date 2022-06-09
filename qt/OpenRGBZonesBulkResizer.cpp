@@ -63,18 +63,7 @@ void OpenRGBZonesBulkResizer::RunChecks(QWidget *parent)
     if(!zones.empty())
     {
         QDialog* dialog = new QDialog(parent);
-        dialog->setWindowTitle("Resize the zones");
-
-        if (OpenRGBDialog2::IsDarkTheme())
-        {
-            QPalette pal;
-            pal.setColor(QPalette::WindowText, Qt::white);
-            dialog->setPalette(pal);
-            QFile dark_theme(":/windows_dark.qss");
-            dark_theme.open(QFile::ReadOnly);
-            dialog->setStyleSheet(dark_theme.readAll());
-            dark_theme.close();
-        }
+        dialog->setWindowTitle(tr("Resize the zones"));
 
         dialog->setMinimumSize(600,480);
         dialog->setModal(true);
@@ -112,7 +101,7 @@ OpenRGBZonesBulkResizer::OpenRGBZonesBulkResizer(QWidget *parent,  const std::ve
     ui->zones_table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     ui->zones_table->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Fixed);
 
-    ui->zones_table->setHorizontalHeaderLabels({"Controller", "Zone", "Size"});
+    ui->zones_table->setHorizontalHeaderLabels({tr("Controller"), tr("Zone"), tr("Size")});
 
     /*---------------------------------------------------------*\
     | Fill the table with widgets (labels, spinbox)             |

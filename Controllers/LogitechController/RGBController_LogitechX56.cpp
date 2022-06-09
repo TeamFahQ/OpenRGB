@@ -9,13 +9,24 @@
 
 #include "RGBController_LogitechX56.h"
 
+/**------------------------------------------------------------------*\
+    @name Logitech X56
+    @category Gamepad
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectLogitechKeyboardGPro
+    @comment
+\*-------------------------------------------------------------------*/
+
 RGBController_LogitechX56::RGBController_LogitechX56(LogitechX56Controller* controller_ptr)
 {
     controller  = controller_ptr;
-    
+
     name        = controller->GetDeviceName();
     vendor      = "Logitech";
-    type        = DEVICE_TYPE_GAMEPAD; 
+    type        = DEVICE_TYPE_GAMEPAD;
     description = "Logitech X56 Device";
     location    = controller->GetDeviceLocation();
     serial      = controller->GetSerialString();

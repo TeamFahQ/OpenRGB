@@ -8,6 +8,17 @@
 
 #include "RGBController_MSIRGB.h"
 
+/**------------------------------------------------------------------*\
+    @name MSI RGB
+    @category Motherboard
+    @type SuperIO
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectMSIRGBControllers
+    @comment
+\*-------------------------------------------------------------------*/
+
 RGBController_MSIRGB::RGBController_MSIRGB(MSIRGBController* msi_ptr)
 {
     msi = msi_ptr;
@@ -16,7 +27,7 @@ RGBController_MSIRGB::RGBController_MSIRGB(MSIRGBController* msi_ptr)
     vendor      = "MSI";
     type        = DEVICE_TYPE_MOTHERBOARD;
     description = "MSI-RGB Device";
-    
+
     mode Direct;
     Direct.name       = "Direct";
     Direct.value      = 0;

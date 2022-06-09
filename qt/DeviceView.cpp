@@ -7,6 +7,7 @@
 \*-----------------------------------------------------*/
 
 #include "DeviceView.h"
+#include "RGBControllerKeyNames.h"
 #include "RGBController.h"
 #include <QPainter>
 #include <QResizeEvent>
@@ -14,6 +15,12 @@
 #include <QtCore/qmath.h>
 #include <QDebug>
 #include <QMouseEvent>
+
+#define MAX_COLS    20
+#define PAD_LED     0.1
+#define PAD_TEXT    0.1
+#define PAD_ZONE    1.0
+#define SIZE_TEXT   0.5
 
 DeviceView::DeviceView(QWidget *parent) :
     QWidget(parent),
@@ -36,115 +43,122 @@ struct led_label
 
 static const std::map<std::string, led_label> led_label_lookup =
 {
-    { "Key: A",                 { "A"     , "A",               }},
-    { "Key: B",                 { "B"     , "B",               }},
-    { "Key: C",                 { "C"     , "C",               }},
-    { "Key: D",                 { "D"     , "D",               }},
-    { "Key: E",                 { "E"     , "E",               }},
-    { "Key: F",                 { "F"     , "F",               }},
-    { "Key: G",                 { "G"     , "G",               }},
-    { "Key: H",                 { "H"     , "H",               }},
-    { "Key: I",                 { "I"     , "I",               }},
-    { "Key: J",                 { "J"     , "J",               }},
-    { "Key: K",                 { "K"     , "K",               }},
-    { "Key: L",                 { "L"     , "L",               }},
-    { "Key: M",                 { "M"     , "M",               }},
-    { "Key: N",                 { "N"     , "N",               }},
-    { "Key: O",                 { "O"     , "O",               }},
-    { "Key: P",                 { "P"     , "P",               }},
-    { "Key: Q",                 { "Q"     , "Q",               }},
-    { "Key: R",                 { "R"     , "R",               }},
-    { "Key: S",                 { "S"     , "S",               }},
-    { "Key: T",                 { "T"     , "T",               }},
-    { "Key: U",                 { "U"     , "U",               }},
-    { "Key: V",                 { "V"     , "V",               }},
-    { "Key: W",                 { "W"     , "W",               }},
-    { "Key: X",                 { "X"     , "X",               }},
-    { "Key: Y",                 { "Y"     , "Y",               }},
-    { "Key: Z",                 { "Z"     , "Z",               }},
-    { "Key: 0",                 { "0"     , "0",               }},
-    { "Key: 1",                 { "1"     , "1",               }},
-    { "Key: 2",                 { "2"     , "2",               }},
-    { "Key: 3",                 { "3"     , "3",               }},
-    { "Key: 4",                 { "4"     , "4",               }},
-    { "Key: 5",                 { "5"     , "5",               }},
-    { "Key: 6",                 { "6"     , "6",               }},
-    { "Key: 7",                 { "7"     , "7",               }},
-    { "Key: 8",                 { "8"     , "8",               }},
-    { "Key: 9",                 { "9"     , "9",               }},
-    { "Key: F1",                { "F1"    , "F1",              }},
-    { "Key: F2",                { "F2"    , "F2",              }},
-    { "Key: F3",                { "F3"    , "F3",              }},
-    { "Key: F4",                { "F4"    , "F4",              }},
-    { "Key: F5",                { "F5"    , "F5",              }},
-    { "Key: F6",                { "F6"    , "F6",              }},
-    { "Key: F7",                { "F7"    , "F7",              }},
-    { "Key: F8",                { "F8"    , "F8",              }},
-    { "Key: F9",                { "F9"    , "F9",              }},
-    { "Key: F10",               { "F10"   , "F10",             }},
-    { "Key: F11",               { "F11"   , "F11",             }},
-    { "Key: F12",               { "F12"   , "F12",             }},
-    { "Key: `",                 { "`"     , "`",               }},
-    { "Key: -",                 { "-"     , "-",               }},
-    { "Key: =",                 { "="     , "=",               }},
-    { "Key: [",                 { "["     , "[",               }},
-    { "Key: ]",                 { "]"     , "]",               }},
-    { "Key: \\ (ANSI)",         { "\\"    , "\\",              }},
-    { "Key: \\ (ISO)",          { "\\"    , "\\",              }},
-    { "Key: ;",                 { ";"     , ";",               }},
-    { "Key: '",                 { "'"     , "'",               }},
-    { "Key: #",                 { "#"     , "#",               }},
-    { "Key: ,",                 { ","     , ",",               }},
-    { "Key: .",                 { "."     , ".",               }},
-    { "Key: /",                 { "/"     , "/",               }},
-    { "Key: Escape",            { "Esc"   , "Esc",             }},
-    { "Key: Print Screen",      { "Prt"   , "Prt",             }},
-    { "Key: Scroll Lock",       { "Scr"   , "Scr",             }},
-    { "Key: Pause/Break",       { "Brk"   , "Brk",             }},
-    { "Key: Backspace",         { "Bks"   , "\xE2\x8C\xAB"     }}, // ⌫
-    { "Key: Insert",            { "Ins"   , "Ins",             }},
-    { "Key: Home",              { "Hom"   , "Hom",             }},
-    { "Key: Page Up",           { "PUp"   , "PUp",             }},
-    { "Key: Tab",               { "Tab"   , "\xE2\x86\xb9"     }}, // ⭾ ↹ ⇄ ⇥
-    { "Key: Delete",            { "Del"   , "Del",             }},
-    { "Key: End",               { "End"   , "End",             }},
-    { "Key: Page Down",         { "PDn"   , "PDn",             }},
-    { "Key: Caps Lock",         { "Cap"   , "Cap",             }},
-    { "Key: Enter",             { "Ent"   , "\xE2\x86\xB5"     }}, // ↵ ⏎
-    { "Key: Enter (ISO)",       { "Ent"   , "\xE2\x86\xB5"     }}, // ↵ ⏎
-    { "Key: Left Shift",        { "Sft"   , "\xE2\x87\xA7"     }}, // ⇧
-    { "Key: Right Shift",       { "Sft"   , "\xE2\x87\xA7"     }}, // ⇧
-    { "Key: Up Arrow",          { "Up"    , "\xF0\x9F\xA1\xB9" }}, // ↑ 🡹
-    { "Key: Left Control",      { "Ctl"   , "Ctl",             }},
-    { "Key: Left Windows",      { "Win"   , "\xe2\x9d\x96"     }}, // ❖
-    { "Key: Left Fn",           { "Fn"    , "Fn",              }},
-    { "Key: Left Alt",          { "Alt"   , "Alt",             }},
-    { "Key: Space",             { "Spc"   , "Spc",             }},
-    { "Key: Right Alt",         { "Alt"   , "Alt",             }},
-    { "Key: Right Fn",          { "Fn"    , "Fn",              }},
-    { "Key: Right Windows",     { "Win"   , "\xe2\x9d\x96"     }}, // ❖
-    { "Key: Menu",              { "Mnu"   , "\xE2\x98\xB0"     }}, // ▤ ☰ 𝌆 🗏
-    { "Key: Right Control",     { "Ctl"   , "Ctl",             }},
-    { "Key: Left Arrow",        { "Lft"   , "\xF0\x9F\xA1\xB8" }}, // ↑ 🡹
-    { "Key: Down Arrow",        { "Dn"    , "\xF0\x9F\xA1\xBB" }}, // ↑ 🡹
-    { "Key: Right Arrow",       { "Rgt"   , "\xF0\x9F\xA1\xBA" }}, // ↑ 🡹
-    { "Key: Num Lock",          { "Num"   , "Num",             }},
-    { "Key: Number Pad /",      { "/"     , "/",               }},
-    { "Key: Number Pad *",      { "*"     , "*",               }},
-    { "Key: Number Pad -",      { "-"     , "-",               }},
-    { "Key: Number Pad +",      { "+"     , "+",               }},
-    { "Key: Number Pad .",      { "."     , ".",               }},
-    { "Key: Number Pad Enter",  { "Ent"   , "\xE2\x86\xB5"     }}, // ↵ ⏎
-    { "Key: Number Pad 0",      { "0"     , "0",               }},
-    { "Key: Number Pad 1",      { "1"     , "1",               }},
-    { "Key: Number Pad 2",      { "2"     , "2",               }},
-    { "Key: Number Pad 3",      { "3"     , "3",               }},
-    { "Key: Number Pad 4",      { "4"     , "4",               }},
-    { "Key: Number Pad 5",      { "5"     , "5",               }},
-    { "Key: Number Pad 6",      { "6"     , "6",               }},
-    { "Key: Number Pad 7",      { "7"     , "7",               }},
-    { "Key: Number Pad 8",      { "8"     , "8",               }},
-    { "Key: Number Pad 9",      { "9"     , "9",               }},
+    { KEY_EN_A,                 { "A"     , "A",                }},
+    { KEY_EN_B,                 { "B"     , "B",                }},
+    { KEY_EN_C,                 { "C"     , "C",                }},
+    { KEY_EN_D,                 { "D"     , "D",                }},
+    { KEY_EN_E,                 { "E"     , "E",                }},
+    { KEY_EN_F,                 { "F"     , "F",                }},
+    { KEY_EN_G,                 { "G"     , "G",                }},
+    { KEY_EN_H,                 { "H"     , "H",                }},
+    { KEY_EN_I,                 { "I"     , "I",                }},
+    { KEY_EN_J,                 { "J"     , "J",                }},
+    { KEY_EN_K,                 { "K"     , "K",                }},
+    { KEY_EN_L,                 { "L"     , "L",                }},
+    { KEY_EN_M,                 { "M"     , "M",                }},
+    { KEY_EN_N,                 { "N"     , "N",                }},
+    { KEY_EN_O,                 { "O"     , "O",                }},
+    { KEY_EN_P,                 { "P"     , "P",                }},
+    { KEY_EN_Q,                 { "Q"     , "Q",                }},
+    { KEY_EN_R,                 { "R"     , "R",                }},
+    { KEY_EN_S,                 { "S"     , "S",                }},
+    { KEY_EN_T,                 { "T"     , "T",                }},
+    { KEY_EN_U,                 { "U"     , "U",                }},
+    { KEY_EN_V,                 { "V"     , "V",                }},
+    { KEY_EN_W,                 { "W"     , "W",                }},
+    { KEY_EN_X,                 { "X"     , "X",                }},
+    { KEY_EN_Y,                 { "Y"     , "Y",                }},
+    { KEY_EN_Z,                 { "Z"     , "Z",                }},
+    { KEY_EN_0,                 { "0"     , "0",                }},
+    { KEY_EN_1,                 { "1"     , "1",                }},
+    { KEY_EN_2,                 { "2"     , "2",                }},
+    { KEY_EN_3,                 { "3"     , "3",                }},
+    { KEY_EN_4,                 { "4"     , "4",                }},
+    { KEY_EN_5,                 { "5"     , "5",                }},
+    { KEY_EN_6,                 { "6"     , "6",                }},
+    { KEY_EN_7,                 { "7"     , "7",                }},
+    { KEY_EN_8,                 { "8"     , "8",                }},
+    { KEY_EN_9,                 { "9"     , "9",                }},
+    { KEY_EN_F1,                { "F1"    , "F1",               }},
+    { KEY_EN_F2,                { "F2"    , "F2",               }},
+    { KEY_EN_F3,                { "F3"    , "F3",               }},
+    { KEY_EN_F4,                { "F4"    , "F4",               }},
+    { KEY_EN_F5,                { "F5"    , "F5",               }},
+    { KEY_EN_F6,                { "F6"    , "F6",               }},
+    { KEY_EN_F7,                { "F7"    , "F7",               }},
+    { KEY_EN_F8,                { "F8"    , "F8",               }},
+    { KEY_EN_F9,                { "F9"    , "F9",               }},
+    { KEY_EN_F10,               { "F10"   , "F10",              }},
+    { KEY_EN_F11,               { "F11"   , "F11",              }},
+    { KEY_EN_F12,               { "F12"   , "F12",              }},
+    { KEY_EN_BACK_TICK,         { "`"     , "`",                }},
+    { KEY_EN_MINUS,             { "-"     , "-",                }},
+    { KEY_EN_EQUALS,            { "="     , "=",                }},
+    { KEY_EN_LEFT_BRACKET,      { "["     , "[",                }},
+    { KEY_EN_RIGHT_BRACKET,     { "]"     , "]",                }},
+    { KEY_EN_ANSI_BACK_SLASH,   { "\\"    , "\\",               }},
+    { KEY_EN_ISO_BACK_SLASH,    { "\\"    , "\\",               }},
+    { KEY_EN_SEMICOLON,         { ";"     , ";",                }},
+    { KEY_EN_QUOTE,             { "'"     , "'",                }},
+    { KEY_EN_POUND,             { "#"     , "#",                }},
+    { KEY_EN_COMMA,             { ","     , ",",                }},
+    { KEY_EN_PERIOD,            { "."     , ".",                }},
+    { KEY_EN_FORWARD_SLASH,     { "/"     , "/",                }},
+    { KEY_EN_ESCAPE,            { "Esc"   , "Esc",              }},
+    { KEY_EN_PRINT_SCREEN,      { "Prt"   , "Prt",              }},
+    { KEY_EN_SCROLL_LOCK,       { "Scr"   , "Scr",              }},
+    { KEY_EN_PAUSE_BREAK,       { "Brk"   , "Brk",              }},
+    { KEY_EN_BACKSPACE,         { "Bks"   , "\xE2\x8C\xAB"      }}, // ⌫
+    { KEY_EN_INSERT,            { "Ins"   , "Ins",              }},
+    { KEY_EN_HOME,              { "Hom"   , "Hom",              }},
+    { KEY_EN_PAGE_UP,           { "PUp"   , "PUp",              }},
+    { KEY_EN_TAB,               { "Tab"   , "\xE2\x86\xb9"      }}, // ⭾ ↹ ⇄ ⇥
+    { KEY_EN_DELETE,            { "Del"   , "Del",              }},
+    { KEY_EN_END,               { "End"   , "End",              }},
+    { KEY_EN_PAGE_DOWN,         { "PDn"   , "PDn",              }},
+    { KEY_EN_CAPS_LOCK,         { "Cap"   , "Cap",              }},
+    { KEY_EN_ANSI_ENTER,        { "Ent"   , "\xE2\x86\xB5"      }}, // ↵ ⏎
+    { KEY_EN_ISO_ENTER,         { "Ent"   , "\xE2\x86\xB5"      }}, // ↵ ⏎
+    { KEY_EN_LEFT_SHIFT,        { "Sft"   , "\xE2\x87\xA7"      }}, // ⇧
+    { KEY_EN_RIGHT_SHIFT,       { "Sft"   , "\xE2\x87\xA7"      }}, // ⇧
+    { KEY_EN_UP_ARROW,          { "Up"    , "\xF0\x9F\xA1\xB9"  }}, // ↑ 🡹
+    { KEY_EN_LEFT_CONTROL,      { "Ctl"   , "Ctl",              }},
+    { KEY_EN_LEFT_WINDOWS,      { "Win"   , "\xe2\x9d\x96"      }}, // ❖
+    { KEY_EN_LEFT_FUNCTION,     { "Fn"    , "Fn",               }},
+    { KEY_EN_LEFT_ALT,          { "Alt"   , "Alt",              }},
+    { KEY_EN_SPACE,             { "Spc"   , "Spc",              }},
+    { KEY_EN_RIGHT_ALT,         { "Alt"   , "Alt",              }},
+    { KEY_EN_RIGHT_FUNCTION,    { "Fn"    , "Fn",               }},
+    { KEY_EN_RIGHT_WINDOWS,     { "Win"   , "\xe2\x9d\x96"      }}, // ❖
+    { KEY_EN_MENU,              { "Mnu"   , "\xE2\x98\xB0"      }}, // ▤ ☰ 𝌆 🗏
+    { KEY_EN_RIGHT_CONTROL,     { "Ctl"   , "Ctl",              }},
+    { KEY_EN_LEFT_ARROW,        { "Lft"   , "\xF0\x9F\xA1\xB8"  }}, // ↑ 🡹
+    { KEY_EN_DOWN_ARROW,        { "Dn"    , "\xF0\x9F\xA1\xBB"  }}, // ↑ 🡹
+    { KEY_EN_RIGHT_ARROW,       { "Rgt"   , "\xF0\x9F\xA1\xBA"  }}, // ↑ 🡹
+    { KEY_EN_NUMPAD_LOCK,       { "Num"   , "Num",              }},
+    { KEY_EN_NUMPAD_DIVIDE,     { "/"     , "/",                }},
+    { KEY_EN_NUMPAD_TIMES,      { "*"     , "*",                }},
+    { KEY_EN_NUMPAD_MINUS,      { "-"     , "-",                }},
+    { KEY_EN_NUMPAD_PLUS,       { "+"     , "+",                }},
+    { KEY_EN_NUMPAD_PERIOD,     { "."     , ".",                }},
+    { KEY_EN_NUMPAD_ENTER,      { "Ent"   , "\xE2\x86\xB5"      }}, // ↵ ⏎
+    { KEY_EN_NUMPAD_0,          { "0"     , "0",                }},
+    { KEY_EN_NUMPAD_1,          { "1"     , "1",                }},
+    { KEY_EN_NUMPAD_2,          { "2"     , "2",                }},
+    { KEY_EN_NUMPAD_3,          { "3"     , "3",                }},
+    { KEY_EN_NUMPAD_4,          { "4"     , "4",                }},
+    { KEY_EN_NUMPAD_5,          { "5"     , "5",                }},
+    { KEY_EN_NUMPAD_6,          { "6"     , "6",                }},
+    { KEY_EN_NUMPAD_7,          { "7"     , "7",                }},
+    { KEY_EN_NUMPAD_8,          { "8"     , "8",                }},
+    { KEY_EN_NUMPAD_9,          { "9"     , "9",                }},
+    { KEY_EN_MEDIA_PLAY_PAUSE,  { "Ply"   , "\xE2\x8F\xAF",     }}, // ⏯
+    { KEY_EN_MEDIA_PREVIOUS,    { "Prv"   , "\xE2\x8F\xAE",     }}, // ⏮
+    { KEY_EN_MEDIA_NEXT,        { "Nxt"   , "\xE2\x8F\xAD",     }}, // ⏭
+    { KEY_EN_MEDIA_STOP,        { "Stp"   , "\xE2\x8F\xB9",     }}, // ⏹
+    { KEY_EN_MEDIA_MUTE,        { "Mte"   , "\xF0\x9F\x94\x87", }}, // 🔇
+    { KEY_EN_MEDIA_VOLUME_DOWN, { "Vl-"   , "\xF0\x9F\x94\x88", }}, // 🔉
+    { KEY_EN_MEDIA_VOLUME_UP,   { "Vl+"   , "\xF0\x9F\x94\x89", }}, // 🔊
 };
 
 void DeviceView::setController(RGBController * controller_ptr)
@@ -170,25 +184,35 @@ void DeviceView::setController(RGBController * controller_ptr)
     | Process position and size for zones                   |
     \*-----------------------------------------------------*/
     unsigned int maxWidth       = 0;
-    unsigned int maxCols        = 20;
     float        totalHeight    = 0;
-    float        zonePadding    = 1;    // Amount of space between zones
-    float        ledPadding     = 0.1;
 
+    /*-----------------------------------------------------*\
+    | Determine the total height (in LEDs) of all zones     |
+    \*-----------------------------------------------------*/
     for(std::size_t zone_idx = 0; zone_idx < controller->zones.size(); zone_idx++)
     {
+        /*-----------------------------------------------------*\
+        | For matrix zones, use matrix height from the map      |
+        \*-----------------------------------------------------*/
         if((controller->zones[zone_idx].type == ZONE_TYPE_MATRIX) && (controller->zones[zone_idx].matrix_map))
         {
-            totalHeight += controller->zones[zone_idx].matrix_map->height;
+            totalHeight                += controller->zones[zone_idx].matrix_map->height;
             zone_pos[zone_idx].matrix_w = controller->zones[zone_idx].matrix_map->width;
         }
+        /*-----------------------------------------------------*\
+        | For all other zones, compute the height including     |
+        | wrap-around                                           |
+        \*-----------------------------------------------------*/
         else
         {
-            unsigned int count = controller->zones[zone_idx].leds_count;
-            zone_pos[zone_idx].matrix_w = std::min(count, maxCols);
-            totalHeight += count / maxCols + !!(count % maxCols); // Equivalent to ceil(float(count) / maxCols);
+            unsigned int count          = controller->zones[zone_idx].leds_count;
+            zone_pos[zone_idx].matrix_w = std::min(count, (unsigned int)MAX_COLS);
+            totalHeight                += (count / MAX_COLS) + ((count % MAX_COLS) > 0);
         }
 
+        /*-----------------------------------------------------*\
+        | Determine the maximum width (in LEDs) in the view     |
+        \*-----------------------------------------------------*/
         if(zone_pos[zone_idx].matrix_w > maxWidth)
         {
             maxWidth = zone_pos[zone_idx].matrix_w;
@@ -198,22 +222,23 @@ void DeviceView::setController(RGBController * controller_ptr)
     /*-----------------------------------------------------*\
     | Add some space for zone names and padding             |
     \*-----------------------------------------------------*/
-    totalHeight += controller->zones.size() * zonePadding;
+    totalHeight    += controller->zones.size() * PAD_ZONE;
 
-    float atom      = 1.0 / maxWidth;       // Atom is the width of a single square; if the whole thing becomes too tall, we ignore it and let the view widget take care of it
-    float current_y = 0;                    // We will be descending, placing each zone one atom below the previous one
-    matrix_h        = totalHeight * atom;
+    float current_y = 0;                    // We will be descending, placing each zone one unit below the previous one
+    matrix_h        = totalHeight;
 
     for(std::size_t zone_idx = 0; zone_idx < controller->zones.size(); zone_idx++)
     {
-        zone_pos[zone_idx].matrix_x = (1.0 - (zone_pos[zone_idx].matrix_w * atom)) / 2;
-        zone_pos[zone_idx].matrix_y = current_y + 0.5 * atom;
-        zone_pos[zone_idx].matrix_w *= atom;
-        zone_pos[zone_idx].matrix_h = 0.4 * atom;
-        current_y                  += zonePadding * atom;
+        /*-----------------------------------------------------*\
+        | Calculate zone label position and size                |
+        \*-----------------------------------------------------*/
+        zone_pos[zone_idx].matrix_x = (maxWidth - zone_pos[zone_idx].matrix_w) / 2.0;
+        zone_pos[zone_idx].matrix_y = current_y + SIZE_TEXT;
+        zone_pos[zone_idx].matrix_h = SIZE_TEXT - PAD_TEXT;
+        current_y                  += PAD_ZONE;
 
         /*-----------------------------------------------------*\
-        | Now process the position and size for the LEDs        |
+        | Calculate LEDs position and size for zone             |
         \*-----------------------------------------------------*/
         if((controller->zones[zone_idx].type == ZONE_TYPE_MATRIX) && (controller->zones[zone_idx].matrix_map))
         {
@@ -228,10 +253,14 @@ void DeviceView::setController(RGBController * controller_ptr)
 
                     if(map->map[map_idx] != 0xFFFFFFFF && color_idx < led_pos.size())
                     {
-                        led_pos[color_idx].matrix_x = (zone_pos[zone_idx].matrix_x + led_x + ledPadding) * atom;
-                        led_pos[color_idx].matrix_y = current_y + (led_y + ledPadding) * atom;
-                        led_pos[color_idx].matrix_w = (1 - (2 * ledPadding)) * atom;
-                        led_pos[color_idx].matrix_h = (1 - (2 * ledPadding)) * atom;
+                        led_pos[color_idx].matrix_x = (zone_pos[zone_idx].matrix_x + led_x + PAD_LED);
+                        led_pos[color_idx].matrix_y = current_y + (led_y + PAD_LED);
+
+                        /*-----------------------------------------------------*\
+                        | LED is a 1x1 square, minus padding on all sides       |
+                        \*-----------------------------------------------------*/
+                        led_pos[color_idx].matrix_w = (1 - (2 * PAD_LED));
+                        led_pos[color_idx].matrix_h = (1 - (2 * PAD_LED));
 
                         /*-----------------------------------------------------*\
                         | Expand large keys to fill empty spaces in matrix, if  |
@@ -253,59 +282,70 @@ void DeviceView::setController(RGBController * controller_ptr)
                         \*-----------------------------------------------------*/
                         if(led_x < map->width - 1 && map->map[map_idx + 1] == 0xFFFFFFFF)
                         {
-                            if( ( controller->leds[color_idx].name == "Key: Tab"          )
-                             || ( controller->leds[color_idx].name == "Key: Caps Lock"    )
-                             || ( controller->leds[color_idx].name == "Key: Left Shift"   )
-                             || ( controller->leds[color_idx].name == "Key: Right Shift"  )
-                             || ( controller->leds[color_idx].name == "Key: Backspace"    )
-                             || ( controller->leds[color_idx].name == "Key: Number Pad 0" ) )
+                            if( ( controller->leds[color_idx].name == KEY_EN_TAB        )
+                             || ( controller->leds[color_idx].name == KEY_EN_CAPS_LOCK  )
+                             || ( controller->leds[color_idx].name == KEY_EN_LEFT_SHIFT )
+                             || ( controller->leds[color_idx].name == KEY_EN_RIGHT_SHIFT)
+                             || ( controller->leds[color_idx].name == KEY_EN_BACKSPACE  )
+                             || ( controller->leds[color_idx].name == KEY_EN_NUMPAD_0   ) )
                             {
-                                led_pos[color_idx].matrix_w += atom;
+                                led_pos[color_idx].matrix_w += 1;
                             }
                         }
-                        if( ( controller->leds[color_idx].name == "Key: Number Pad Enter" )
-                         || ( controller->leds[color_idx].name == "Key: Number Pad +"     ) )
+                        if( ( controller->leds[color_idx].name == KEY_EN_NUMPAD_ENTER   )
+                         || ( controller->leds[color_idx].name == KEY_EN_NUMPAD_PLUS    ) )
                         {
                             if(led_y < map->height - 1 && map->map[map_idx + map->width] == 0xFFFFFFFF)
                             {
-                                led_pos[color_idx].matrix_h += atom;
+                                led_pos[color_idx].matrix_h += 1;
                             }
                             /* TODO: check if there isn't another widened key above */
                             else if(led_y > 0 && map->map[map_idx - map->width] == 0xFFFFFFFF)
                             {
-                                led_pos[color_idx].matrix_y -= atom;
-                                led_pos[color_idx].matrix_h += atom;
+                                led_pos[color_idx].matrix_y -= 1;
+                                led_pos[color_idx].matrix_h += 1;
                             }
                         }
-                        else if(controller->leds[color_idx].name == "Key: Space")
+                        else if(controller->leds[color_idx].name == KEY_EN_SPACE)
                         {
                             for(unsigned int map_idx2 = map_idx - 1; map_idx2 > led_y * map->width && map->map[map_idx2] == 0xFFFFFFFF; --map_idx2)
                             {
-                                led_pos[color_idx].matrix_x -= atom;
-                                led_pos[color_idx].matrix_w += atom;
+                                led_pos[color_idx].matrix_x -= 1;
+                                led_pos[color_idx].matrix_w += 1;
                             }
                             for(unsigned int map_idx2 = map_idx + 1; map_idx2 < (led_y + 1) * map->width && map->map[map_idx2] == 0xFFFFFFFF; ++map_idx2)
                             {
-                                led_pos[color_idx].matrix_w += atom;
+                                led_pos[color_idx].matrix_w += 1;
                             }
                         }
                     }
                 }
             }
 
-            current_y += map->height * atom;
+            current_y += map->height;
         }
         else
         {
-            for(unsigned int i = 0; (i + controller->zones[zone_idx].start_idx) < led_pos.size(); i++)
+            /*-----------------------------------------------------*\
+            | Calculate LED box positions for single/linear zones   |
+            \*-----------------------------------------------------*/
+            unsigned int leds_count = controller->zones[zone_idx].leds_count;
+            
+            for(unsigned int led_idx = 0; led_idx < leds_count; led_idx++)
             {
-                led_pos[i + controller->zones[zone_idx].start_idx].matrix_x = zone_pos[zone_idx].matrix_x + (i % maxCols + ledPadding) * atom;
-                led_pos[i + controller->zones[zone_idx].start_idx].matrix_y = current_y + (i / maxCols + ledPadding) * atom;
-                led_pos[i + controller->zones[zone_idx].start_idx].matrix_w = (1 - (2 * ledPadding)) * atom;
-                led_pos[i + controller->zones[zone_idx].start_idx].matrix_h = (1 - (2 * ledPadding)) * atom;
+                unsigned int led_pos_idx = controller->zones[zone_idx].start_idx + led_idx;
+
+                led_pos[led_pos_idx].matrix_x = zone_pos[zone_idx].matrix_x + ((led_idx % MAX_COLS) + PAD_LED);
+                led_pos[led_pos_idx].matrix_y = current_y + ((led_idx / MAX_COLS) + PAD_LED);
+
+                /*-----------------------------------------------------*\
+                | LED is a 1x1 square, minus padding on all sides       |
+                \*-----------------------------------------------------*/
+                led_pos[led_pos_idx].matrix_w = (1 - (2 * PAD_LED));
+                led_pos[led_pos_idx].matrix_h = (1 - (2 * PAD_LED));
             }
 
-            current_y += (controller->zones[zone_idx].leds_count / maxCols + !!(controller->zones[zone_idx].leds_count % maxCols)) * atom;
+            current_y += (leds_count / MAX_COLS) + ((leds_count % MAX_COLS) > 0);
         }
     }
 
@@ -325,6 +365,33 @@ void DeviceView::setController(RGBController * controller_ptr)
             led_labels[led_idx] = QString::number(led_idx);
         }
     }
+
+    /*-----------------------------------------------------*\
+    | Scale the zones and LEDs                              |
+    |                                                       |
+    | Atom is the width of a single square; if the whole    |
+    | thing becomes too tall, we ignore it and let the view |
+    | widget take care of it                                |
+    \*-----------------------------------------------------*/
+    float atom = 1.0 / maxWidth;
+
+    for(std::size_t zone_idx = 0; zone_idx < zone_pos.size(); zone_idx++)
+    {
+        zone_pos[zone_idx].matrix_x *= atom;
+        zone_pos[zone_idx].matrix_y *= atom;
+        zone_pos[zone_idx].matrix_w *= atom;
+        zone_pos[zone_idx].matrix_h *= atom;
+    }
+
+    for(std::size_t led_idx = 0; led_idx < led_pos.size(); led_idx++)
+    {
+        led_pos[led_idx].matrix_x *= atom;
+        led_pos[led_idx].matrix_y *= atom;
+        led_pos[led_idx].matrix_w *= atom;
+        led_pos[led_idx].matrix_h *= atom;
+    }
+
+    matrix_h *= atom;
 
     /*-----------------------------------------------------*\
     | Update cached size and offset                         |

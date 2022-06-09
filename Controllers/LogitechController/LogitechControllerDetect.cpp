@@ -96,6 +96,7 @@ using namespace std::chrono_literals;
 | Headset product IDs                                   |
 \*-----------------------------------------------------*/
 #define LOGITECH_G933_PID                           0x0A5B
+#define LOGITECH_G935_PID                           0x0A87
 #define LOGITECH_G733_PID                           0x0AB5
 
 /*-----------------------------------------------------*\
@@ -179,7 +180,8 @@ void DetectLogitechKeyboardG810(hid_device_info* info, const std::string& name)
     {
         LogitechG810Controller*     controller     = new LogitechG810Controller(dev_usage_0x0602, dev_usage_0x0604);
         RGBController_LogitechG810* rgb_controller = new RGBController_LogitechG810(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                       = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
     else
@@ -195,7 +197,8 @@ void DetectLogitechKeyboardG810(hid_device_info* info, const std::string& name)
     {
         LogitechG810Controller*     controller     = new LogitechG810Controller(dev, dev);
         RGBController_LogitechG810* rgb_controller = new RGBController_LogitechG810(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                       = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 #endif
@@ -238,7 +241,8 @@ void DetectLogitechKeyboardG910(hid_device_info* info, const std::string& name)
     {
         LogitechG910Controller*     controller     = new LogitechG910Controller(dev_usage_0x0602, dev_usage_0x0604);
         RGBController_LogitechG910* rgb_controller = new RGBController_LogitechG910(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                       = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
     else
@@ -254,7 +258,8 @@ void DetectLogitechKeyboardG910(hid_device_info* info, const std::string& name)
     {
         LogitechG910Controller*     controller     = new LogitechG910Controller(dev, dev);
         RGBController_LogitechG910* rgb_controller = new RGBController_LogitechG910(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                       = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 #endif
@@ -297,7 +302,8 @@ void DetectLogitechKeyboardG815(hid_device_info* info, const std::string& name)
     {
         LogitechG815Controller*     controller     = new LogitechG815Controller(dev_usage_0x0602, dev_usage_0x0604);
         RGBController_LogitechG815* rgb_controller = new RGBController_LogitechG815(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                       = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
     else
@@ -321,7 +327,8 @@ void DetectLogitechKeyboardG815(hid_device_info* info, const std::string& name)
     {
         LogitechG815Controller*     controller     = new LogitechG815Controller(dev, dev);
         RGBController_LogitechG815* rgb_controller = new RGBController_LogitechG815(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                       = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 #endif
@@ -336,7 +343,8 @@ void DetectLogitechKeyboardG915(hid_device_info* info, const std::string& name)
     {
         LogitechG915Controller*     controller     = new LogitechG915Controller(dev, false);
         RGBController_LogitechG915* rgb_controller = new RGBController_LogitechG915(controller, is_tkl);
-        rgb_controller->name = name;
+        rgb_controller->name                       = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 }
@@ -350,7 +358,8 @@ void DetectLogitechKeyboardG915Wired(hid_device_info* info, const std::string& n
     {
         LogitechG915Controller*     controller     = new LogitechG915Controller(dev, true);
         RGBController_LogitechG915* rgb_controller = new RGBController_LogitechG915(controller, is_tkl);
-        rgb_controller->name = name;
+        rgb_controller->name                       = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 }
@@ -392,7 +401,8 @@ void DetectLogitechKeyboardGPro(hid_device_info* info, const std::string& name)
     {
         LogitechGProKeyboardController*     controller     = new LogitechGProKeyboardController(dev_usage_0x0602, dev_usage_0x0604);
         RGBController_LogitechGProKeyboard* rgb_controller = new RGBController_LogitechGProKeyboard(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                               = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
     else
@@ -408,7 +418,8 @@ void DetectLogitechKeyboardGPro(hid_device_info* info, const std::string& name)
     {
         LogitechGProKeyboardController*     controller     = new LogitechGProKeyboardController(dev, dev);
         RGBController_LogitechGProKeyboard* rgb_controller = new RGBController_LogitechGProKeyboard(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                               = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 #endif
@@ -451,7 +462,8 @@ static void addLogitechLightsyncMouse1zone(hid_device_info* info, const std::str
         {
             LogitechGLightsyncController*          controller     = new LogitechGLightsyncController(dev_usage_1, dev_usage_2, info->path, hid_dev_index, hid_feature_index, hid_fctn_ase_id);
             RGBController_LogitechGLightsync1zone* rgb_controller = new RGBController_LogitechGLightsync1zone (controller);
-            rgb_controller->name = name;
+            rgb_controller->name                                  = name;
+
             ResourceManager::get()->RegisterRGBController(rgb_controller);
         }
         else
@@ -470,7 +482,8 @@ static void addLogitechLightsyncMouse1zone(hid_device_info* info, const std::str
         {
             LogitechGLightsyncController*          controller     = new LogitechGLightsyncController(dev, dev, info->path, hid_dev_index, hid_feature_index, hid_fctn_ase_id);
             RGBController_LogitechGLightsync1zone* rgb_controller = new RGBController_LogitechGLightsync1zone(controller);
-            rgb_controller->name = name;
+            rgb_controller->name                                  = name;
+
             ResourceManager::get()->RegisterRGBController(rgb_controller);
         }
     }
@@ -511,7 +524,8 @@ static void addLogitechLightsyncMouse2zone(hid_device_info* info, const std::str
         {
             LogitechGLightsyncController*     controller     = new LogitechGLightsyncController(dev_usage_1, dev_usage_2, info->path, hid_dev_index, hid_feature_index, hid_fctn_ase_id);
             RGBController_LogitechGLightsync* rgb_controller = new RGBController_LogitechGLightsync (controller);
-            rgb_controller->name = name;
+            rgb_controller->name                             = name;
+
             ResourceManager::get()->RegisterRGBController(rgb_controller);
         }
         else
@@ -529,7 +543,8 @@ static void addLogitechLightsyncMouse2zone(hid_device_info* info, const std::str
         {
             LogitechGLightsyncController*     controller     = new LogitechGLightsyncController(dev, dev, info->path, hid_dev_index, hid_feature_index, hid_fctn_ase_id);
             RGBController_LogitechGLightsync* rgb_controller = new RGBController_LogitechGLightsync(controller);
-            rgb_controller->name = name;
+            rgb_controller->name                             = name;
+
             ResourceManager::get()->RegisterRGBController(rgb_controller);
         }
     }
@@ -549,7 +564,8 @@ void DetectLogitechMouseG203L(hid_device_info* info, const std::string& name)
     {
         LogitechG203LController*     controller     = new LogitechG203LController(dev, info->path);
         RGBController_LogitechG203L* rgb_controller = new RGBController_LogitechG203L(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                        = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 }
@@ -583,7 +599,8 @@ void DetectLogitechG560(hid_device_info* info, const std::string& name)
         \*---------------------------------------------*/
         LogitechG560Controller*     controller     = new LogitechG560Controller(dev, info->path);
         RGBController_LogitechG560* rgb_controller = new RGBController_LogitechG560(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                       = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 }
@@ -599,7 +616,8 @@ void DetectLogitechG933(hid_device_info* info, const std::string& name)
         \*---------------------------------------------*/
         LogitechG933Controller*     controller     = new LogitechG933Controller(dev, info->path);
         RGBController_LogitechG933* rgb_controller = new RGBController_LogitechG933(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                       = name;
+
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 }
@@ -615,7 +633,8 @@ void DetectLogitechX56(hid_device_info* info, const std::string& name)
         \*---------------------------------------------*/
         LogitechX56Controller*     controller     = new LogitechX56Controller(dev, info->path);
         RGBController_LogitechX56* rgb_controller = new RGBController_LogitechX56(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                      = name;
+        
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 }
@@ -887,3 +906,4 @@ REGISTER_HID_DETECTOR_IPU("Logitech G903 Wireless Gaming Mouse (wired)",        
 REGISTER_HID_DETECTOR_IPU("Logitech G903 Hero Wireless Gaming Mouse (wired)",   DetectLogitechWired,        LOGITECH_VID, LOGITECH_G903_LIGHTSPEED_HERO_PID,            1, 0xFF00, 2);
 REGISTER_HID_DETECTOR_IPU("Logitech G Pro Wireless Gaming Mouse (wired)",       DetectLogitechWired,        LOGITECH_VID, LOGITECH_G_PRO_WIRELESS_PID,                  2, 0xFF00, 2);
 REGISTER_HID_DETECTOR_IPU("Logitech G733 Gaming Headset",                       DetectLogitechWired,        LOGITECH_VID, LOGITECH_G733_PID,                            3, 0xFF43, 514);
+REGISTER_HID_DETECTOR_IPU("Logitech G935 Gaming Headset",                       DetectLogitechWired,        LOGITECH_VID, LOGITECH_G935_PID,                            3, 0xFF43, 514);

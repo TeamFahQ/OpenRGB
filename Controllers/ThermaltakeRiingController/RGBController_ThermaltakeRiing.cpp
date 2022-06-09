@@ -9,6 +9,16 @@
 
 #include "RGBController_ThermaltakeRiing.h"
 
+/**------------------------------------------------------------------*\
+    @name Thermaltake Riing
+    @category Cooler
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :white_check_mark:
+    @detectors DetectThermaltakeRiingControllers
+    @comment
+\*-------------------------------------------------------------------*/
 
 RGBController_ThermaltakeRiing::RGBController_ThermaltakeRiing(ThermaltakeRiingController* riing_ptr)
 {
@@ -156,7 +166,7 @@ void RGBController_ThermaltakeRiing::SetupZones()
         }
 
         zones[channel_idx].matrix_map = NULL;
-        
+
         for (unsigned int led_ch_idx = 0; led_ch_idx < zones[channel_idx].leds_count; led_ch_idx++)
         {
             char led_idx_string[3];

@@ -10,17 +10,28 @@
 
 #include <iostream>
 
-RGBController_NZXTKraken::RGBController_NZXTKraken(NZXTKrakenController* nzxtkraken_ptr)
+/**------------------------------------------------------------------*\
+    @name NZXT Kraken
+    @category Cooler
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :white_check_mark:
+    @detectors DetectNZXTKrakenControllers
+    @comment
+\*-------------------------------------------------------------------*/
+
+RGBController_NZXTKraken::RGBController_NZXTKraken(NZXTKrakenController* controller_ptr)
 {
-    nzxtkraken = nzxtkraken_ptr;
+    controller  = controller_ptr;
 
     name        = "NZXT Kraken X/M";
     vendor      = "NZXT";
     type        = DEVICE_TYPE_COOLER;
     description = "NZXT Kraken X42/X52/X62/X72/M22";
-    version     = nzxtkraken->GetFirmwareVersion();
-    location    = nzxtkraken->GetLocation();
-    serial      = nzxtkraken->GetSerialString();
+    version     = controller->GetFirmwareVersion();
+    location    = controller->GetLocation();
+    serial      = controller->GetSerialString();
 
     mode Direct;
     Direct.name       = "Direct";
@@ -190,7 +201,7 @@ RGBController_NZXTKraken::RGBController_NZXTKraken(NZXTKrakenController* nzxtkra
 
 RGBController_NZXTKraken::~RGBController_NZXTKraken()
 {
-    delete nzxtkraken;
+    delete controller;
 }
 
 void RGBController_NZXTKraken::SetupZones()
@@ -295,7 +306,7 @@ void RGBController_NZXTKraken::UpdateChannel(NZXTKrakenChannel_t channel, int zo
     std::vector<std::vector<RGBColor>> update_colors = GetColors(zone, channel_mode);
     for(std::size_t idx = 0; idx < update_colors.size(); ++idx)
     {
-        nzxtkraken->UpdateEffect(
+        controller->UpdateEffect(
             channel,
             channel_mode.value,
             direction,

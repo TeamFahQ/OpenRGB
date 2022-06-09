@@ -12,6 +12,17 @@
 #include <thread>
 #include <chrono>
 
+/**------------------------------------------------------------------*\
+    @name MSI Optix
+    @category LEDStrip
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectMSIOptixControllers
+    @comment
+\*-------------------------------------------------------------------*/
+
 RGBController_MSIOptix::RGBController_MSIOptix(MSIOptixController* controller_ptr)
 {
     controller                          = controller_ptr;
@@ -377,7 +388,7 @@ void RGBController_MSIOptix::SetCustomMode()
 }
 
 void RGBController_MSIOptix::DeviceUpdateMode()
-{    
+{
     if(modes[active_mode].flags & MODE_FLAG_HAS_PER_LED_COLOR)
     {
         controller->SetMode(colors, modes[active_mode].brightness, modes[active_mode].speed, modes[active_mode].value, modes[active_mode].flags);

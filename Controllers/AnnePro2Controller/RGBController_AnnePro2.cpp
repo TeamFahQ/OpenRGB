@@ -7,6 +7,7 @@
 |  Sergey Gavrilov (DrZlo13) 06/06/2021     |
 \*-----------------------------------------*/
 
+#include "RGBControllerKeyNames.h"
 #include "RGBController_AnnePro2.h"
 
 #define NA              0xFFFFFFFF
@@ -17,7 +18,7 @@ static unsigned int matrix_map[5][14] =
     { { 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13 },
       { 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27 },
       { 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, NA },
-      { 41, NA, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, NA }, 
+      { 41, NA, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, NA },
       { 53, NA, 54, 55, NA, NA, 56, NA, NA, 57, 58, 59, 60, NA } };
 
 static const char* zone_names[] =
@@ -44,79 +45,90 @@ typedef struct
 static const led_type led_names[] =
 {
     /* Key Label                Index  */
-    { "Key: Escape",            0       },
-    { "Key: 1",                 1       },
-    { "Key: 2",                 2       },
-    { "Key: 3",                 3       },
-    { "Key: 4",                 4       },
-    { "Key: 5",                 5       },
-    { "Key: 6",                 6       },
-    { "Key: 7",                 7       },
-    { "Key: 8",                 8       },
-    { "Key: 9",                 9       },
-    { "Key: 0",                 10      },
-    { "Key: -",                 11      },
-    { "Key: =",                 12      },
-    { "Key: Backspace",         13      },
-    { "Key: Tab",               14      },
-    { "Key: Q",                 15      },
-    { "Key: W",                 16      },
-    { "Key: E",                 17      },
-    { "Key: R",                 18      },
-    { "Key: T",                 19      },
-    { "Key: Y",                 20      },
-    { "Key: U",                 21      },
-    { "Key: I",                 22      },
-    { "Key: O",                 23      },
-    { "Key: P",                 24      },
-    { "Key: [",                 25      },
-    { "Key: ]",                 26      },
-    { "Key: \\ (ANSI)",         27      },
-    { "Key: Caps Lock",         28      },
-    { "Key: A",                 29      },
-    { "Key: S",                 30      },
-    { "Key: D",                 31      },
-    { "Key: F",                 32      },
-    { "Key: G",                 33      },
-    { "Key: H",                 34      },
-    { "Key: J",                 35      },
-    { "Key: K",                 36      },
-    { "Key: L",                 37      },
-    { "Key: ;",                 38      },
-    { "Key: '",                 39      },
-    { "Key: Enter",             40      },
-    { "Key: Left Shift",        41      },
-    { "Key: Z",                 42      },
-    { "Key: X",                 43      },
-    { "Key: C",                 44      },
-    { "Key: V",                 45      },
-    { "Key: B",                 46      },
-    { "Key: N",                 47      },
-    { "Key: M",                 48      },
-    { "Key: ,",                 49      },
-    { "Key: .",                 50      },
-    { "Key: /",                 51      },
-    { "Key: Right Shift",       52      },
-    { "Key: Left Control",      53      },
-    { "Key: Left Windows",      54      },
-    { "Key: Left Alt",          55      },
-    { "Key: Space",             56      },
-    { "Key: Right Alt",         57      },
-    { "Key: Right Fn",          58      },
-    { "Key: Menu",              59      },
-    { "Key: Right Control",     60      },
+    { KEY_EN_ESCAPE,            0       },
+    { KEY_EN_1,                 1       },
+    { KEY_EN_2,                 2       },
+    { KEY_EN_3,                 3       },
+    { KEY_EN_4,                 4       },
+    { KEY_EN_5,                 5       },
+    { KEY_EN_6,                 6       },
+    { KEY_EN_7,                 7       },
+    { KEY_EN_8,                 8       },
+    { KEY_EN_9,                 9       },
+    { KEY_EN_0,                 10      },
+    { KEY_EN_MINUS,             11      },
+    { KEY_EN_EQUALS,            12      },
+    { KEY_EN_BACKSPACE,         13      },
+    { KEY_EN_TAB,               14      },
+    { KEY_EN_Q,                 15      },
+    { KEY_EN_W,                 16      },
+    { KEY_EN_E,                 17      },
+    { KEY_EN_R,                 18      },
+    { KEY_EN_T,                 19      },
+    { KEY_EN_Y,                 20      },
+    { KEY_EN_U,                 21      },
+    { KEY_EN_I,                 22      },
+    { KEY_EN_O,                 23      },
+    { KEY_EN_P,                 24      },
+    { KEY_EN_LEFT_BRACKET,      25      },
+    { KEY_EN_RIGHT_BRACKET,     26      },
+    { KEY_EN_ANSI_BACK_SLASH,   27      },
+    { KEY_EN_CAPS_LOCK,         28      },
+    { KEY_EN_A,                 29      },
+    { KEY_EN_S,                 30      },
+    { KEY_EN_D,                 31      },
+    { KEY_EN_F,                 32      },
+    { KEY_EN_G,                 33      },
+    { KEY_EN_H,                 34      },
+    { KEY_EN_J,                 35      },
+    { KEY_EN_K,                 36      },
+    { KEY_EN_L,                 37      },
+    { KEY_EN_SEMICOLON,         38      },
+    { KEY_EN_QUOTE,             39      },
+    { KEY_EN_ANSI_ENTER,        40      },
+    { KEY_EN_LEFT_SHIFT,        41      },
+    { KEY_EN_Z,                 42      },
+    { KEY_EN_X,                 43      },
+    { KEY_EN_C,                 44      },
+    { KEY_EN_V,                 45      },
+    { KEY_EN_B,                 46      },
+    { KEY_EN_N,                 47      },
+    { KEY_EN_M,                 48      },
+    { KEY_EN_COMMA,             49      },
+    { KEY_EN_PERIOD,            50      },
+    { KEY_EN_FORWARD_SLASH,     51      },
+    { KEY_EN_RIGHT_SHIFT,       52      },
+    { KEY_EN_LEFT_CONTROL,      53      },
+    { KEY_EN_LEFT_WINDOWS,      54      },
+    { KEY_EN_LEFT_ALT,          55      },
+    { KEY_EN_SPACE,             56      },
+    { KEY_EN_RIGHT_ALT,         57      },
+    { KEY_EN_RIGHT_FUNCTION,    58      },
+    { KEY_EN_MENU,              59      },
+    { KEY_EN_RIGHT_CONTROL,     60      },
 };
 
-RGBController_AnnePro2::RGBController_AnnePro2(AnnePro2Controller* annepro2_ptr) 
+/**------------------------------------------------------------------*\
+    @name Anne Pro 2
+    @category Keyboard
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectAnnePro2Controllers
+    @comment
+\*-------------------------------------------------------------------*/
+
+RGBController_AnnePro2::RGBController_AnnePro2(AnnePro2Controller* controller_ptr)
 {
-    annepro2    = annepro2_ptr;
+    controller  = controller_ptr;
 
     name        = "Anne Pro 2";
     vendor      = "Obinslab";
     type        = DEVICE_TYPE_KEYBOARD;
     description = "Obinslab Anne Pro 2 Device";
-    location    = annepro2->GetDeviceLocation();
-    serial      = annepro2->GetSerialString();
+    location    = controller->GetDeviceLocation();
+    serial      = controller->GetSerialString();
 
     mode Direct;
     Direct.name       = "Direct";
@@ -128,12 +140,12 @@ RGBController_AnnePro2::RGBController_AnnePro2(AnnePro2Controller* annepro2_ptr)
     SetupZones();
 }
 
-RGBController_AnnePro2::~RGBController_AnnePro2() 
+RGBController_AnnePro2::~RGBController_AnnePro2()
 {
-    delete annepro2;
+    delete controller;
 }
 
-void RGBController_AnnePro2::SetupZones() 
+void RGBController_AnnePro2::SetupZones()
 {
     /*---------------------------------------------------------*\
     | Set up zones                                              |
@@ -176,14 +188,14 @@ void RGBController_AnnePro2::SetupZones()
     SetupColors();
 }
 
-void RGBController_AnnePro2::ResizeZone(int /*zone*/, int /*new_size*/) 
+void RGBController_AnnePro2::ResizeZone(int /*zone*/, int /*new_size*/)
 {
     /*---------------------------------------------------------*\
     | This device does not support resizing zones               |
     \*---------------------------------------------------------*/
 }
 
-void RGBController_AnnePro2::DeviceUpdateLEDs() 
+void RGBController_AnnePro2::DeviceUpdateLEDs()
 {
     const unsigned char frame_buf_length = LED_REAL_COUNT * 3;
     unsigned char frame_buf[frame_buf_length];
@@ -211,25 +223,25 @@ void RGBController_AnnePro2::DeviceUpdateLEDs()
         led_real_idx++;
     }
 
-    annepro2->SendDirect(frame_buf_length, frame_buf);
+    controller->SendDirect(frame_buf_length, frame_buf);
 }
 
-void RGBController_AnnePro2::UpdateZoneLEDs(int /*zone*/) 
+void RGBController_AnnePro2::UpdateZoneLEDs(int /*zone*/)
 {
     DeviceUpdateLEDs();
 }
 
-void RGBController_AnnePro2::UpdateSingleLED(int /*led*/) 
+void RGBController_AnnePro2::UpdateSingleLED(int /*led*/)
 {
     DeviceUpdateLEDs();
 }
 
-void RGBController_AnnePro2::SetCustomMode() 
+void RGBController_AnnePro2::SetCustomMode()
 {
     active_mode = 0;
 }
 
-void RGBController_AnnePro2::DeviceUpdateMode() 
+void RGBController_AnnePro2::DeviceUpdateMode()
 {
-    
+
 }

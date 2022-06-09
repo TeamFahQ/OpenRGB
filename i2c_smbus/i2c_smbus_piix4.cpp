@@ -9,9 +9,37 @@
 \*-----------------------------------------*/
 
 #include "i2c_smbus_piix4.h"
-#include <Windows.h>
-#include "inpout32.h"
+#include "OlsApi.h"
 #include "LogManager.h"
+#include "ResourceManager.h"
+
+i2c_smbus_piix4::i2c_smbus_piix4()
+{
+    json drivers_settings = ResourceManager::get()->GetSettingsManager()->GetSettings("Drivers");
+    bool amd_smbus_reduce_cpu = false;
+
+    if(drivers_settings.contains("amd_smbus_reduce_cpu"))
+    {
+        amd_smbus_reduce_cpu = drivers_settings["amd_smbus_reduce_cpu"].get<bool>();
+    }
+
+    if(amd_smbus_reduce_cpu)
+    {
+        delay_timer = CreateWaitableTimerExW(NULL, NULL, CREATE_WAITABLE_TIMER_MANUAL_RESET | CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
+        if(!delay_timer) // high resolution timer not supported
+        {
+            delay_timer = CreateWaitableTimer(NULL, TRUE, NULL); // create regular timer instead
+        }
+    }
+}
+
+i2c_smbus_piix4::~i2c_smbus_piix4()
+{
+    if(delay_timer)
+    {
+        CloseHandle(delay_timer);
+    }
+}
 
 //Logic adapted from piix4_transaction() in i2c-piix4.c
 int i2c_smbus_piix4::piix4_transaction()
@@ -21,13 +49,13 @@ int i2c_smbus_piix4::piix4_transaction()
     int timeout = 0;
 
     /* Make sure the SMBus host is ready to start transmitting */
-    temp = Inp32(SMBHSTSTS);
+    temp = ReadIoPortByte(SMBHSTSTS);
 
     if (temp != 0x00)
     {
-        Out32(SMBHSTSTS, temp);
+        WriteIoPortByte(SMBHSTSTS, temp);
 
-        temp = Inp32(SMBHSTSTS);
+        temp = ReadIoPortByte(SMBHSTSTS);
 
         if (temp != 0x00)
         {
@@ -36,16 +64,34 @@ int i2c_smbus_piix4::piix4_transaction()
     }
 
     /* start the transaction by setting bit 6 */
-    temp = Inp32(SMBHSTCNT);
-    Out32(SMBHSTCNT, temp | 0x040);
+    temp = ReadIoPortByte(SMBHSTCNT);
+    WriteIoPortByte(SMBHSTCNT, temp | 0x040);
 
     /* We will always wait for a fraction of a second! (See PIIX4 docs errata) */
     temp = 0;
-    while ((++timeout < MAX_TIMEOUT) && temp <= 1)
+    if(delay_timer)
     {
-        temp = Inp32(SMBHSTSTS);
-    }
+        LARGE_INTEGER retry_delay;
+        retry_delay.QuadPart = -2500;
 
+        SetWaitableTimer(delay_timer, &retry_delay, 0, NULL, NULL, FALSE);
+        WaitForSingleObject(delay_timer, INFINITE);
+
+
+        while ((++timeout < MAX_TIMEOUT) && temp <= 1)
+        {
+            temp = ReadIoPortByte(SMBHSTSTS);
+            SetWaitableTimer(delay_timer, &retry_delay, 0, NULL, NULL, FALSE);
+            WaitForSingleObject(delay_timer, INFINITE);
+        }
+    }
+    else
+    {
+        while ((++timeout < MAX_TIMEOUT) && temp <= 1)
+        {
+            temp = ReadIoPortByte(SMBHSTSTS);
+        }
+    }
     /* If the SMBus is still busy, we give up */
     if (timeout == MAX_TIMEOUT)
     {
@@ -67,10 +113,10 @@ int i2c_smbus_piix4::piix4_transaction()
         result = -ENXIO;
     }
 
-    temp = Inp32(SMBHSTSTS);
+    temp = ReadIoPortByte(SMBHSTSTS);
     if (temp != 0x00)
     {
-        Out32(SMBHSTSTS, temp);
+        WriteIoPortByte(SMBHSTSTS, temp);
     }
 
     return result;
@@ -84,39 +130,39 @@ s32 i2c_smbus_piix4::piix4_access(u16 addr, char read_write, u8 command, int siz
 	switch (size)
 	{
 	case I2C_SMBUS_QUICK:
-		Out32(SMBHSTADD, (addr << 1) | read_write);
+        WriteIoPortByte(SMBHSTADD, (addr << 1) | read_write);
 		size = PIIX4_QUICK;
 		break;
     case I2C_SMBUS_BYTE:
-        Out32(SMBHSTADD, (addr << 1) | read_write);
+        WriteIoPortByte(SMBHSTADD, (addr << 1) | read_write);
         if (read_write == I2C_SMBUS_WRITE)
         {
-            Out32(SMBHSTCMD, command);
+            WriteIoPortByte(SMBHSTCMD, command);
         }
         size = PIIX4_BYTE;
         break;
 	case I2C_SMBUS_BYTE_DATA:
-		Out32(SMBHSTADD, (addr << 1) | read_write);
-		Out32(SMBHSTCMD, command);
+        WriteIoPortByte(SMBHSTADD, (addr << 1) | read_write);
+        WriteIoPortByte(SMBHSTCMD, command);
 		if (read_write == I2C_SMBUS_WRITE)
 		{
-			Out32(SMBHSTDAT0, data->byte);
+            WriteIoPortByte(SMBHSTDAT0, data->byte);
 		}
 		size = PIIX4_BYTE_DATA;
 		break;
 	case I2C_SMBUS_WORD_DATA:
-		Out32(SMBHSTADD, (addr << 1) | read_write);
-		Out32(SMBHSTCMD, command);
+        WriteIoPortByte(SMBHSTADD, (addr << 1) | read_write);
+        WriteIoPortByte(SMBHSTCMD, command);
 		if (read_write == I2C_SMBUS_WRITE)
 		{
-			Out32(SMBHSTDAT0, data->word & 0xFF);
-			Out32(SMBHSTDAT1, (data->word & 0xFF00) >> 8);
+            WriteIoPortByte(SMBHSTDAT0, data->word & 0xFF);
+            WriteIoPortByte(SMBHSTDAT1, (data->word & 0xFF00) >> 8);
 		}
 		size = PIIX4_WORD_DATA;
 		break;
 	case I2C_SMBUS_BLOCK_DATA:
-		Out32(SMBHSTADD, (addr << 1) | read_write);
-		Out32(SMBHSTCMD, command);
+        WriteIoPortByte(SMBHSTADD, (addr << 1) | read_write);
+        WriteIoPortByte(SMBHSTCMD, command);
 		if (read_write == I2C_SMBUS_WRITE)
 		{
             len = data->block[0];
@@ -124,11 +170,11 @@ s32 i2c_smbus_piix4::piix4_access(u16 addr, char read_write, u8 command, int siz
 			{
 				return -EINVAL;
 			}
-			Out32(SMBHSTDAT0, len);
-			Inp32(SMBHSTCNT);
+            WriteIoPortByte(SMBHSTDAT0, len);
+            ReadIoPortByte(SMBHSTCNT);
 			for (i = 1; i <= len; i++)
 			{
-				Out32(SMBBLKDAT, data->block[i]);
+                WriteIoPortByte(SMBBLKDAT, data->block[i]);
 			}
 		}
 		size = PIIX4_BLOCK_DATA;
@@ -137,35 +183,35 @@ s32 i2c_smbus_piix4::piix4_access(u16 addr, char read_write, u8 command, int siz
 		return -EOPNOTSUPP;
 	}
 
-	Out32(SMBHSTCNT, (size & 0x1C));
+    WriteIoPortByte(SMBHSTCNT, (size & 0x1C));
 
     status = piix4_transaction();
 
     if (status)
         return status;
 
-	if ((read_write == I2C_SMBUS_WRITE) || (size == PIIX4_QUICK))
+    if ((read_write == I2C_SMBUS_WRITE) || (size == PIIX4_QUICK))
 		return 0;
 
 	switch (size)
 	{
 	case PIIX4_BYTE:
 	case PIIX4_BYTE_DATA:
-		data->byte = (u8)Inp32(SMBHSTDAT0);
+        data->byte = (u8)ReadIoPortByte(SMBHSTDAT0);
 		break;
 	case PIIX4_WORD_DATA:
-		data->word = Inp32(SMBHSTDAT0) + (Inp32(SMBHSTDAT1) << 8);
+        data->word = ReadIoPortByte(SMBHSTDAT0) + (ReadIoPortByte(SMBHSTDAT1) << 8);
 		break;
 	case PIIX4_BLOCK_DATA:
-		data->block[0] = (u8)Inp32(SMBHSTDAT0);
+        data->block[0] = (u8)ReadIoPortByte(SMBHSTDAT0);
 		if (data->block[0] == 0 || data->block[0] > I2C_SMBUS_BLOCK_MAX)
 		{
 			return -EPROTO;
 		}
-		Inp32(SMBHSTCNT);
+        ReadIoPortByte(SMBHSTCNT);
 		for (i = 1; i <= data->block[0]; i++)
 		{
-			data->block[i] = (u8)Inp32(SMBBLKDAT);
+            data->block[i] = (u8)ReadIoPortByte(SMBBLKDAT);
 		}
 		break;
 	}
@@ -188,9 +234,9 @@ s32 i2c_smbus_piix4::i2c_xfer(u8 addr, char read_write, int* size, u8* data)
 
 bool i2c_smbus_piix4_detect()
 {
-    if(!IsInpOutDriverOpen())
+    if(!InitializeOls() || GetDllStatus())
     {
-        LOG_INFO("inpout32 is not loaded, piix4 I2C bus detection aborted");
+        LOG_INFO("WinRing0 is not loaded, piix4 I2C bus detection aborted");
         return(false);
     }
 

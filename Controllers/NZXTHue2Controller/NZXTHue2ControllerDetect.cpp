@@ -19,11 +19,13 @@
 static void spawn_hue(hid_device_info* info, const std::string& name, int rgb_channels, int fan_channels)
 {
     hid_device* dev = hid_open_path(info->path);
+
     if(dev)
     {
-        NZXTHue2Controller* controller = new NZXTHue2Controller(dev, rgb_channels, fan_channels, info->path);
+        NZXTHue2Controller*     controller     = new NZXTHue2Controller(dev, rgb_channels, fan_channels, info->path);
         RGBController_NZXTHue2* rgb_controller = new RGBController_NZXTHue2(controller);
-        rgb_controller->name = name;
+        rgb_controller->name                   = name;
+        
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 }
@@ -50,7 +52,7 @@ void DetectNZXTSmartDeviceV2(hid_device_info* info, const std::string& name)
 
 void DetectNZXTKrakenX3(hid_device_info* info, const std::string& name)
 {
-    spawn_hue(info, name, 4, 0);
+    spawn_hue(info, name, 3, 0);
 }
 
 void DetectNZXTFanController(hid_device_info* info, const std::string& name)

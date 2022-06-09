@@ -9,13 +9,24 @@
 
 #include "RGBController_SteelSeriesQCKMat.h"
 
+/**------------------------------------------------------------------*\
+    @name Steel Series QCK Mat
+    @category Mousemat
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectSteelSeriesMousemat
+    @comment
+\*-------------------------------------------------------------------*/
+
 RGBController_SteelSeriesQCKMat::RGBController_SteelSeriesQCKMat(SteelSeriesQCKMatController* qck_ptr)
 {
     qck         = qck_ptr;
-    
+
     name        = qck->GetDeviceName();
     vendor      = "SteelSeries";
-    type        = DEVICE_TYPE_MOUSEMAT; 
+    type        = DEVICE_TYPE_MOUSEMAT;
     description = "SteelSeries QCK Mat Device";
     location    = qck->GetDeviceLocation();
     serial      = qck->GetSerialString();

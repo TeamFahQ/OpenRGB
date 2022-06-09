@@ -8,6 +8,17 @@
 
 #include "RGBController_PhilipsHue.h"
 
+/**------------------------------------------------------------------*\
+    @name Philips Hue
+    @category Light
+    @type Network
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectPhilipsHueControllers
+    @comment
+\*-------------------------------------------------------------------*/
+
 RGBController_PhilipsHue::RGBController_PhilipsHue(PhilipsHueController* light_ptr)
 {
     light = light_ptr;

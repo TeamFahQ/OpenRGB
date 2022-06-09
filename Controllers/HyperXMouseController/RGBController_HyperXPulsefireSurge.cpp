@@ -11,16 +11,27 @@
 
 using namespace std::chrono_literals;
 
-RGBController_HyperXPulsefireSurge::RGBController_HyperXPulsefireSurge(HyperXPulsefireSurgeController* hyperx_ptr)
+/**------------------------------------------------------------------*\
+    @name HyperX Pulsefire Surge
+    @category Mouse
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectHyperXPulsefireSurgeControllers
+    @comment
+\*-------------------------------------------------------------------*/
+
+RGBController_HyperXPulsefireSurge::RGBController_HyperXPulsefireSurge(HyperXPulsefireSurgeController* controller_ptr)
 {
-    hyperx = hyperx_ptr;
+    controller  = controller_ptr;
 
     name        = "HyperX Pulsefire Surge Device";
     vendor      = "HyperX";
     type        = DEVICE_TYPE_MOUSE;
     description = "HyperX Pulsefire Surge Device";
-    location    = hyperx->GetDeviceLocation();
-    serial      = hyperx->GetSerialString();
+    location    = controller->GetDeviceLocation();
+    serial      = controller->GetSerialString();
 
     mode Direct;
     Direct.name = "Direct";
@@ -47,7 +58,7 @@ RGBController_HyperXPulsefireSurge::~RGBController_HyperXPulsefireSurge()
     keepalive_thread->join();
     delete keepalive_thread;
 
-    delete hyperx;
+    delete controller;
 }
 
 void RGBController_HyperXPulsefireSurge::SetupZones()
@@ -75,14 +86,14 @@ void RGBController_HyperXPulsefireSurge::SetupZones()
         for(unsigned int led_idx = 0; led_idx < zones[zone_idx].leds_count; led_idx++)
         {
             led new_led;
-            
+
             new_led.name = zones[zone_idx].name;
 
             if(zones[zone_idx].leds_count > 1)
             {
                 new_led.name.append(" LED ");
                 new_led.name.append(std::to_string(led_idx + 1));
-            }  
+            }
 
             leds.push_back(new_led);
         }
@@ -104,7 +115,7 @@ void RGBController_HyperXPulsefireSurge::DeviceUpdateLEDs()
 
     if(active_mode == 0)
     {
-        hyperx->SendDirect(&colors[0]);
+        controller->SendDirect(&colors[0]);
     }
     else
     {

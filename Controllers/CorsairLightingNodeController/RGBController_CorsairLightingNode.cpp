@@ -9,18 +9,28 @@
 
 #include "RGBController_CorsairLightingNode.h"
 
+/**------------------------------------------------------------------*\
+    @name Corsair Lighting Node
+    @category LEDStrip
+    @type USB
+    @save :warning:
+    @direct :white_check_mark:
+    @effects :white_check_mark:
+    @detectors DetectCorsairLightingNodeControllers
+    @comment
+\*-------------------------------------------------------------------*/
 
-RGBController_CorsairLightingNode::RGBController_CorsairLightingNode(CorsairLightingNodeController* corsair_ptr)
+RGBController_CorsairLightingNode::RGBController_CorsairLightingNode(CorsairLightingNodeController* controller_ptr)
 {
-    corsair = corsair_ptr;
+    controller  = controller_ptr;
 
     name        = "Corsair Lighting Node Device";
     vendor      = "Corsair";
     description = "Corsair Lighting Node Device";
     type        = DEVICE_TYPE_LEDSTRIP;
-    version     = corsair->GetFirmwareString();
-    location    = corsair->GetLocationString();
-    serial      = corsair->GetSerialString();
+    version     = controller->GetFirmwareString();
+    location    = controller->GetLocationString();
+    serial      = controller->GetSerialString();
 
     mode Direct;
     Direct.name           = "Direct";
@@ -202,7 +212,7 @@ RGBController_CorsairLightingNode::RGBController_CorsairLightingNode(CorsairLigh
 
 RGBController_CorsairLightingNode::~RGBController_CorsairLightingNode()
 {
-    delete corsair;
+    delete controller;
 }
 
 void RGBController_CorsairLightingNode::SetupZones()
@@ -241,8 +251,8 @@ void RGBController_CorsairLightingNode::SetupZones()
         | maximum number of LEDs the Corsair Commander Pro  |
         | can support is 200.                               |
         \*-------------------------------------------------*/
-        zones[channel_idx].leds_min   = 0;
-        zones[channel_idx].leds_max   = 204;
+        zones[channel_idx].leds_min = 0;
+        zones[channel_idx].leds_max = 204;
 
         if(first_run)
         {
@@ -250,7 +260,7 @@ void RGBController_CorsairLightingNode::SetupZones()
         }
 
         zones[channel_idx].matrix_map = NULL;
-        
+
         for (unsigned int led_ch_idx = 0; led_ch_idx < zones[channel_idx].leds_count; led_ch_idx++)
         {
             char led_idx_string[4];
@@ -289,20 +299,20 @@ void RGBController_CorsairLightingNode::DeviceUpdateLEDs()
 {
     for(std::size_t zone_idx = 0; zone_idx < zones.size(); zone_idx++)
     {
-        corsair->SetChannelLEDs(zone_idx, zones[zone_idx].colors, zones[zone_idx].leds_count);
+        controller->SetChannelLEDs(zone_idx, zones[zone_idx].colors, zones[zone_idx].leds_count);
     }
 }
 
 void RGBController_CorsairLightingNode::UpdateZoneLEDs(int zone)
 {
-    corsair->SetChannelLEDs(zone, zones[zone].colors, zones[zone].leds_count);
+    controller->SetChannelLEDs(zone, zones[zone].colors, zones[zone].leds_count);
 }
 
 void RGBController_CorsairLightingNode::UpdateSingleLED(int led)
 {
     unsigned int channel = leds_channel[led];
 
-    corsair->SetChannelLEDs(channel, zones[channel].colors, zones[channel].leds_count);
+    controller->SetChannelLEDs(channel, zones[channel].colors, zones[channel].leds_count);
 }
 
 void RGBController_CorsairLightingNode::SetCustomMode()
@@ -340,30 +350,30 @@ void RGBController_CorsairLightingNode::DeviceUpdateMode()
                 }
             }
 
-            corsair->SetChannelEffect(channel,
-                                      zones[channel].leds_count,
-                                      modes[active_mode].value,
-                                      modes[active_mode].speed,
-                                      direction,
-                                      random,
-                                      mode_colors[0],
-                                      mode_colors[1],
-                                      mode_colors[2],
-                                      mode_colors[3],
-                                      mode_colors[4],
-                                      mode_colors[5],
-                                      mode_colors[6],
-                                      mode_colors[7],
-                                      mode_colors[8]);
+            controller->SetChannelEffect(channel,
+                                         zones[channel].leds_count,
+                                         modes[active_mode].value,
+                                         modes[active_mode].speed,
+                                         direction,
+                                         random,
+                                         mode_colors[0],
+                                         mode_colors[1],
+                                         mode_colors[2],
+                                         mode_colors[3],
+                                         mode_colors[4],
+                                         mode_colors[5],
+                                         mode_colors[6],
+                                         mode_colors[7],
+                                         mode_colors[8]);
         }
     }
 
     if(modes[active_mode].flags & MODE_FLAG_HAS_BRIGHTNESS)
     {
-        corsair->SetBrightness(modes[active_mode].brightness);
+        controller->SetBrightness(modes[active_mode].brightness);
     }
     else
     {
-        corsair->SetBrightness(100);
+        controller->SetBrightness(100);
     }
 }

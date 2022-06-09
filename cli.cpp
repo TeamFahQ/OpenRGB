@@ -5,6 +5,7 @@
 #include <iostream>
 #include "OpenRGB.h"
 #include "AutoStart.h"
+#include "filesystem.h"
 #include "ProfileManager.h"
 #include "ResourceManager.h"
 #include "RGBController.h"
@@ -269,14 +270,17 @@ bool ParseColors(std::string colors_string, DeviceOptions *options)
         /* swy: (B) no luck, try interpreting it as an hexadecimal number instead */
         if (!parsed)
         {
-            const char *colorptr = color.c_str(); char *endptr = NULL;
+            if (color.length() == 6)
+            {
+                const char *colorptr = color.c_str(); char *endptr = NULL;
 
-            rgb = strtoul(colorptr, &endptr, 16);
+                rgb = strtoul(colorptr, &endptr, 16);
 
-            /* swy: check that strtoul() has advanced the read pointer until the end (NULL terminator);
-                    that means it has read the whole thing */
-            if (colorptr != endptr && endptr && *endptr == '\0')
-                parsed = true;
+                /* swy: check that strtoul() has advanced the read pointer until the end (NULL terminator);
+                        that means it has read the whole thing */
+                if (colorptr != endptr && endptr && *endptr == '\0')
+                    parsed = true;
+            }
         }
 
         /* swy: we got it, save the 32-bit integer as a tuple of three RGB bytes */
@@ -1022,9 +1026,20 @@ unsigned int cli_pre_detection(int argc, char *argv[])
         \*---------------------------------------------------------*/
         else if(option == "--config")
         {
-            ResourceManager::get()->SetConfigurationDirectory(argument);
-            cfg_args++;
+            cfg_args+= 2;
             arg_index++;
+
+            if(filesystem::is_directory(argument))
+            {
+                ResourceManager::get()->SetConfigurationDirectory(argument);
+                LOG_INFO("Setting config directory to %s",argument.c_str());
+            }
+            else
+            {
+                LOG_ERROR("'%s' is not a valid directory",argument.c_str());
+                print_help = true;
+                break;
+            }
         }
 
         /*---------------------------------------------------------*\

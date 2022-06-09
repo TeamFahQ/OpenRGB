@@ -10,11 +10,13 @@
 #include "OpenRGBSupportedDevicesPage.h"
 #include "OpenRGBSettingsPage.h"
 #include "OpenRGBE131SettingsPage/OpenRGBE131SettingsPage.h"
+#include "OpenRGBLIFXSettingsPage/OpenRGBLIFXSettingsPage.h"
 #include "OpenRGBPhilipsHueSettingsPage/OpenRGBPhilipsHueSettingsPage.h"
 #include "OpenRGBPhilipsWizSettingsPage/OpenRGBPhilipsWizSettingsPage.h"
 #include "OpenRGBQMKORGBSettingsPage/OpenRGBQMKORGBSettingsPage.h"
 #include "OpenRGBSerialSettingsPage/OpenRGBSerialSettingsPage.h"
 #include "OpenRGBYeelightSettingsPage/OpenRGBYeelightSettingsPage.h"
+#include "OpenRGBNanoleafSettingsPage/OpenRGBNanoleafSettingsPage.h"
 #include "PluginManager.h"
 
 #include <vector>
@@ -54,12 +56,14 @@ public:
 
     void setMode(unsigned char mode_val);
 
-    static bool IsDarkTheme();
     static bool IsMinimizeOnClose();
 
     void SetDialogMessage(PLogMessage msg);
 
     bool DontShowAgain;
+
+public slots:
+    void SetTrayIcon(bool tray_icon);
 
 private:
     /*-------------------------------------*\
@@ -72,11 +76,13 @@ private:
     OpenRGBSupportedDevicesPage *SupportedPage;
     OpenRGBSettingsPage *SettingsPage;
     OpenRGBE131SettingsPage *E131SettingsPage;
+    OpenRGBLIFXSettingsPage *LIFXSettingsPage;
     OpenRGBPhilipsHueSettingsPage *PhilipsHueSettingsPage;
     OpenRGBPhilipsWizSettingsPage *PhilipsWizSettingsPage;
     OpenRGBQMKORGBSettingsPage *QMKORGBSettingsPage;
     OpenRGBSerialSettingsPage *SerialSettingsPage;
     OpenRGBYeelightSettingsPage *YeelightSettingsPage;
+    OpenRGBNanoleafSettingsPage *NanoleafSettingsPage;
 
     bool ShowI2CTools = false;
 
@@ -96,11 +102,13 @@ private:
     void AddSupportedDevicesPage();
     void AddSettingsPage();
     void AddE131SettingsPage();
+    void AddLIFXSettingsPage();
     void AddPhilipsHueSettingsPage();
     void AddPhilipsWizSettingsPage();
     void AddQMKORGBSettingsPage();
     void AddSerialSettingsPage();
     void AddYeelightSettingsPage();
+    void AddNanoleafSettingsPage();
     void AddPluginsPage();
     void AddConsolePage();
 

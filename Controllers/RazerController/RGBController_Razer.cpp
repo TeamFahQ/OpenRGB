@@ -1,6 +1,17 @@
 #include "RGBController_Razer.h"
 #include "RazerDevices.h"
 
+/**------------------------------------------------------------------*\
+    @name Razer
+    @category Keyboard,Mouse,Mousemat,HeadsetStand,Case
+    @type USB
+    @save :warning:
+    @direct :white_check_mark:
+    @effects :white_check_mark:
+    @detectors DetectRazerControllers
+    @comment
+\*-------------------------------------------------------------------*/
+
 RGBController_Razer::RGBController_Razer(RazerController* controller_ptr)
 {
     controller      = controller_ptr;
@@ -43,18 +54,21 @@ RGBController_Razer::RGBController_Razer(RazerController* controller_ptr)
     Static.brightness     = 255;
     modes.push_back(Static);
 
-    mode Breathing;
-    Breathing.name           = "Breathing";
-    Breathing.value          = RAZER_MODE_BREATHING;
-    Breathing.flags          = MODE_FLAG_HAS_MODE_SPECIFIC_COLOR | MODE_FLAG_HAS_RANDOM_COLOR | MODE_FLAG_HAS_BRIGHTNESS;
-    Breathing.color_mode     = MODE_COLORS_MODE_SPECIFIC;
-    Breathing.colors_min     = 1;
-    Breathing.colors_max     = 2;
-    Breathing.colors.resize(1);
-    Breathing.brightness_min = 0;
-    Breathing.brightness_max = 255;
-    Breathing.brightness     = 255;
-    modes.push_back(Breathing);
+    if(controller->SupportsBreathing())
+    {
+        mode Breathing;
+        Breathing.name           = "Breathing";
+        Breathing.value          = RAZER_MODE_BREATHING;
+        Breathing.flags          = MODE_FLAG_HAS_MODE_SPECIFIC_COLOR | MODE_FLAG_HAS_RANDOM_COLOR | MODE_FLAG_HAS_BRIGHTNESS;
+        Breathing.color_mode     = MODE_COLORS_MODE_SPECIFIC;
+        Breathing.colors_min     = 1;
+        Breathing.colors_max     = 2;
+        Breathing.colors.resize(1);
+        Breathing.brightness_min = 0;
+        Breathing.brightness_max = 255;
+        Breathing.brightness     = 255;
+        modes.push_back(Breathing);
+    }
 
     mode SpectrumCycle;
     SpectrumCycle.name           = "Spectrum Cycle";

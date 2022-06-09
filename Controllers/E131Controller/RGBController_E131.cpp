@@ -13,6 +13,17 @@
 
 using namespace std::chrono_literals;
 
+/**------------------------------------------------------------------*\
+    @name E1.31 Devices
+    @category LEDStrip
+    @type E1.31
+    @save :x:
+    @direct :white_check_mark:
+    @effects :x:
+    @detectors DetectE131Controllers
+    @comment
+\*-------------------------------------------------------------------*/
+
 RGBController_E131::RGBController_E131(std::vector<E131Device> device_list)
 {
     bool multicast = false;
@@ -33,12 +44,16 @@ RGBController_E131::RGBController_E131(std::vector<E131Device> device_list)
     {
         name    = devices[0].name;
     }
+    else if(devices[0].ip != "")
+    {
+        name += " (" + devices[0].ip + ")";
+    }
 
     /*-----------------------------------------*\
     | Append the destination address to the     |
     | location field                            |
     \*-----------------------------------------*/
-    if((devices.size() == 1) && (devices[0].ip != ""))
+    if(devices[0].ip != "")
     {
         location += "Unicast " + devices[0].ip + ", ";
     }
@@ -100,7 +115,7 @@ RGBController_E131::RGBController_E131(std::vector<E131Device> device_list)
     for(unsigned int univ_list_idx = 0; univ_list_idx < universe_list.size(); univ_list_idx++)
     {
         location += std::to_string(universe_list[univ_list_idx]);
-        
+
         if(univ_list_idx < (universe_list.size() - 1))
         {
             location += ", ";
@@ -121,7 +136,7 @@ RGBController_E131::RGBController_E131(std::vector<E131Device> device_list)
     | Create E1.31 socket                       |
     \*-----------------------------------------*/
     sockfd = e131_socket();
-    
+
     keepalive_delay = 0ms;
 
     SetupZones();
@@ -277,7 +292,7 @@ RGBController_E131::RGBController_E131(std::vector<E131Device> device_list)
             }
             zones[device_idx].matrix_map = new_map;
         }
-	}
+    }
 
     if(keepalive_delay.count() > 0)
     {
@@ -366,7 +381,7 @@ void RGBController_E131::DeviceUpdateLEDs()
     int color_idx = 0;
 
     last_update_time = std::chrono::steady_clock::now();
-    
+
     for(std::size_t device_idx = 0; device_idx < devices.size(); device_idx++)
     {
         float universe_size = devices[device_idx].universe_size;
@@ -427,12 +442,12 @@ void RGBController_E131::DeviceUpdateLEDs()
 
 void RGBController_E131::UpdateZoneLEDs(int /*zone*/)
 {
-	DeviceUpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_E131::UpdateSingleLED(int /*led*/)
 {
-	DeviceUpdateLEDs();
+    DeviceUpdateLEDs();
 }
 
 void RGBController_E131::SetCustomMode()

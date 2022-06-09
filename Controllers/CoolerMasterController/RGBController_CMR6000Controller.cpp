@@ -8,18 +8,29 @@
 
 #include "RGBController_CMR6000Controller.h"
 
-RGBController_CMR6000Controller::RGBController_CMR6000Controller(CMR6000Controller* cmmp_ptr)
+/**------------------------------------------------------------------*\
+    @name AMD Radeon 6000
+    @category GPU
+    @type USB
+    @save :x:
+    @direct :white_check_mark:
+    @effects :white_check_mark:
+    @detectors DetectCoolerMasterGPU
+    @comment Similar to the Wraith Spire before it the AMD branded Radeon
+        GPUs have an RGB controller provided by Coolermaster.
+\*-------------------------------------------------------------------*/
+
+RGBController_CMR6000Controller::RGBController_CMR6000Controller(CMR6000Controller* controller_ptr)
 {
-    cmr6000             = cmmp_ptr;
-    unsigned char speed = cmr6000->GetLedSpeed();
+    controller          = controller_ptr;
+    unsigned char speed = controller->GetLedSpeed();
 
     name                = "AMD RX 6xxx GPU";
     vendor              = "Cooler Master";
     type                = DEVICE_TYPE_GPU;
-    description         = cmr6000->GetDeviceName();
-    version             = "1.0";
-    serial              = cmr6000->GetSerial();
-    location            = cmr6000->GetLocation();
+    description         = controller->GetDeviceName();
+    serial              = controller->GetSerial();
+    location            = controller->GetLocation();
 
     mode Off;
     Off.name            = "Off";
@@ -29,12 +40,12 @@ RGBController_CMR6000Controller::RGBController_CMR6000Controller(CMR6000Controll
     modes.push_back(Off);
 
     mode Direct;
-    Direct.name         = "Direct";
-    Direct.value        = CM_MR6000_MODE_DIRECT;
-    Direct.flags        = MODE_FLAG_HAS_PER_LED_COLOR| MODE_FLAG_HAS_BRIGHTNESS;
-    Direct.color_mode   = MODE_COLORS_PER_LED;
-    Direct.colors_min   = 1;
-    Direct.colors_max   = 1;
+    Direct.name             = "Direct";
+    Direct.value            = CM_MR6000_MODE_DIRECT;
+    Direct.flags            = MODE_FLAG_HAS_PER_LED_COLOR| MODE_FLAG_HAS_BRIGHTNESS;
+    Direct.color_mode       = MODE_COLORS_PER_LED;
+    Direct.colors_min       = 1;
+    Direct.colors_max       = 1;
     Direct.colors.resize(1);
     Direct.brightness_min   = 0x00;
     Direct.brightness_max   = 0xFF;
@@ -67,7 +78,7 @@ RGBController_CMR6000Controller::RGBController_CMR6000Controller(CMR6000Controll
     Breathing.colors_max = 1;
     Breathing.colors.resize(1);
     Breathing.speed      = speed;
-    modes.push_back(Breathing);    
+    modes.push_back(Breathing);
 
     SetupZones();
     active_mode = 1;
@@ -75,23 +86,23 @@ RGBController_CMR6000Controller::RGBController_CMR6000Controller(CMR6000Controll
 
 RGBController_CMR6000Controller::~RGBController_CMR6000Controller()
 {
-    delete cmr6000;
+    delete controller;
 }
 
 void RGBController_CMR6000Controller::SetupZones()
 {
     zone GP_zone;
-    GP_zone.name          = "GPU";
-    GP_zone.type          = ZONE_TYPE_SINGLE;
-    GP_zone.leds_min      = 1;
-    GP_zone.leds_max      = 1;
-    GP_zone.leds_count    = 1;
-    GP_zone.matrix_map    = NULL;
+    GP_zone.name        = "GPU";
+    GP_zone.type        = ZONE_TYPE_SINGLE;
+    GP_zone.leds_min    = 1;
+    GP_zone.leds_max    = 1;
+    GP_zone.leds_count  = 1;
+    GP_zone.matrix_map  = NULL;
     zones.push_back(GP_zone);
 
     led GP_led;
-    GP_led.name = "Logo";
-    GP_led.value = 0;
+    GP_led.name         = "Logo";
+    GP_led.value        = 0;
     leds.push_back(GP_led);
 
     SetupColors();
@@ -121,7 +132,7 @@ void RGBController_CMR6000Controller::DeviceUpdateLEDs()
     unsigned char rnd = (modes[active_mode].color_mode == MODE_COLORS_RANDOM) ? 0xA0 : 0x20;
     unsigned char bri = (modes[active_mode].flags & MODE_FLAG_HAS_BRIGHTNESS) ? modes[active_mode].brightness : 0xFF;
 
-    cmr6000->SetMode(modes[active_mode].value, modes[active_mode].speed, red, grn, blu, rnd, bri);
+    controller->SetMode(modes[active_mode].value, modes[active_mode].speed, red, grn, blu, rnd, bri);
 }
 
 void RGBController_CMR6000Controller::UpdateZoneLEDs(int /*zone*/)

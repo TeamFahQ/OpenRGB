@@ -11,14 +11,15 @@
 #include "ResourceManager.h"
 #include "TabLabel.h"
 #include "OpenRGBZonesBulkResizer.h"
+#include "OpenRGBThemeManager.h"
 #include <QLabel>
 #include <QTabBar>
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QStyleFactory>
 
-#ifdef _WIN32
-#include <QSettings>
+#ifdef __APPLE__
+#include "macutils.h"
 #endif
 
 using namespace Ui;
@@ -77,6 +78,9 @@ static QString GetIconString(device_type type, bool dark)
     case DEVICE_TYPE_STORAGE:
         filename = "storage";
         break;
+    case DEVICE_TYPE_CASE:
+        filename = "case";
+        break;
     default:
         filename = "unknown";
         break;
@@ -132,60 +136,6 @@ static void DialogShowCallback(void * this_ptr, PLogMessage msg)
     QMetaObject::invokeMethod(this_obj, "onShowDialogMessage", Qt::QueuedConnection);
 }
 
-bool OpenRGBDialog2::IsDarkTheme()
-    {
-#ifdef _WIN32
-    /*-------------------------------------------------*\
-    | Windows dark theme settings                       |
-    \*-------------------------------------------------*/
-    json            theme_settings;
-
-    /*-------------------------------------------------*\
-    | Get prefered theme from settings manager          |
-    \*-------------------------------------------------*/
-    theme_settings = ResourceManager::get()->GetSettingsManager()->GetSettings("Theme");
-
-    /*-------------------------------------------------*\
-    | Read the theme key and adjust accordingly         |
-    \*-------------------------------------------------*/
-    std::string current_theme = "light";
-
-    if(theme_settings.contains("theme"))
-    {
-        current_theme = theme_settings["theme"];
-    }
-
-    if((current_theme == "auto") || (current_theme == "dark"))
-    {
-        if(current_theme == "auto")
-        {
-            QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", QSettings::NativeFormat);
-
-            if(settings.value("AppsUseLightTheme") != 0)
-            {
-                return false;
-            }
-            else if(settings.value("AppsUseLightTheme") == 0)
-            {
-                return true;
-            }
-        }
-        else if(current_theme == "dark")
-        {
-            return true;
-        }
-    }
-    return false;
-
-#else
-    if(QPalette().window().color().value() < 127)
-    {
-        return true;
-    }
-#endif
-
-    return false;
-}
 
 bool OpenRGBDialog2::IsMinimizeOnClose()
 {
@@ -224,14 +174,14 @@ OpenRGBDialog2::OpenRGBDialog2(QWidget *parent) : QMainWindow(parent), ui(new Op
     if(!ui_settings.contains("geometry"))
     {
         json geometry_settings;
-        
+
         geometry_settings["load_geometry"]  = false;
         geometry_settings["save_on_exit"]   = false;
         geometry_settings["x"]              = 0;
         geometry_settings["y"]              = 0;
         geometry_settings["width"]          = 0;
         geometry_settings["height"]         = 0;
-        
+
         ui_settings["geometry"] = geometry_settings;
 
         settings_manager->SetSettings(ui_string, ui_settings);
@@ -242,7 +192,7 @@ OpenRGBDialog2::OpenRGBDialog2(QWidget *parent) : QMainWindow(parent), ui(new Op
     | If geometry information exists in settings, apply it  |
     \*-----------------------------------------------------*/
     bool load_geometry = false;
-    
+
     if(ui_settings["geometry"].contains("load_geometry"))
     {
         load_geometry = ui_settings["geometry"]["load_geometry"].get<bool>();
@@ -318,52 +268,52 @@ OpenRGBDialog2::OpenRGBDialog2(QWidget *parent) : QMainWindow(parent), ui(new Op
 
     trayIcon = new QSystemTrayIcon(this);
 
-    QAction* actionShowHide = new QAction("Show/Hide", this);
+    QAction* actionShowHide = new QAction(tr("Show/Hide"), this);
     connect(actionShowHide, SIGNAL(triggered()), this, SLOT(on_ShowHide()));
     trayIconMenu->addAction(actionShowHide);
 
-    profileMenu = new QMenu("Profiles", this);
+    profileMenu = new QMenu(tr("Profiles"), this);
 
     trayIconMenu->addMenu(profileMenu);
 
-    QMenu* quickColorsMenu = new QMenu("Quick Colors", this);
+    QMenu* quickColorsMenu = new QMenu(tr("Quick Colors"), this);
 
-    QAction* actionQuickRed = new QAction("Red", this);
+    QAction* actionQuickRed = new QAction(tr("Red"), this);
     connect(actionQuickRed, SIGNAL(triggered()), this, SLOT(on_QuickRed()));
     quickColorsMenu->addAction(actionQuickRed);
 
-    QAction* actionQuickYellow = new QAction("Yellow", this);
+    QAction* actionQuickYellow = new QAction(tr("Yellow"), this);
     connect(actionQuickYellow, SIGNAL(triggered()), this, SLOT(on_QuickYellow()));
     quickColorsMenu->addAction(actionQuickYellow);
 
-    QAction* actionQuickGreen = new QAction("Green", this);
+    QAction* actionQuickGreen = new QAction(tr("Green"), this);
     connect(actionQuickGreen, SIGNAL(triggered()), this, SLOT(on_QuickGreen()));
     quickColorsMenu->addAction(actionQuickGreen);
 
-    QAction* actionQuickCyan = new QAction("Cyan", this);
+    QAction* actionQuickCyan = new QAction(tr("Cyan"), this);
     connect(actionQuickCyan, SIGNAL(triggered()), this, SLOT(on_QuickCyan()));
     quickColorsMenu->addAction(actionQuickCyan);
 
-    QAction* actionQuickBlue = new QAction("Blue", this);
+    QAction* actionQuickBlue = new QAction(tr("Blue"), this);
     connect(actionQuickBlue, SIGNAL(triggered()), this, SLOT(on_QuickBlue()));
     quickColorsMenu->addAction(actionQuickBlue);
 
-    QAction* actionQuickMagenta = new QAction("Magenta", this);
+    QAction* actionQuickMagenta = new QAction(tr("Magenta"), this);
     connect(actionQuickMagenta, SIGNAL(triggered()), this, SLOT(on_QuickMagenta()));
     quickColorsMenu->addAction(actionQuickMagenta);
 
-    QAction* actionQuickWhite = new QAction("White", this);
+    QAction* actionQuickWhite = new QAction(tr("White"), this);
     connect(actionQuickWhite, SIGNAL(triggered()), this, SLOT(on_QuickWhite()));
     quickColorsMenu->addAction(actionQuickWhite);
 
     trayIconMenu->addMenu(quickColorsMenu);
 
-    QAction* actionLightsOff = new QAction("Lights Off", this);
+    QAction* actionLightsOff = new QAction(tr("Lights Off"), this);
     actionLightsOff->setObjectName("ActionLightsOff");
     connect(actionLightsOff, SIGNAL(triggered()), this, SLOT(on_LightsOff()));
     trayIconMenu->addAction(actionLightsOff);
 
-    actionExit = new QAction( "Exit", this );
+    actionExit = new QAction(tr("Exit"), this );
     connect( actionExit, SIGNAL( triggered() ), this, SLOT( on_Exit() ));
     trayIconMenu->addAction(actionExit);
 
@@ -381,35 +331,32 @@ OpenRGBDialog2::OpenRGBDialog2(QWidget *parent) : QMainWindow(parent), ui(new Op
 
     connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(on_ReShow(QSystemTrayIcon::ActivationReason)));
 
-    trayIcon->setIcon(logo);
+    /*-------------------------------------------------*\
+    | If Greyscale Tray Icon flag is not set in config  |
+    | then set the default value to false               |
+    \*-------------------------------------------------*/
+    if(!ui_settings.contains("greyscale_tray_icon"))
+    {
+        ui_settings["greyscale_tray_icon"] = false;
+
+        settings_manager->SetSettings(ui_string, ui_settings);
+        settings_manager->SaveSettings();
+    }
+
+    /*-----------------------------------------------------*\
+    | If greyscale tray icon exists in settings, apply it   |
+    |   or else set the icon to the default window logo     |
+    \*-----------------------------------------------------*/
+    if(ui_settings.contains("greyscale_tray_icon"))
+    {
+        SetTrayIcon(ui_settings["greyscale_tray_icon"].get<bool>());
+    }
+
     trayIcon->setToolTip("OpenRGB");
     trayIcon->setContextMenu(trayIconMenu);
     trayIcon->show();
 
-#ifdef _WIN32
-    /*-------------------------------------------------*\
-    | Apply dark theme on Windows if configured         |
-    \*-------------------------------------------------*/
-    if(IsDarkTheme())
-    {
-        QPalette pal = palette();
-        pal.setColor(QPalette::WindowText, Qt::white);
-        pal.setColor(QPalette::Link, QColor(0,127,220));
-        pal.setColor(QPalette::LinkVisited, QColor(64,196,220));
-        QApplication::setPalette(pal);
-        QFile darkTheme(":/windows_dark.qss");
-        darkTheme.open(QFile::ReadOnly);
-        setStyleSheet(darkTheme.readAll());
-    }
-#endif
-
-#ifdef __APPLE__
-    /*-------------------------------------------------*\
-    | Apply Qt Fusion theme on MacOS, as the MacOS      |
-    | default theme does not handle vertical tabs well  |
-    \*-------------------------------------------------*/
-    QApplication::setStyle(QStyleFactory::create("Fusion"));
-#endif
+    OpenRGBThemeManager::Init();
 
     /*-----------------------------------------------------*\
     | Update the profile list                               |
@@ -450,7 +397,7 @@ OpenRGBDialog2::OpenRGBDialog2(QWidget *parent) : QMainWindow(parent), ui(new Op
     /*-----------------------------------------------------*\
     | Initialize the plugin manager                         |
     \*-----------------------------------------------------*/
-    plugin_manager = new PluginManager(IsDarkTheme());
+    plugin_manager = new PluginManager();
     plugin_manager->RegisterAddPluginCallback(&CreatePluginCallback, this);
     plugin_manager->RegisterRemovePluginCallback(&DeletePluginCallback, this);
     plugin_manager->ScanAndLoadPlugins();
@@ -464,6 +411,11 @@ OpenRGBDialog2::OpenRGBDialog2(QWidget *parent) : QMainWindow(parent), ui(new Op
     | Add the E1.31 settings page                           |
     \*-----------------------------------------------------*/
     AddE131SettingsPage();
+
+    /*-----------------------------------------------------*\
+    | Add the LIFX settings page                            |
+    \*-----------------------------------------------------*/
+    AddLIFXSettingsPage();
 
     /*-----------------------------------------------------*\
     | Add the Serial settings page                          |
@@ -491,12 +443,17 @@ OpenRGBDialog2::OpenRGBDialog2(QWidget *parent) : QMainWindow(parent), ui(new Op
     AddYeelightSettingsPage();
 
     /*-----------------------------------------------------*\
+    | Add the Nanoleaf settings page                        |
+    \*-----------------------------------------------------*/
+    AddNanoleafSettingsPage();
+
+    /*-----------------------------------------------------*\
     | Add the SMBus Tools page if enabled                   |
     \*-----------------------------------------------------*/
     if(ShowI2CTools)
     {
         AddI2CToolsPage();
-    }    
+    }
 
     /*-----------------------------------------------------*\
     | If log console is enabled in settings, enable it      |
@@ -558,6 +515,9 @@ void OpenRGBDialog2::closeEvent(QCloseEvent *event)
 
     if (IsMinimizeOnClose() && !this->isHidden())
     {
+#ifdef __APPLE__
+        MacUtils::ToggleApplicationDocklessState(false);
+#endif
         hide();
         event->ignore();
     }
@@ -580,7 +540,7 @@ void OpenRGBDialog2::AddPluginsPage()
 
     QString PluginsLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         PluginsLabelString = "plugin_dark.png";
     }
@@ -592,7 +552,7 @@ void OpenRGBDialog2::AddPluginsPage()
     /*-----------------------------------------------------*\
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
-    TabLabel* PluginTabLabel = new TabLabel(PluginsLabelString, "Plugins");
+    TabLabel* PluginTabLabel = new TabLabel(PluginsLabelString, tr("Plugins"));
 
     ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, PluginTabLabel);
 }
@@ -608,7 +568,7 @@ void OpenRGBDialog2::AddSoftwareInfoPage()
 
     QString SoftwareLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         SoftwareLabelString = "software_dark.png";
     }
@@ -620,7 +580,7 @@ void OpenRGBDialog2::AddSoftwareInfoPage()
     /*-----------------------------------------------------*\
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
-    TabLabel* SoftwareTabLabel = new TabLabel(SoftwareLabelString, "Software");
+    TabLabel* SoftwareTabLabel = new TabLabel(SoftwareLabelString, tr("Software"));
 
     ui->InformationTabBar->tabBar()->setTabButton(ui->InformationTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SoftwareTabLabel);
 }
@@ -636,7 +596,7 @@ void OpenRGBDialog2::AddSupportedDevicesPage()
 
     QString SettingsLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         SettingsLabelString = "software_dark.png";
     }
@@ -648,7 +608,7 @@ void OpenRGBDialog2::AddSupportedDevicesPage()
     /*-----------------------------------------------------*\
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
-    TabLabel* SupportedTabLabel = new TabLabel(SettingsLabelString, "Supported Devices");
+    TabLabel* SupportedTabLabel = new TabLabel(SettingsLabelString, tr("Supported Devices"));
 
     ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SupportedTabLabel);
 }
@@ -665,7 +625,7 @@ void OpenRGBDialog2::AddSettingsPage()
 
     QString SettingsLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         SettingsLabelString = "settings_dark.png";
     }
@@ -677,9 +637,14 @@ void OpenRGBDialog2::AddSettingsPage()
     /*-----------------------------------------------------*\
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
-    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, "General Settings");
+    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, tr("General Settings"));
 
     ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
+
+    /*-----------------------------------------------------*\
+    | Connect signals to slots                              |
+    \*-----------------------------------------------------*/
+    connect(SettingsPage, SIGNAL(TrayIconChanged(bool)), this, SLOT(SetTrayIcon(bool)));
 }
 
 void OpenRGBDialog2::AddE131SettingsPage()
@@ -693,7 +658,7 @@ void OpenRGBDialog2::AddE131SettingsPage()
 
     QString SettingsLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         SettingsLabelString = "wireless_dark.png";
     }
@@ -705,7 +670,35 @@ void OpenRGBDialog2::AddE131SettingsPage()
     /*-----------------------------------------------------*\
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
-    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, "E1.31 Devices");
+    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, tr("E1.31 Devices"));
+
+    ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
+}
+
+void OpenRGBDialog2::AddLIFXSettingsPage()
+{
+    /*-----------------------------------------------------*\
+    | Create the Settings page                              |
+    \*-----------------------------------------------------*/
+    LIFXSettingsPage = new OpenRGBLIFXSettingsPage();
+
+    ui->SettingsTabBar->addTab(LIFXSettingsPage, "");
+
+    QString SettingsLabelString;
+
+    if(OpenRGBThemeManager::IsDarkTheme())
+    {
+        SettingsLabelString = "light_dark.png";
+    }
+    else
+    {
+        SettingsLabelString = "light.png";
+    }
+
+    /*-----------------------------------------------------*\
+    | Create the tab label                                  |
+    \*-----------------------------------------------------*/
+    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, "LIFX Devices");
 
     ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
 }
@@ -721,7 +714,7 @@ void OpenRGBDialog2::AddPhilipsHueSettingsPage()
 
     QString SettingsLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         SettingsLabelString = "light_dark.png";
     }
@@ -733,7 +726,7 @@ void OpenRGBDialog2::AddPhilipsHueSettingsPage()
     /*-----------------------------------------------------*\
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
-    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, "Philips Hue Devices");
+    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, tr("Philips Hue Devices"));
 
     ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
 }
@@ -749,7 +742,7 @@ void OpenRGBDialog2::AddPhilipsWizSettingsPage()
 
     QString SettingsLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         SettingsLabelString = "light_dark.png";
     }
@@ -761,7 +754,7 @@ void OpenRGBDialog2::AddPhilipsWizSettingsPage()
     /*-----------------------------------------------------*\
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
-    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, "Philips Wiz Devices");
+    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, tr("Philips Wiz Devices"));
 
     ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
 }
@@ -777,7 +770,7 @@ void OpenRGBDialog2::AddQMKORGBSettingsPage()
 
     QString SettingsLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         SettingsLabelString = "keyboard_dark.png";
     }
@@ -789,7 +782,7 @@ void OpenRGBDialog2::AddQMKORGBSettingsPage()
     /*-----------------------------------------------------*\
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
-    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, "OpenRGB QMK Protocol");
+    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, tr("OpenRGB QMK Protocol"));
 
     ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
 }
@@ -805,7 +798,7 @@ void OpenRGBDialog2::AddSerialSettingsPage()
 
     QString SettingsLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         SettingsLabelString = "serial_dark.png";
     }
@@ -817,7 +810,7 @@ void OpenRGBDialog2::AddSerialSettingsPage()
     /*-----------------------------------------------------*\
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
-    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, "Serial Devices");
+    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, tr("Serial Devices"));
 
     ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
 }
@@ -833,7 +826,7 @@ void OpenRGBDialog2::AddYeelightSettingsPage()
 
     QString SettingsLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         SettingsLabelString = "light_dark.png";
     }
@@ -845,7 +838,35 @@ void OpenRGBDialog2::AddYeelightSettingsPage()
     /*-----------------------------------------------------*\
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
-    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, "Yeelight Devices");
+    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, tr("Yeelight Devices"));
+
+    ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
+}
+
+void OpenRGBDialog2::AddNanoleafSettingsPage()
+{
+    /*-----------------------------------------------------*\
+    | Create the Settings page                              |
+    \*-----------------------------------------------------*/
+    NanoleafSettingsPage = new OpenRGBNanoleafSettingsPage();
+
+    ui->SettingsTabBar->addTab(NanoleafSettingsPage, "");
+
+    QString SettingsLabelString;
+
+    if(OpenRGBThemeManager::IsDarkTheme())
+    {
+        SettingsLabelString = "light_dark.png";
+    }
+    else
+    {
+        SettingsLabelString = "light.png";
+    }
+
+    /*-----------------------------------------------------*\
+    | Create the tab label                                  |
+    \*-----------------------------------------------------*/
+    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, "Nanoleaf Devices");
 
     ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
 }
@@ -863,7 +884,7 @@ void OpenRGBDialog2::AddPlugin(OpenRGBPluginEntry* plugin)
     \*-----------------------------------------------------*/
     QString PluginLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         PluginLabelString = "plugin_dark.png";
     }
@@ -1047,7 +1068,7 @@ void OpenRGBDialog2::AddI2CToolsPage()
 
     QString SMBusToolsLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         SMBusToolsLabelString = "tools_dark.png";
     }
@@ -1059,7 +1080,7 @@ void OpenRGBDialog2::AddI2CToolsPage()
     /*-----------------------------------------------------*\
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
-    TabLabel* SMBusToolsTabLabel = new TabLabel(SMBusToolsLabelString, "SMBus Tools");
+    TabLabel* SMBusToolsTabLabel = new TabLabel(SMBusToolsLabelString, tr("SMBus Tools"));
 
     ui->InformationTabBar->tabBar()->setTabButton(ui->InformationTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SMBusToolsTabLabel);
 }
@@ -1072,7 +1093,7 @@ void OpenRGBDialog2::AddClientTab()
     if(ClientInfoPage == NULL)
     {
         ClientInfoPage = new OpenRGBClientInfoPage();
-        ui->MainTabBar->insertTab(2, ClientInfoPage, "SDK Client");
+        ui->MainTabBar->insertTab(2, ClientInfoPage, tr("SDK Client"));
     }
 }
 
@@ -1093,7 +1114,7 @@ void OpenRGBDialog2::AddServerTab()
     | Add server information tab if there is a server       |
     \*-----------------------------------------------------*/
     OpenRGBServerInfoPage *ServerInfoPage = new OpenRGBServerInfoPage(ResourceManager::get()->GetServer());
-    ui->MainTabBar->insertTab(2, ServerInfoPage, "SDK Server");
+    ui->MainTabBar->insertTab(2, ServerInfoPage, tr("SDK Server"));
 }
 
 void OpenRGBDialog2::ClearDevicesList()
@@ -1178,7 +1199,7 @@ void OpenRGBDialog2::UpdateDevicesList()
             /*-----------------------------------------------------*\
             | Create the tab label                                  |
             \*-----------------------------------------------------*/
-            TabLabel* NewTabLabel = new TabLabel(GetIconString(controllers[controller_idx]->type, IsDarkTheme()), QString::fromStdString(controllers[controller_idx]->name));
+            TabLabel* NewTabLabel = new TabLabel(GetIconString(controllers[controller_idx]->type, OpenRGBThemeManager::IsDarkTheme()), QString::fromStdString(controllers[controller_idx]->name));
 
             ui->DevicesTabBar->tabBar()->setTabButton(ui->DevicesTabBar->count() - 1, QTabBar::LeftSide, NewTabLabel);
             ui->DevicesTabBar->tabBar()->setTabToolTip(ui->DevicesTabBar->count() - 1, QString::fromStdString(controllers[controller_idx]->name));
@@ -1229,7 +1250,7 @@ void OpenRGBDialog2::UpdateDevicesList()
             /*-----------------------------------------------------*\
             | Create the tab label                                  |
             \*-----------------------------------------------------*/
-            TabLabel* NewTabLabel = new TabLabel(GetIconString(controllers[controller_idx]->type, IsDarkTheme()), QString::fromStdString(controllers[controller_idx]->name));
+            TabLabel* NewTabLabel = new TabLabel(GetIconString(controllers[controller_idx]->type, OpenRGBThemeManager::IsDarkTheme()), QString::fromStdString(controllers[controller_idx]->name));
 
             ui->InformationTabBar->tabBar()->setTabButton(ui->InformationTabBar->count() - 1, QTabBar::LeftSide, NewTabLabel);
             ui->InformationTabBar->tabBar()->setTabToolTip(ui->InformationTabBar->count() - 1, QString::fromStdString(controllers[controller_idx]->name));
@@ -1426,10 +1447,16 @@ void OpenRGBDialog2::on_ShowHide()
 {
     if(isHidden())
     {
+#ifdef __APPLE__
+        MacUtils::ToggleApplicationDocklessState(true);
+#endif
         show();
     }
     else
     {
+#ifdef __APPLE__
+        MacUtils::ToggleApplicationDocklessState(false);
+#endif
         hide();
     }
 }
@@ -1465,16 +1492,6 @@ void OpenRGBDialog2::onShowDialogMessage()
     }
 
     QMessageBox box;
-
-    if(IsDarkTheme())
-    {
-        QPalette pal = palette();
-        pal.setColor(QPalette::WindowText, Qt::white);
-        box.setPalette(pal);
-        QFile darkTheme(":/windows_dark.qss");
-        darkTheme.open(QFile::ReadOnly);
-        box.setStyleSheet(darkTheme.readAll());
-    }
 
     box.setInformativeText(dialog_message);
 
@@ -1589,7 +1606,7 @@ void Ui::OpenRGBDialog2::on_ButtonDeleteProfile_clicked()
         | Confirm we want to delete the profile                     |
         \*---------------------------------------------------------*/
         QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, "Delete Profile", "Do you really want to delete this profile?", QMessageBox::Yes|QMessageBox::No);
+        reply = QMessageBox::question(this, tr("Delete Profile"), tr("Do you really want to delete this profile?"), QMessageBox::Yes|QMessageBox::No);
 
         /*---------------------------------------------------------*\
         | Load the profile                                          |
@@ -1676,6 +1693,18 @@ void Ui::OpenRGBDialog2::SetDetectionViewState(bool detection_showing)
     }
 }
 
+void OpenRGBDialog2::SetTrayIcon(bool tray_icon)
+{
+    if(tray_icon)
+    {
+        trayIcon->setIcon(QIcon(":OpenRGBGreyscale.png"));
+    }
+    else
+    {
+        trayIcon->setIcon(QIcon(":OpenRGB.png"));
+    }
+}
+
 void OpenRGBDialog2::SaveProfile()
 {
     ProfileManager* profile_manager = ResourceManager::get()->GetProfileManager();
@@ -1729,8 +1758,29 @@ void OpenRGBDialog2::SaveProfileAs()
 
 void Ui::OpenRGBDialog2::on_ButtonRescan_clicked()
 {
+    /*---------------------------------------------------------*\
+    | Hide devices view on rescan so it stops handling paint    |
+    | events.                                                   |
+    \*---------------------------------------------------------*/
+    for(int device = 0; device < ui->DevicesTabBar->count(); device++)
+    {
+        OpenRGBDevicePage* device_page = qobject_cast<OpenRGBDevicePage *>(ui->DevicesTabBar->widget(device));
+        if(device_page) // Check the cast to make sure it is a device and not plugin
+        {
+            device_page->HideDeviceView();
+        }
+    }
+
+    device_view_showing = false;
+
+    /*---------------------------------------------------------*\
+    | Show the detection progress bar.                          |
+    \*---------------------------------------------------------*/
     SetDetectionViewState(true);
 
+    /*---------------------------------------------------------*\
+    | Show the detection progress bar.                          |
+    \*---------------------------------------------------------*/
     ResourceManager::get()->DetectDevices();
 }
 
@@ -1814,7 +1864,7 @@ void Ui::OpenRGBDialog2::AddConsolePage()
 
     QString ConsoleLabelString;
 
-    if(IsDarkTheme())
+    if(OpenRGBThemeManager::IsDarkTheme())
     {
         ConsoleLabelString = "console_dark.png";
     }
@@ -1826,7 +1876,7 @@ void Ui::OpenRGBDialog2::AddConsolePage()
     /*-----------------------------------------------------*\
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
-    TabLabel* ConsoleTabLabel = new TabLabel(ConsoleLabelString, "Log Console");
+    TabLabel* ConsoleTabLabel = new TabLabel(ConsoleLabelString, tr("Log Console"));
 
     ui->InformationTabBar->tabBar()->setTabButton(ui->InformationTabBar->tabBar()->count() - 1, QTabBar::LeftSide, ConsoleTabLabel);
 }
