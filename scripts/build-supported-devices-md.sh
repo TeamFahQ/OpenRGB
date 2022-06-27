@@ -13,7 +13,8 @@ OPENRGB_PATH=$1
 CONTROLLER_PATH=${OPENRGB_PATH}'/Controllers'
 DATA_TABLE_HEAD='| Controller Name | Connection | Save to Flash | Direct | Hardware Effects |\n'
 DATA_TABLE_ALIGN='| :--- | :---: | :---: | :---: | :---: |'
-DEVICE_TABLE_HEAD='| VID | PID | Device Name |\n'
+USB_DEVICE_TABLE_HEAD='| Vendor ID | Product ID | Device Name |\n'
+GPU_DEVICE_TABLE_HEAD='| Vendor &<br/>Device ID | Sub-Vendor &<br/>Product ID | Device Name |\n'
 DEVICE_TABLE_ALIGN='| :---: | :---: | :--- |'
 MAIN_FILE='Supported Devices.md'
 
@@ -43,7 +44,8 @@ echo -e "- [Graphics Cards](#graphics-cards)" >> "$MAIN_FILE"
 echo -e "- [Coolers](#coolers)" >> "$MAIN_FILE"
 echo -e "- [LED Strips](#led-strips)" >> "$MAIN_FILE"
 echo -e "- [Keyboards](#keyboards)" >> "$MAIN_FILE"
-echo -e "- [Mice](#mouse)" >> "$MAIN_FILE"
+echo -e "- [Microphones](#microphones)" >> "$MAIN_FILE"
+echo -e "- [Mice](#mice)" >> "$MAIN_FILE"
 echo -e "- [Mouse Mats](#mouse-mats)" >> "$MAIN_FILE"
 echo -e "- [Headsets](#headsets)" >> "$MAIN_FILE"
 echo -e "- [Headset Stands](#headset-stands)" >> "$MAIN_FILE"
@@ -54,6 +56,16 @@ echo -e "- [Virtual Devices](#virtual-devices)" >> "$MAIN_FILE"
 echo -e "- [Storage](#storage)" >> "$MAIN_FILE"
 echo -e "- [Cases](#cases)" >> "$MAIN_FILE"
 echo -e "- [Other Devices](#other-devices)" >> "$MAIN_FILE"
+
+echo -e "\n## Legend\n\n" >> "$MAIN_FILE"
+echo -e "| Symbol | Meaning |" >> "$MAIN_FILE"
+echo -e "| :---: | :--- |" >> "$MAIN_FILE"
+echo -e "| :white_check_mark: | Fully supported by OpenRGB |" >> "$MAIN_FILE"
+echo -e "| :rotating_light: | Support is problematic<br/>See device page for details |" >> "$MAIN_FILE"
+echo -e "| :robot: | Feature is automatic and can not be turned off |" >> "$MAIN_FILE"
+echo -e "| :tools: | Partially supported by OpenRGB<br/>See device page for details |" >> "$MAIN_FILE"
+echo -e "| :o: | Not currently supported by OpenRGB |" >> "$MAIN_FILE"
+echo -e "| :x: | Not applicable for this device |" >> "$MAIN_FILE"
 
 while read -r controller
 do
@@ -76,8 +88,11 @@ do
             :x:)
                 save_title="Not supported by controller"
                 ;;
-            :warning:)
-                save_title="Controller saves on every update"
+            :o:)
+                save_title="Not currently supported by OpenRGB"
+                ;;
+            :robot:)
+                save_title="Controller saves automatically on every update"
                 ;;
             :white_check_mark:)
                 save_title="Saving is supported by this controller"
@@ -88,8 +103,11 @@ do
             :x:)
                 direct_title="Not supported by controller"
                 ;;
-            :warning:)
-                direct_title="Direct control is problematic"
+            :o:)
+                direct_title="Not currently supported by OpenRGB"
+                ;;
+            :rotating_light:)
+                direct_title="Direct control is problematic (See device page for details)"
                 ;;
             :white_check_mark:)
                 direct_title="Direct control is supported for Software Effects"
@@ -100,8 +118,14 @@ do
             :x:)
                 effects_title="Hardware effects are not supported by controller"
                 ;;
-            :warning:)
-                effects_title="Hardware effects are not fully implemented by controller"
+            :o:)
+                effects_title="Not currently supported by OpenRGB"
+                ;;
+            :rotating_light:)
+                effects_title="Hardware effects implementation is problematic"
+                ;;
+            :tools:)
+                effects_title="Hardware effects are not fully implemented by controller (See device page for details)"
                 ;;
             :white_check_mark:)
                 effects_title="Hardware effects are supported"
@@ -134,6 +158,9 @@ do
                 Keyboard)
                     keyboard+=$current_controller
                     ;;
+                Microphone)
+                    microphone+=$current_controller
+                    ;;
                 Mouse)
                     mouse+=$current_controller
                     ;;
@@ -164,6 +191,9 @@ do
                 Case)
                     case+=$current_controller
                     ;;
+                Dummy)
+                    ## Do nothing for the Dummy controller
+                    ;;
                 *)
                     unknown+=$current_controller
                     ;;
@@ -177,7 +207,11 @@ do
         echo -e "## Saving\n ${save_title}\n" >> "$outfile"
         echo -e "## Direct Mode\n ${direct_title}\n" >> "$outfile"
         echo -e "## Hardware Effects\n ${effects_title}\n" >> "$outfile"
-        echo -e "## Device List\n\n${DEVICE_TABLE_HEAD}${DEVICE_TABLE_ALIGN}" >> "$outfile"
+        if [[ $categories = GPU ]]; then
+            echo -e "## Device List\n\n${GPU_DEVICE_TABLE_HEAD}${DEVICE_TABLE_ALIGN}" >> "$outfile"
+        else
+            echo -e "## Device List\n\n${USB_DEVICE_TABLE_HEAD}${DEVICE_TABLE_ALIGN}" >> "$outfile"
+        fi
 
         ## Iterate over the comma seperated detector function list
         while read -r detector
@@ -202,7 +236,7 @@ do
                         #Remove leading hex signifier from $vid and $pid
                         vid=${vid/0x/}
                         pid=${pid/0x/}
-                        device_name=${device_name//[^[:alnum:][:blank:]]/}
+                        device_name=${device_name//[^[:alnum:][:punct:][:blank:]]/}
 
                         table_row=$(printf '| `%s` | `%s` | %s |' "${vid/ /}" "${pid/ /}" "${device_name}")
                         ;;
@@ -213,15 +247,18 @@ do
                         pid=${pid/0x/}
                         svid=${svid/0x/}
                         spid=${spid/0x/}
-                        device_name=${device_name//[^[:alnum:][:blank:]]/}
+                        device_name=${device_name//[^[:alnum:][:punct:][:blank:]]/}
 
-                        table_row=$(printf '| `%s:%s` | `%s:%s` | %s |' "${vid}" "${pid/ /}" "${svid}" "${spid/ /}" "${device_name}")
+                        table_row=$(printf '| `%s:%s` | `%s:%s` | %s |' "${vid/ /}" "${pid/ /}" "${svid/ /}" "${spid/ /}" "${device_name}")
                         ;;
                     *)
+                        table_row=""
                         ;;
                 esac
 
-                echo -e "$table_row" >>"$outfile"
+                if [[ $table_row = *[![:blank:]]* ]]; then
+                    echo -e "$table_row" >>"$outfile"
+                fi
             done <<< "$text"
         done <<< "$detectors"
     fi
@@ -233,6 +270,7 @@ printf "\n## Graphics Cards\n${DATA_TABLE_HEAD}${DATA_TABLE_ALIGN}%s\n" "$(echo 
 printf "\n## Coolers\n${DATA_TABLE_HEAD}${DATA_TABLE_ALIGN}%s\n" "$(echo -e ${cooler}| sort)" >> "$MAIN_FILE"
 printf "\n## LED Strips\n${DATA_TABLE_HEAD}${DATA_TABLE_ALIGN}%s\n" "$(echo -e ${ledstrip}| sort)" >> "$MAIN_FILE"
 printf "\n## Keyboards\n${DATA_TABLE_HEAD}${DATA_TABLE_ALIGN}%s\n" "$(echo -e ${keyboard}| sort)" >> "$MAIN_FILE"
+printf "\n## Microphones\n${DATA_TABLE_HEAD}${DATA_TABLE_ALIGN}%s\n" "$(echo -e ${microphone}| sort)" >> "$MAIN_FILE"
 printf "\n## Mice\n${DATA_TABLE_HEAD}${DATA_TABLE_ALIGN}%s\n" "$(echo -e ${mouse}| sort)" >> "$MAIN_FILE"
 printf "\n## Mouse Mats\n${DATA_TABLE_HEAD}${DATA_TABLE_ALIGN}%s\n" "$(echo -e ${mousemat}| sort)" >> "$MAIN_FILE"
 printf "\n## Headsets\n${DATA_TABLE_HEAD}${DATA_TABLE_ALIGN}%s\n" "$(echo -e ${headset}| sort)" >> "$MAIN_FILE"

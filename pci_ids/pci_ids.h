@@ -75,6 +75,7 @@
 #define NVIDIA_RTX3060_LHR_DEV                          0x2504
 #define NVIDIA_RTX3060TI_DEV                            0x2486
 #define NVIDIA_RTX3060TI_LHR_DEV                        0x2489
+#define NVIDIA_RTX3060TI_V1_LHR_DEV                     0x2414
 #define NVIDIA_RTX3070_DEV                              0x2484
 #define NVIDIA_RTX3070_LHR_DEV                          0x2488
 #define NVIDIA_RTX3070TI_DEV                            0x2482
@@ -84,6 +85,15 @@
 #define NVIDIA_RTX3080TI_DEV                            0x2208
 #define NVIDIA_RTX3090_DEV                              0x2204
 #define NVIDIA_RTX3090TI_DEV                            0x2203
+
+/*-----------------------------------------------------*\
+| nVidia Sub-Device IDs                                 |
+\*-----------------------------------------------------*/
+#define NVIDIA_RTX2070_FE_SUPER_SUB_DEV                 0x13AA
+#define NVIDIA_RTX3080_FE_SUB_DEV                       0x1467
+#define NVIDIA_RTX3080TI_FE_SUB_DEV                     0x1535
+#define NVIDIA_RTX3090_FE_SUB_DEV                       0x147D
+#define NVIDIA_RTX3090TI_FE_SUB_DEV                     0x1618
 
 /*---------------------------------------------------------*\
 | PCI Sub-Vendor IDs                                        |
@@ -150,6 +160,7 @@
 #define ASUS_ROG_STRIX_RTX2070S_A8G_GAMING_86FF         0x86FF
 #define ASUS_ROG_STRIX_RTX2070S_O8G_GAMING              0x8727
 #define ASUS_ROG_STRIX_RTX2080_O8G_GAMING               0x865F
+#define ASUS_ROG_STRIX_RTX2080_8G_GAMING                0x867F
 #define ASUS_ROG_STRIX_RTX2080S_A8G_GAMING              0x8712
 #define ASUS_ROG_STRIX_RTX2080S_O8G_GAMING              0x8711
 #define ASUS_ROG_STRIX_RTX2080S_O8G_WHITE               0x876B
@@ -395,6 +406,7 @@
 #define MSI_RTX3070_GAMING_TRIO_SUB_DEV                 0x3904
 #define MSI_RTX3070_GAMING_X_TRIO_SUB_DEV               0x3903
 #define MSI_RTX3080_GAMING_Z_TRIO_SUB_DEV               0x389B
+#define MSI_RTX3080_12G_GAMING_Z_TRIO_SUB_DEV           0x389B
 #define MSI_RTX3070TI_SUPRIM_X_SUB_DEV                  0x5051
 #define MSI_RTX3070TI_GAMING_X_TRIO_SUB_DEV             0x5052
 #define MSI_RTX3070_SUPRIM_X_LHR_SUB_DEV                0x3901
@@ -410,6 +422,7 @@
 | PNY Sub-Device IDs                                    |
 \*-----------------------------------------------------*/
 #define PNY_RTX_3090_XLR8_REVEL_EPIC_X_SUB_DEV          0x136A
+#define PNY_RTX_3060TI_XLR8_REVEL_EPIC_X_SUB_DEV        0x1389
 
 /*-----------------------------------------------------*\
 | Palit Sub-Device IDs                                    |
@@ -418,7 +431,6 @@
 #define PALIT_RTX3060_LHR_SUB_DEV                       0x2504
 
 #define PALIT_RTX3060TI_SUB_DEV                         0x2486
-#define PALIT_RTX3060TI_LHR_SUB_DEV                     0x2489
 
 #define PALIT_RTX3070_SUB_DEV                           0x2484
 #define PALIT_RTX3070_LHR_SUB_DEV                       0x2488

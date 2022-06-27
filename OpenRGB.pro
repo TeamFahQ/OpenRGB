@@ -306,10 +306,12 @@ HEADERS +=                                                                      
     Controllers/CorsairPeripheralController/CorsairK100Controller.h                             \
     Controllers/CorsairPeripheralController/CorsairK55RGBPROController.h                        \
     Controllers/CorsairPeripheralController/CorsairK65MiniController.h                          \
+    Controllers/CorsairPeripheralController/CorsairK95PlatinumXTController.h                    \
     Controllers/CorsairPeripheralController/RGBController_CorsairPeripheral.h                   \
     Controllers/CorsairPeripheralController/RGBController_CorsairK100.h                         \
     Controllers/CorsairPeripheralController/RGBController_CorsairK55RGBPRO.h                    \
     Controllers/CorsairPeripheralController/RGBController_CorsairK65Mini.h                      \
+    Controllers/CorsairPeripheralController/RGBController_CorsairK95PlatinumXT.h                \
     Controllers/CorsairVengeanceController/CorsairVengeanceController.h                         \
     Controllers/CorsairVengeanceController/RGBController_CorsairVengeance.h                     \
     Controllers/CorsairVengeanceProController/CorsairVengeanceProController.h                   \
@@ -500,11 +502,11 @@ HEADERS +=                                                                      
     Controllers/RazerController/RGBController_RazerKraken.h                                     \
     Controllers/RedragonController/RedragonM711Controller.h                                     \
     Controllers/RedragonController/RGBController_RedragonM711.h                                 \
-    Controllers/RoccatController/RGBController_RoccatBurstCore.h                                \
+    Controllers/RoccatController/RGBController_RoccatBurst.h                                    \
     Controllers/RoccatController/RGBController_RoccatHordeAimo.h                                \
     Controllers/RoccatController/RGBController_RoccatKoneAimo.h                                 \
     Controllers/RoccatController/RGBController_RoccatVulcanAimo.h                               \
-    Controllers/RoccatController/RoccatBurstCoreController.h                                    \
+    Controllers/RoccatController/RoccatBurstController.h                                        \
     Controllers/RoccatController/RoccatHordeAimoController.h                                    \
     Controllers/RoccatController/RoccatKoneAimoController.h                                     \
     Controllers/RoccatController/RoccatVulcanAimoController.h                                   \
@@ -523,12 +525,14 @@ HEADERS +=                                                                      
     Controllers/SonyDS4Controller/SonyDS4Controller.h                                           \
     Controllers/SonyDS4Controller/RGBController_SonyDS4.h                                       \
     Controllers/SteelSeriesController/color32.h                                                 \
+    Controllers/SteelSeriesController/SteelSeriesAerox3Controller.h                             \
     Controllers/SteelSeriesController/SteelSeriesApexBaseController.h                           \
     Controllers/SteelSeriesController/SteelSeriesApexController.h                               \
-    Controllers/SteelSeriesController/SteelSeriesApexTZoneController.h                          \
     Controllers/SteelSeriesController/SteelSeriesApexMController.h                              \
+    Controllers/SteelSeriesController/SteelSeriesApexTZoneController.h                          \
     Controllers/SteelSeriesController/SteelSeriesArctis5Controller.h                            \
     Controllers/SteelSeriesController/SteelSeriesGeneric.h                                      \
+    Controllers/SteelSeriesController/SteelSeriesMouseController.h                              \
     Controllers/SteelSeriesController/SteelSeriesOldApexController.h                            \
     Controllers/SteelSeriesController/SteelSeriesRivalController.h                              \
     Controllers/SteelSeriesController/SteelSeriesRival3Controller.h                             \
@@ -764,10 +768,12 @@ SOURCES +=                                                                      
     Controllers/CorsairPeripheralController/CorsairK100Controller.cpp                           \
     Controllers/CorsairPeripheralController/CorsairK55RGBPROController.cpp                      \
     Controllers/CorsairPeripheralController/CorsairK65MiniController.cpp                        \
+    Controllers/CorsairPeripheralController/CorsairK95PlatinumXTController.cpp                  \
     Controllers/CorsairPeripheralController/RGBController_CorsairPeripheral.cpp                 \
     Controllers/CorsairPeripheralController/RGBController_CorsairK100.cpp                       \
     Controllers/CorsairPeripheralController/RGBController_CorsairK55RGBPRO.cpp                  \
     Controllers/CorsairPeripheralController/RGBController_CorsairK65Mini.cpp                    \
+    Controllers/CorsairPeripheralController/RGBController_CorsairK95PlatinumXT.cpp              \
     Controllers/CorsairVengeanceController/CorsairVengeanceController.cpp                       \
     Controllers/CorsairVengeanceController/CorsairVengeanceControllerDetect.cpp                 \
     Controllers/CorsairVengeanceController/RGBController_CorsairVengeance.cpp                   \
@@ -1018,11 +1024,11 @@ SOURCES +=                                                                      
     Controllers/RedragonController/RedragonM711Controller.cpp                                   \
     Controllers/RedragonController/RedragonControllerDetect.cpp                                 \
     Controllers/RedragonController/RGBController_RedragonM711.cpp                               \
-    Controllers/RoccatController/RGBController_RoccatBurstCore.cpp                              \
+    Controllers/RoccatController/RGBController_RoccatBurst.cpp                                  \
     Controllers/RoccatController/RGBController_RoccatHordeAimo.cpp                              \
     Controllers/RoccatController/RGBController_RoccatKoneAimo.cpp                               \
     Controllers/RoccatController/RGBController_RoccatVulcanAimo.cpp                             \
-    Controllers/RoccatController/RoccatBurstCoreController.cpp                                  \
+    Controllers/RoccatController/RoccatBurstController.cpp                                      \
     Controllers/RoccatController/RoccatHordeAimoController.cpp                                  \
     Controllers/RoccatController/RoccatKoneAimoController.cpp                                   \
     Controllers/RoccatController/RoccatVulcanAimoController.cpp                                 \
@@ -1044,17 +1050,19 @@ SOURCES +=                                                                      
     Controllers/SonyDS4Controller/SonyDS4Controller.cpp                                         \
     Controllers/SonyDS4Controller/SonyDS4ControllerDetect.cpp                                   \
     Controllers/SonyDS4Controller/RGBController_SonyDS4.cpp                                     \
+    Controllers/SteelSeriesController/SteelSeriesAerox3Controller.cpp                           \
     Controllers/SteelSeriesController/SteelSeriesApexController.cpp                             \
-    Controllers/SteelSeriesController/SteelSeriesApexTZoneController.cpp                        \
     Controllers/SteelSeriesController/SteelSeriesApexMController.cpp                            \
+    Controllers/SteelSeriesController/SteelSeriesApexTZoneController.cpp                        \
     Controllers/SteelSeriesController/SteelSeriesArctis5Controller.cpp                          \
+    Controllers/SteelSeriesController/SteelSeriesControllerDetect.cpp                           \
+    Controllers/SteelSeriesController/SteelSeriesMouseController.cpp                            \
     Controllers/SteelSeriesController/SteelSeriesOldApexController.cpp                          \
     Controllers/SteelSeriesController/SteelSeriesRivalController.cpp                            \
     Controllers/SteelSeriesController/SteelSeriesRival3Controller.cpp                           \
     Controllers/SteelSeriesController/SteelSeriesSenseiController.cpp                           \
     Controllers/SteelSeriesController/SteelSeriesSiberiaController.cpp                          \
     Controllers/SteelSeriesController/SteelSeriesQCKMatController.cpp                           \
-    Controllers/SteelSeriesController/SteelSeriesControllerDetect.cpp                           \
     Controllers/SteelSeriesController/RGBController_SteelSeriesApex.cpp                         \
     Controllers/SteelSeriesController/RGBController_SteelSeriesApexTZone.cpp                    \
     Controllers/SteelSeriesController/RGBController_SteelSeriesArctis5.cpp                      \
@@ -1179,6 +1187,7 @@ win32:INCLUDEPATH +=                                                            
     dependencies/openrazer-win32                                                                \
     wmi/                                                                                        \
     Controllers/AsusTUFLaptopController                                                         \
+    Controllers/NVIDIAIlluminationController                                                    \
 
 win32:SOURCES +=                                                                                \
 #   dependencies/hidapi/hidapi.c                                                                \
@@ -1281,6 +1290,10 @@ win32:SOURCES +=                                                                
     Controllers/AsusTUFLaptopController/RGBController_AsusTUFLaptopWMI.cpp                      \
     Controllers/ENESMBusController/XPGSpectrixS40GDetect_Windows.cpp                            \
     Controllers/ENESMBusController/ENESMBusInterface/ENESMBusInterface_SpectrixS40G_Windows.cpp \
+    Controllers/NVIDIAIlluminationController/nvapi_accessor.cpp                                                        \
+    Controllers/NVIDIAIlluminationController/NVIDIAIlluminationV1Controller.cpp                 \
+    Controllers/NVIDIAIlluminationController/NVIDIAIlluminationControllerDetect.cpp             \
+    Controllers/NVIDIAIlluminationController/RGBController_NVIDIAIllumination.cpp               \
     Controllers/OpenRazerController/OpenRazerWindowsDetect.cpp                                  \
     Controllers/OpenRazerController/RGBController_OpenRazerWindows.cpp                          \
 
@@ -1299,6 +1312,9 @@ win32:HEADERS +=                                                                
     AutoStart/AutoStart-Windows.h                                                               \
     Controllers/AsusTUFLaptopController/RGBController_AsusTUFLaptopWMI.h                        \
     Controllers/ENESMBusController/ENESMBusInterface/ENESMBusInterface_SpectrixS40G_Windows.h   \
+    Controllers/NVIDIAIlluminationController/nvapi_accessor.h                                                          \
+    Controllers/NVIDIAIlluminationController/NVIDIAIlluminationV1Controller.h                   \
+    Controllers/NVIDIAIlluminationController/RGBController_NVIDIAIllumination.h                 \
     Controllers/OpenRazerController/RGBController_OpenRazerWindows.h                            \
 
 win32:contains(QMAKE_TARGET.arch, x86_64) {
