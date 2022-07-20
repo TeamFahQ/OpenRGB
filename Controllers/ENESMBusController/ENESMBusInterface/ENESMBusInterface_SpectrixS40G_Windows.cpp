@@ -20,6 +20,11 @@ ENESMBusInterface_SpectrixS40G::ENESMBusInterface_SpectrixS40G(HANDLE fd, wchar_
 	this->path    = path;
 }
 
+ENESMBusInterface_SpectrixS40G::~ENESMBusInterface_SpectrixS40G()
+{
+
+}
+
 std::string ENESMBusInterface_SpectrixS40G::GetLocation()
 {
 	std::string str(path.begin(), path.end());
@@ -92,8 +97,8 @@ unsigned char ENESMBusInterface_SpectrixS40G::ENERegisterRead(ene_dev_id dev, en
         \*-----------------------------------------------------------------------------*/
         DWORD bytesreturned = 0;
         while(bytesreturned != sizeof(buffer))
-        {        
-            bool result = DeviceIoControl(nvme_fd, IOCTL_STORAGE_PROTOCOL_COMMAND, buffer, sizeof(buffer), buffer, sizeof(buffer), &bytesreturned, (LPOVERLAPPED)0x0);
+        {
+            DeviceIoControl(nvme_fd, IOCTL_STORAGE_PROTOCOL_COMMAND, buffer, sizeof(buffer), buffer, sizeof(buffer), &bytesreturned, (LPOVERLAPPED)0x0);
         }
 
         /*-----------------------------------------------------------------------------*\
@@ -102,7 +107,7 @@ unsigned char ENESMBusInterface_SpectrixS40G::ENERegisterRead(ene_dev_id dev, en
         \*-----------------------------------------------------------------------------*/
         memcpy(ExtraValue, &command->Command + sizeof(NVME_COMMAND), sizeof(ExtraValue));
 
-        return(ExtraValue[16]);
+        return((unsigned char)ExtraValue[16]);
     }
 
 }

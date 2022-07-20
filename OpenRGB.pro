@@ -75,11 +75,12 @@ INCLUDEPATH +=                                                                  
     serial_port/                                                                                \
     super_io/                                                                                   \
     AutoStart/                                                                                  \
+    Controllers/A4TechController/                                                               \
     Controllers/AlienwareController/                                                            \
     Controllers/AlienwareKeyboardController/                                                    \
     Controllers/AMDWraithPrismController/                                                       \
-    Controllers/ASRockPolychromeSMBusController/                                                \
     Controllers/ASRockPolychromeUSBController/                                                  \
+    Controllers/ASRockSMBusController/                                                          \
     Controllers/AsusAuraCoreController/                                                         \
     Controllers/AsusAuraGPUController/                                                          \
     Controllers/AsusAuraUSBController/                                                          \
@@ -152,7 +153,7 @@ INCLUDEPATH +=                                                                  
     Controllers/RoccatController/                                                               \
     Controllers/SapphireGPUController/                                                          \
     Controllers/SinowealthController/                                                           \
-    Controllers/SonyDS4Controller/                                                              \
+    Controllers/SonyGamepadController/                                                          \
     Controllers/SteelSeriesController/                                                          \
     Controllers/TecknetController/                                                              \
     Controllers/ThermaltakePoseidonZRGBController/                                              \
@@ -234,6 +235,8 @@ HEADERS +=                                                                      
     serial_port/serial_port.h                                                                   \
     super_io/super_io.h                                                                         \
     AutoStart/AutoStart.h                                                                       \
+    Controllers/A4TechController/BloodyMouseController.h                                        \
+    Controllers/A4TechController/RGBController_BloodyMouse.h                                    \
     Controllers/AlienwareController/AlienwareController.h                                       \
     Controllers/AlienwareController/RGBController_Alienware.h                                   \
     Controllers/AlienwareKeyboardController/AlienwareAW510KController.h                         \
@@ -242,10 +245,14 @@ HEADERS +=                                                                      
     Controllers/AMDWraithPrismController/RGBController_AMDWraithPrism.h                         \
     Controllers/AnnePro2Controller/AnnePro2Controller.h                                         \
     Controllers/AnnePro2Controller/RGBController_AnnePro2.h                                     \
-    Controllers/ASRockPolychromeSMBusController/ASRockPolychromeSMBusController.h               \
-    Controllers/ASRockPolychromeSMBusController/RGBController_ASRockPolychromeSMBus.h           \
     Controllers/ASRockPolychromeUSBController/ASRockPolychromeUSBController.h                   \
     Controllers/ASRockPolychromeUSBController/RGBController_ASRockPolychromeUSB.h               \
+    Controllers/ASRockSMBusController/ASRockASRRGBSMBusController.h                             \
+    Controllers/ASRockSMBusController/RGBController_ASRockASRRGBSMBus.h                         \
+    Controllers/ASRockSMBusController/ASRockPolychromeV1SMBusController.h                       \
+    Controllers/ASRockSMBusController/RGBController_ASRockPolychromeV1SMBus.h                   \
+    Controllers/ASRockSMBusController/ASRockPolychromeV2SMBusController.h                       \
+    Controllers/ASRockSMBusController/RGBController_ASRockPolychromeV2SMBus.h                   \
     Controllers/AsusAuraCoreController/AsusAuraCoreController.h                                 \
     Controllers/AsusAuraCoreController/RGBController_AsusAuraCore.h                             \
     Controllers/AsusAuraGPUController/AsusAuraGPUController.h                                   \
@@ -277,6 +284,7 @@ HEADERS +=                                                                      
     Controllers/BlinkyTapeController/BlinkyTapeController.h                                     \
     Controllers/BlinkyTapeController/RGBController_BlinkyTape.h                                 \
     Controllers/CoolerMasterController/CMARGBcontroller.h                                       \
+    Controllers/CoolerMasterController/CMARGBGen2A1controller.h                                 \
     Controllers/CoolerMasterController/CMMKController.h                                         \
     Controllers/CoolerMasterController/CMMMController.h                                         \
     Controllers/CoolerMasterController/CMMM711Controller.h                                      \
@@ -285,6 +293,7 @@ HEADERS +=                                                                      
     Controllers/CoolerMasterController/CMRGBController.h                                        \
     Controllers/CoolerMasterController/CMSmallARGBController.h                                  \
     Controllers/CoolerMasterController/RGBController_CMARGBController.h                         \
+    Controllers/CoolerMasterController/RGBController_CMARGBGen2A1Controller.h                   \
     Controllers/CoolerMasterController/RGBController_CMMKController.h                           \
     Controllers/CoolerMasterController/RGBController_CMMMController.h                           \
     Controllers/CoolerMasterController/RGBController_CMMM711Controller.h                        \
@@ -494,6 +503,7 @@ HEADERS +=                                                                      
     Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRev9.h                             \
     Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRevB.h                             \
     Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRevD.h                             \
+    Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRevE.h                             \
     Controllers/RazerController/RazerController.h                                               \
     Controllers/RazerController/RazerKrakenController.h                                         \
     Controllers/RazerController/RazerDevices.h                                                  \
@@ -522,8 +532,10 @@ HEADERS +=                                                                      
     Controllers/SinowealthController/RGBController_Sinowealth1007.h                             \
     Controllers/SinowealthController/RGBController_SinowealthKeyboard.h                         \
     Controllers/SinowealthController/RGBController_SinowealthKeyboard16.h                       \
-    Controllers/SonyDS4Controller/SonyDS4Controller.h                                           \
-    Controllers/SonyDS4Controller/RGBController_SonyDS4.h                                       \
+    Controllers/SonyGamepadController/SonyDualSenseController.h                                 \
+    Controllers/SonyGamepadController/RGBController_SonyDualSense.h                             \
+    Controllers/SonyGamepadController/SonyDS4Controller.h                                       \
+    Controllers/SonyGamepadController/RGBController_SonyDS4.h                                   \
     Controllers/SteelSeriesController/color32.h                                                 \
     Controllers/SteelSeriesController/SteelSeriesAerox3Controller.h                             \
     Controllers/SteelSeriesController/SteelSeriesApexBaseController.h                           \
@@ -681,6 +693,9 @@ SOURCES +=                                                                      
     serial_port/serial_port.cpp                                                                 \
     super_io/super_io.cpp                                                                       \
     AutoStart/AutoStart.cpp                                                                     \
+    Controllers/A4TechController/A4Tech_Detector.cpp                                            \
+    Controllers/A4TechController/BloodyMouseController.cpp                                      \
+    Controllers/A4TechController/RGBController_BloodyMouse.cpp                                  \
     Controllers/AlienwareController/AlienwareController.cpp                                     \
     Controllers/AlienwareController/AlienwareControllerDetect.cpp                               \
     Controllers/AlienwareController/RGBController_Alienware.cpp                                 \
@@ -693,12 +708,16 @@ SOURCES +=                                                                      
     Controllers/AnnePro2Controller/AnnePro2Controller.cpp                                       \
     Controllers/AnnePro2Controller/AnnePro2ControllerDetect.cpp                                 \
     Controllers/AnnePro2Controller/RGBController_AnnePro2.cpp                                   \
-    Controllers/ASRockPolychromeSMBusController/ASRockPolychromeSMBusController.cpp             \
-    Controllers/ASRockPolychromeSMBusController/ASRockPolychromeSMBusControllerDetect.cpp       \
-    Controllers/ASRockPolychromeSMBusController/RGBController_ASRockPolychromeSMBus.cpp         \
     Controllers/ASRockPolychromeUSBController/ASRockPolychromeUSBController.cpp                 \
     Controllers/ASRockPolychromeUSBController/ASRockPolychromeUSBControllerDetect.cpp           \
     Controllers/ASRockPolychromeUSBController/RGBController_ASRockPolychromeUSB.cpp             \
+    Controllers/ASRockSMBusController/ASRockASRRGBSMBusController.cpp                           \
+    Controllers/ASRockSMBusController/ASRockPolychromeV1SMBusController.cpp                     \
+    Controllers/ASRockSMBusController/ASRockPolychromeV2SMBusController.cpp                     \
+    Controllers/ASRockSMBusController/ASRockSMBusControllerDetect.cpp                           \
+    Controllers/ASRockSMBusController/RGBController_ASRockASRRGBSMBus.cpp                       \
+    Controllers/ASRockSMBusController/RGBController_ASRockPolychromeV1SMBus.cpp                 \
+    Controllers/ASRockSMBusController/RGBController_ASRockPolychromeV2SMBus.cpp                 \
     Controllers/AsusAuraCoreController/AsusAuraCoreController.cpp                               \
     Controllers/AsusAuraCoreController/AsusAuraCoreControllerDetect.cpp                         \
     Controllers/AsusAuraCoreController/RGBController_AsusAuraCore.cpp                           \
@@ -732,6 +751,7 @@ SOURCES +=                                                                      
     Controllers/BlinkyTapeController/BlinkyTapeControllerDetect.cpp                             \
     Controllers/BlinkyTapeController/RGBController_BlinkyTape.cpp                               \
     Controllers/CoolerMasterController/CMARGBcontroller.cpp                                     \
+    Controllers/CoolerMasterController/CMARGBGen2A1controller.cpp                               \
     Controllers/CoolerMasterController/CMMKController.cpp                                       \
     Controllers/CoolerMasterController/CMMMController.cpp                                       \
     Controllers/CoolerMasterController/CMMM711Controller.cpp                                    \
@@ -741,6 +761,7 @@ SOURCES +=                                                                      
     Controllers/CoolerMasterController/CMSmallARGBController.cpp                                \
     Controllers/CoolerMasterController/CoolerMasterControllerDetect.cpp                         \
     Controllers/CoolerMasterController/RGBController_CMARGBController.cpp                       \
+    Controllers/CoolerMasterController/RGBController_CMARGBGen2A1Controller.cpp                 \
     Controllers/CoolerMasterController/RGBController_CMMKController.cpp                         \
     Controllers/CoolerMasterController/RGBController_CMMMController.cpp                         \
     Controllers/CoolerMasterController/RGBController_CMMM711Controller.cpp                      \
@@ -1015,6 +1036,7 @@ SOURCES +=                                                                      
     Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRev9.cpp                           \
     Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRevB.cpp                           \
     Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRevD.cpp                           \
+    Controllers/QMKOpenRGBController/RGBController_QMKOpenRGBRevE.cpp                           \
     Controllers/RazerController/RazerController.cpp                                             \
     Controllers/RazerController/RazerKrakenController.cpp                                       \
     Controllers/RazerController/RazerControllerDetect.cpp                                       \
@@ -1047,9 +1069,11 @@ SOURCES +=                                                                      
     Controllers/SinowealthController/RGBController_Sinowealth1007.cpp                           \
     Controllers/SinowealthController/RGBController_SinowealthKeyboard.cpp                       \
     Controllers/SinowealthController/RGBController_SinowealthKeyboard16.cpp                     \
-    Controllers/SonyDS4Controller/SonyDS4Controller.cpp                                         \
-    Controllers/SonyDS4Controller/SonyDS4ControllerDetect.cpp                                   \
-    Controllers/SonyDS4Controller/RGBController_SonyDS4.cpp                                     \
+    Controllers/SonyGamepadController/SonyDualSenseController.cpp                               \
+    Controllers/SonyGamepadController/RGBController_SonyDualSense.cpp                           \
+    Controllers/SonyGamepadController/SonyDS4Controller.cpp                                     \
+    Controllers/SonyGamepadController/RGBController_SonyDS4.cpp                                 \
+    Controllers/SonyGamepadController/SonyGamepadControllerDetect.cpp                           \
     Controllers/SteelSeriesController/SteelSeriesAerox3Controller.cpp                           \
     Controllers/SteelSeriesController/SteelSeriesApexController.cpp                             \
     Controllers/SteelSeriesController/SteelSeriesApexMController.cpp                            \
@@ -1290,7 +1314,7 @@ win32:SOURCES +=                                                                
     Controllers/AsusTUFLaptopController/RGBController_AsusTUFLaptopWMI.cpp                      \
     Controllers/ENESMBusController/XPGSpectrixS40GDetect_Windows.cpp                            \
     Controllers/ENESMBusController/ENESMBusInterface/ENESMBusInterface_SpectrixS40G_Windows.cpp \
-    Controllers/NVIDIAIlluminationController/nvapi_accessor.cpp                                                        \
+    Controllers/NVIDIAIlluminationController/nvapi_accessor.cpp                                 \
     Controllers/NVIDIAIlluminationController/NVIDIAIlluminationV1Controller.cpp                 \
     Controllers/NVIDIAIlluminationController/NVIDIAIlluminationControllerDetect.cpp             \
     Controllers/NVIDIAIlluminationController/RGBController_NVIDIAIllumination.cpp               \
@@ -1312,7 +1336,7 @@ win32:HEADERS +=                                                                
     AutoStart/AutoStart-Windows.h                                                               \
     Controllers/AsusTUFLaptopController/RGBController_AsusTUFLaptopWMI.h                        \
     Controllers/ENESMBusController/ENESMBusInterface/ENESMBusInterface_SpectrixS40G_Windows.h   \
-    Controllers/NVIDIAIlluminationController/nvapi_accessor.h                                                          \
+    Controllers/NVIDIAIlluminationController/nvapi_accessor.h                                   \
     Controllers/NVIDIAIlluminationController/NVIDIAIlluminationV1Controller.h                   \
     Controllers/NVIDIAIlluminationController/RGBController_NVIDIAIllumination.h                 \
     Controllers/OpenRazerController/RGBController_OpenRazerWindows.h                            \

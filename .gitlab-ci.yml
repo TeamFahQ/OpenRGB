@@ -71,6 +71,13 @@ before_script:
     - README.md
     expire_in: 30 days
 
+  rules:
+  - if: '$CI_PROJECT_PATH == "CalcProgrammer1/OpenRGB"'
+    when: on_success
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true
+
 #-----------------------------------------------------------------------#
 # Linux (AppImage) 64-bit Build Target                                  #
 #-----------------------------------------------------------------------#
@@ -111,6 +118,13 @@ before_script:
     - openrgb-dbgsym*.deb
     expire_in: 30 days
 
+  rules:
+  - if: '$CI_PROJECT_PATH == "CalcProgrammer1/OpenRGB"'
+    when: on_success
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true
+
 #-----------------------------------------------------------------------#
 # Linux (.deb) Debian Buster (Legacy) 64-bit Build Target               #
 #-----------------------------------------------------------------------#
@@ -131,6 +145,13 @@ before_script:
     exclude:
     - openrgb-dbgsym*.deb
     expire_in: 30 days
+
+  rules:
+  - if: '$CI_PROJECT_PATH == "CalcProgrammer1/OpenRGB"'
+    when: on_success
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true
 
 #-----------------------------------------------------------------------#
 # Linux (.deb) Debian Bullseye 32-bit Build Target                      #
@@ -153,6 +174,13 @@ before_script:
     - openrgb-dbgsym*.deb
     expire_in: 30 days
 
+  rules:
+  - if: '$CI_PROJECT_PATH == "CalcProgrammer1/OpenRGB"'
+    when: on_success
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true
+
 #-----------------------------------------------------------------------#
 # Linux (.deb) Debian Bullseye 64-bit Build Target                      #
 #-----------------------------------------------------------------------#
@@ -173,6 +201,69 @@ before_script:
     exclude:
     - openrgb-dbgsym*.deb
     expire_in: 30 days
+
+  rules:
+  - if: '$CI_PROJECT_PATH == "CalcProgrammer1/OpenRGB"'
+    when: on_success
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true
+
+#-----------------------------------------------------------------------#
+# Linux (.deb) Debian Bookworm 32-bit Build Target                      #
+#-----------------------------------------------------------------------#
+"Linux 32 .deb (Debian Bookworm)":
+  <<: *ccache_init
+  image: registry.gitlab.com/openrgbdevelopers/openrgb-linux-ci-deb-builder:bookworm-32
+  stage: build
+  script:
+  - dpkg-architecture -l
+  - dpkg-buildpackage --target-arch i386 -us -B
+  - rm -v ../openrgb-dbgsym*.deb
+  - mv -v ../openrgb*.deb ./
+
+  artifacts:
+    name: "${CI_PROJECT_NAME}_Linux_32_deb_${CI_COMMIT_SHORT_SHA}"
+    paths:
+    - openrgb*.deb
+    exclude:
+    - openrgb-dbgsym*.deb
+    expire_in: 30 days
+
+  rules:
+  - if: '$CI_PROJECT_PATH == "CalcProgrammer1/OpenRGB"'
+    when: on_success
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true
+
+#-----------------------------------------------------------------------#
+# Linux (.deb) Debian Bookworm 64-bit Build Target                      #
+#-----------------------------------------------------------------------#
+"Linux 64 .deb (Debian Bookworm)":
+  <<: *ccache_init
+  image: registry.gitlab.com/openrgbdevelopers/openrgb-linux-ci-deb-builder:bookworm-64
+  stage: build
+  script:
+  - dpkg-architecture -l
+  - dpkg-buildpackage -us -B
+  - rm -v ../openrgb-dbgsym*.deb
+  - mv -v ../openrgb*.deb ./
+
+  artifacts:
+    name: "${CI_PROJECT_NAME}_Linux_64_deb_${CI_COMMIT_SHORT_SHA}"
+    paths:
+    - openrgb*.deb
+    exclude:
+    - openrgb-dbgsym*.deb
+    expire_in: 30 days
+
+  rules:
+  - if: '$CI_PROJECT_PATH == "CalcProgrammer1/OpenRGB"'
+    when: on_success
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true
 
 #-----------------------------------------------------------------------#
 # Linux (.rpm, f35) 64-bit Build Target                                 #
@@ -201,6 +292,13 @@ before_script:
     - openrgb*.rpm
     expire_in: 30 days
 
+  rules:
+  - if: '$CI_PROJECT_PATH == "CalcProgrammer1/OpenRGB"'
+    when: on_success
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true
+
 #-----------------------------------------------------------------------#
 # Linux (.rpm, f36) 64-bit Build Target                                 #
 #-----------------------------------------------------------------------#
@@ -227,6 +325,13 @@ before_script:
     paths:
     - openrgb*.rpm
     expire_in: 30 days
+
+  rules:
+  - if: '$CI_PROJECT_PATH == "CalcProgrammer1/OpenRGB"'
+    when: on_success
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true
 
 #-----------------------------------------------------------------------#
 # Debian 32 Buster test                                                 #
@@ -297,6 +402,40 @@ before_script:
   - "Linux 64 .deb (Debian Bullseye)"
 
 #-----------------------------------------------------------------------#
+# Debian 32 Bookworm test                                               #
+#-----------------------------------------------------------------------#
+"Debian 32 Bookworm":
+  image: i386/debian:bookworm
+  stage: test
+  script:
+  - apt update
+  - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*i386.deb
+  - openrgb --version
+  - openrgb -l
+  - apt remove -y openrgb
+  dependencies:
+  - "Linux 32 .deb (Debian Bookworm)"
+  needs:
+  - "Linux 32 .deb (Debian Bookworm)"
+
+#-----------------------------------------------------------------------#
+# Debian 64 Bookworm test                                               #
+#-----------------------------------------------------------------------#
+"Debian 64 Bookworm":
+  image: amd64/debian:bookworm
+  stage: test
+  script:
+  - apt update
+  - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
+  - openrgb --version
+  - openrgb -l
+  - apt remove -y openrgb
+  dependencies:
+  - "Linux 64 .deb (Debian Bookworm)"
+  needs:
+  - "Linux 64 .deb (Debian Bookworm)"
+
+#-----------------------------------------------------------------------#
 # Ubuntu 64 20.04LTS test                                               #
 #-----------------------------------------------------------------------#
 "Ubuntu 64 20.04LTS":
@@ -329,6 +468,23 @@ before_script:
   - "Linux 64 .deb (Debian Bullseye)"
   needs:
   - "Linux 64 .deb (Debian Bullseye)"
+
+#-----------------------------------------------------------------------#
+# Ubuntu 64 22.04 test                                                  #
+#-----------------------------------------------------------------------#
+"Ubuntu 64 22.04LTS":
+  image: ubuntu:jammy
+  stage: test
+  script:
+  - apt update
+  - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
+  - openrgb --version
+  - openrgb -l
+  - apt remove -y openrgb
+  dependencies:
+  - "Linux 64 .deb (Debian Bookworm)"
+  needs:
+  - "Linux 64 .deb (Debian Bookworm)"
 
 #-----------------------------------------------------------------------#
 # Fedora 64 v35 test                                                    #
@@ -435,6 +591,13 @@ before_script:
     - 'OpenRGB Windows 32-bit'
     expire_in: 30 days
 
+  rules:
+  - if: '$CI_PROJECT_PATH == "CalcProgrammer1/OpenRGB"'
+    when: on_success
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true
+
 #-----------------------------------------------------------------------#
 # Windows (64-bit) Build Target                                         #
 #-----------------------------------------------------------------------#
@@ -532,6 +695,9 @@ before_script:
     when: on_success
   - if: '$BUILD_MACOS =~ /.+/'
     when: on_success
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true
 
 "MacOS Intel":
   tags:
@@ -554,3 +720,6 @@ before_script:
     when: on_success
   - if: '$BUILD_MACOS =~ /.+/'
     when: on_success
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true

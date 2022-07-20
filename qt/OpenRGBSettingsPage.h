@@ -20,6 +20,9 @@ public:
 signals:
     void TrayIconChanged(bool tray_icon);
 
+public slots:
+    void UpdateProfiles();
+
 private:
     Ui::OpenRGBSettingsPageUi *ui;
     void SaveSettings();
@@ -45,16 +48,21 @@ private slots:
     void on_CheckboxAutoStartServer_clicked();
     void on_CheckboxAutoStartClient_clicked();
     void on_CheckboxAutoStartProfile_clicked();
+    void on_TextServerHost_textChanged(const QString);
     void on_TextServerPort_textChanged(const QString);
     void on_TextClientHost_textChanged(const QString);
     void on_TextCustomArgs_textChanged(const QString);
     void on_ComboBoxAutoStartProfile_currentTextChanged(const QString);
+    void on_CheckboxAutoStartSetServerHost_clicked();
     void on_CheckboxAutoStartSetServerPort_clicked();
     void on_CheckboxAutoStartCustom_clicked();
     void on_CheckboxRunZoneChecks_clicked();
     void on_OpenSettingsFolderButton_clicked();
     void on_CheckboxLogConsole_clicked();
     void on_CheckboxAMDSMBusReduceCPU_clicked();
+
+    void on_CheckboxSetOnExit_clicked(bool checked);
+    void on_ComboBoxExitProfile_currentTextChanged(const QString exit_profile_name);
 };
 
 #endif // OPENRGBSETTINGSPAGE_H
