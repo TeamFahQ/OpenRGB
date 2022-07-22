@@ -45,6 +45,7 @@
 #define RAZER_BLADE_LATE_2020_PID                       0x0268
 #define RAZER_BLADE_2021_ADVANCED_PID                   0x026D
 #define RAZER_BLADE_2021_BASE_PID                       0x026F
+#define RAZER_BLADE_2021_BASE_V2_PID                    0x027A
 
 #define RAZER_BLADE_14_2021_PID                         0x0270
 
@@ -431,7 +432,9 @@ static const razer_key blackwidow_chroma_te_keymap[] =
     {   0,      5,      1,              KEY_EN_LEFT_CONTROL                 },
     {   0,      5,      2,              KEY_EN_LEFT_WINDOWS                 },
     {   0,      5,      3,              KEY_EN_LEFT_ALT                     },
+    {   0,      5,      7,              KEY_EN_SPACE                        },
     {   0,      5,      11,             KEY_EN_RIGHT_ALT                    },
+    {   0,      5,      12,             KEY_EN_RIGHT_FUNCTION               },
     {   0,      5,      13,             KEY_EN_MENU                         },
     {   0,      5,      14,             KEY_EN_RIGHT_CONTROL                },
     {   0,      5,      15,             KEY_EN_LEFT_ARROW                   },
@@ -3171,8 +3174,8 @@ static const razer_device blackwidow_x_chroma_te_device =
         NULL,
         NULL
     },
-    NULL,
-    0
+    blackwidow_chroma_te_keymap,
+    BLACKWIDOW_CHROMA_TE_KEYMAP_SIZE
 };
 
 /*-------------------------------------------------------------*\
@@ -4115,6 +4118,41 @@ static const razer_device blade_15_2021_base_device =
 };
 
 /*-------------------------------------------------------------*\
+|  Razer Blade 15 (2021 Base) 1532:027A                         |
+|                                                               |
+|  Zone "Keyboard"                                              |
+|       Linear                                                  |
+|       1 Row, 16 Columns                                       |
+\*-------------------------------------------------------------*/
+static const razer_zone blade_15_2021_base_v2_zone =
+{
+    "Keyboard",
+    ZONE_TYPE_LINEAR,
+    1,
+    16
+};
+
+static const razer_device blade_15_2021_base_v2_device =
+{
+    "Razer Blade 15 (2021 Base)",
+    RAZER_BLADE_2021_BASE_V2_PID,
+    DEVICE_TYPE_KEYBOARD,
+    true,
+    1,
+    16,
+    {
+        &blade_15_2021_base_v2_zone,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    },
+    NULL,
+    0
+};
+
+/*-------------------------------------------------------------*\
 |  Razer Blade 14 (2021)                                        |
 |                                                               |
 |   Zone "Keyboard"                                             |
@@ -4677,15 +4715,15 @@ static const razer_device blade_stealth_2020_device =
 |  Razer Blade Stealth (Late 2020)                              |
 |                                                               |
 |  Zone "Keyboard"                                              |
-|       Single                                                  |
-|       1 LED                                                   |
+|       Linear                                                  |
+|       1 Row, 16 Columns                                       |
 \*-------------------------------------------------------------*/
 static const razer_zone blade_stealth_late_2020_zone =
 {
     "Keyboard",
-    ZONE_TYPE_SINGLE,
+    ZONE_TYPE_LINEAR,
     1,
-    1
+    16
 };
 
 static const razer_device blade_stealth_late_2020_device =
@@ -4693,9 +4731,9 @@ static const razer_device blade_stealth_late_2020_device =
     "Razer Blade Stealth (Late 2020)",
     RAZER_BLADE_STEALTH_LATE_2020_PID,
     DEVICE_TYPE_KEYBOARD,
-    false,
+    true,
     1,
-    1,
+    16,
     {
         &blade_stealth_late_2020_zone,
         NULL,
@@ -8052,6 +8090,7 @@ static const razer_device* device_list[] =
     &blade_late_2020_device,
     &blade_15_2021_advanced_device,
     &blade_15_2021_base_device,
+    &blade_15_2021_base_v2_device,
     &blade_14_2021_device,
     &book_13_2020_device,
     &blade_pro_2016_device,

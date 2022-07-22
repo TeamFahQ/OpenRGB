@@ -154,6 +154,7 @@ INCLUDEPATH +=                                                                  
     Controllers/SapphireGPUController/                                                          \
     Controllers/SinowealthController/                                                           \
     Controllers/SonyGamepadController/                                                          \
+    Controllers/SRGBmodsController/                                                             \
     Controllers/SteelSeriesController/                                                          \
     Controllers/TecknetController/                                                              \
     Controllers/ThermaltakePoseidonZRGBController/                                              \
@@ -431,6 +432,8 @@ HEADERS +=                                                                      
     Controllers/LIFXController/RGBController_LIFX.h                                             \
     Controllers/LianLiController/LianLiUniHubController.h                                       \
     Controllers/LianLiController/RGBController_LianLiUniHub.h                                   \
+    Controllers/LianLiController/RGBController_StrimerLConnect.h                                \
+    Controllers/LianLiController/StrimerLConnectController.h                                    \
     Controllers/LogitechController/LogitechProtocolCommon.h                                     \
     Controllers/LogitechController/LogitechG203LController.h                                    \
     Controllers/LogitechController/LogitechG213Controller.h                                     \
@@ -536,6 +539,8 @@ HEADERS +=                                                                      
     Controllers/SonyGamepadController/RGBController_SonyDualSense.h                             \
     Controllers/SonyGamepadController/SonyDS4Controller.h                                       \
     Controllers/SonyGamepadController/RGBController_SonyDS4.h                                   \
+    Controllers/SRGBmodsController/SRGBmodsPicoController.h                                     \
+    Controllers/SRGBmodsController/RGBController_SRGBmodsPico.h                                 \
     Controllers/SteelSeriesController/color32.h                                                 \
     Controllers/SteelSeriesController/SteelSeriesAerox3Controller.h                             \
     Controllers/SteelSeriesController/SteelSeriesApexBaseController.h                           \
@@ -946,6 +951,8 @@ SOURCES +=                                                                      
     Controllers/LianLiController/LianLiControllerDetect.cpp                                     \
     Controllers/LianLiController/LianLiUniHubController.cpp                                     \
     Controllers/LianLiController/RGBController_LianLiUniHub.cpp                                 \
+    Controllers/LianLiController/RGBController_StrimerLConnect.cpp                              \
+    Controllers/LianLiController/StrimerLConnectController.cpp                                  \
     Controllers/LogitechController/LogitechControllerDetect.cpp                                 \
     Controllers/LogitechController/LogitechProtocolCommon.cpp                                   \
     Controllers/LogitechController/LogitechG203LController.cpp                                  \
@@ -1074,6 +1081,9 @@ SOURCES +=                                                                      
     Controllers/SonyGamepadController/SonyDS4Controller.cpp                                     \
     Controllers/SonyGamepadController/RGBController_SonyDS4.cpp                                 \
     Controllers/SonyGamepadController/SonyGamepadControllerDetect.cpp                           \
+    Controllers/SRGBmodsController/SRGBmodsPicoController.cpp                                   \
+    Controllers/SRGBmodsController/SRGBmodsControllerDetect.cpp                                 \
+    Controllers/SRGBmodsController/RGBController_SRGBmodsPico.cpp                               \
     Controllers/SteelSeriesController/SteelSeriesAerox3Controller.cpp                           \
     Controllers/SteelSeriesController/SteelSeriesApexController.cpp                             \
     Controllers/SteelSeriesController/SteelSeriesApexMController.cpp                            \
@@ -1155,12 +1165,14 @@ contains(QMAKE_PLATFORM, freebsd) {
 RESOURCES +=                                                                                    \
     qt/resources.qrc                                                                            \
 
-TRANSLATIONS += \
-    qt/i18n/OpenRGB_en.ts  \
-    qt/i18n/OpenRGB_de.ts  \
-    qt/i18n/OpenRGB_es.ts  \
-    qt/i18n/OpenRGB_fr.ts  \
-    qt/i18n/OpenRGB_ru.ts  \
+TRANSLATIONS +=                                                                                 \
+    qt/i18n/OpenRGB_en.ts                                                                       \
+    qt/i18n/OpenRGB_en_AU.ts                                                                    \
+    qt/i18n/OpenRGB_en_GB.ts                                                                    \
+    qt/i18n/OpenRGB_de.ts                                                                       \
+    qt/i18n/OpenRGB_es.ts                                                                       \
+    qt/i18n/OpenRGB_fr.ts                                                                       \
+    qt/i18n/OpenRGB_ru.ts                                                                       \
 
 FORMS +=                                                                                        \
     qt/OpenRGBClientInfoPage.ui                                                                 \
