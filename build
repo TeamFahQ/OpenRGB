@@ -17,7 +17,7 @@ time make CC="ccache gcc" -j $(nproc --all)
 echo "Does it work?"
 select ynq in "yes" "no" "quit"; do
     case $ynq in
-	yes ) cp openrgb $HOME/bin;break;;
+	yes ) sudo make install;break;;
 	no ) echo "UhOh!" && exit;break;;
 	quit ) echo "Nothing done. Good Bye!";exit;;
 esac;
