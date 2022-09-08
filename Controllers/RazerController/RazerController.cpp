@@ -57,9 +57,12 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_TARTARUS_CHROMA_PID:
         case RAZER_TARTARUS_V2_PID:
         case RAZER_DEATHADDER_CHROMA_PID:
+        case RAZER_DEATHADDER_ESSENTIAL_V2_PID:
         case RAZER_DEATHADDER_V2_MINI_PID:
+        case RAZER_LAPTOP_STAND_CHROMA_PID:
         case RAZER_LAPTOP_STAND_CHROMA_V2_PID:
         case RAZER_MAMBA_ELITE_PID:
+        case RAZER_NAGA_CLASSIC_PID:
         case RAZER_NAGA_EPIC_CHROMA_PID:
         case RAZER_NAGA_LEFT_HANDED_PID:
         case RAZER_NAGA_PRO_WIRED_PID:
@@ -121,12 +124,15 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_CORE_X_PID:
         case RAZER_DEATHADDER_ELITE_PID:
         case RAZER_DEATHADDER_V2_MINI_PID:
+        case RAZER_DEATHADDER_ESSENTIAL_V2_PID:
         case RAZER_FIREFLY_V2_PID:
         case RAZER_GOLIATHUS_CHROMA_EXTENDED_PID:
         case RAZER_GOLIATHUS_CHROMA_PID:
+        case RAZER_LAPTOP_STAND_CHROMA_PID:
         case RAZER_LAPTOP_STAND_CHROMA_V2_PID:
         case RAZER_MAMBA_ELITE_PID:
         case RAZER_MOUSE_BUNGEE_V3_CHROMA_PID:
+        case RAZER_NAGA_CLASSIC_PID:
         case RAZER_NAGA_LEFT_HANDED_PID:
         case RAZER_O11_DYNAMIC_PID:
         case RAZER_TARTARUS_V2_PID:
@@ -237,6 +243,7 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_CYNOSA_V2_PID:
         case RAZER_DEATHADDER_ELITE_PID:
         case RAZER_DEATHADDER_ESSENTIAL_PID:
+        case RAZER_DEATHADDER_ESSENTIAL_V2_PID:
         case RAZER_DEATHADDER_ESSENTIAL_WHITE_EDITION_PID:
         case RAZER_DEATHADDER_V2_MINI_PID:
         case RAZER_DEATHADDER_V2_PID:
@@ -259,12 +266,14 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_LANCEHEAD_2017_WIRELESS_PID:
         case RAZER_LANCEHEAD_2019_WIRED_PID:
         case RAZER_LANCEHEAD_2019_WIRELESS_PID:
+        case RAZER_LAPTOP_STAND_CHROMA_PID:
         case RAZER_LAPTOP_STAND_CHROMA_V2_PID:
         case RAZER_MAMBA_2018_WIRED_PID:
         case RAZER_MAMBA_2018_WIRELESS_PID:
         case RAZER_MAMBA_ELITE_PID:
         case RAZER_MOUSE_BUNGEE_V3_CHROMA_PID:
         case RAZER_MOUSE_DOCK_CHROMA_PID:
+        case RAZER_NAGA_CLASSIC_PID:
         case RAZER_NAGA_LEFT_HANDED_PID:
         case RAZER_NAGA_TRINITY_PID:
         case RAZER_NAGA_PRO_WIRED_PID:
@@ -359,6 +368,29 @@ void RazerController::SetAddressableZoneSizes(unsigned char zone_1_size, unsigne
     razer_report report     = razer_create_addressable_size_report(zone_1_size, zone_2_size, zone_3_size, zone_4_size, zone_5_size, zone_6_size);
 
     razer_usb_send(&report);
+}
+
+unsigned char RazerController::GetMaxBrightness()
+{
+    /*-----------------------------------------------------*\
+    | Max brightness for most devices is 0xFF (255)         |
+    |   Add PIDs only for devices that use 0x64 (100)       |
+    |   or any another arbitrary value                      |
+    \*-----------------------------------------------------*/
+    unsigned char max_brightness = 255;
+
+    switch(dev_pid)
+    {
+        /*-----------------------------------------------------*\
+        | Mice                                                  |
+        \*-----------------------------------------------------*/
+        case RAZER_DEATHADDER_ESSENTIAL_V2_PID:
+
+            max_brightness = 100;
+            break;
+    }
+
+    return(max_brightness);
 }
 
 void RazerController::SetBrightness(unsigned char brightness)
@@ -578,6 +610,7 @@ bool RazerController::SupportsWave()
         case RAZER_CORE_X_PID:
         case RAZER_FIREFLY_PID:
         case RAZER_FIREFLY_V2_PID:
+        case RAZER_LAPTOP_STAND_CHROMA_PID:
         case RAZER_LAPTOP_STAND_CHROMA_V2_PID:
         case RAZER_MOUSE_BUNGEE_V3_CHROMA_PID:
         case RAZER_NOMMO_CHROMA_PID:

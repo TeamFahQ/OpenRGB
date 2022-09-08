@@ -294,7 +294,7 @@ void RGBController_CorsairK95PlatinumXT::SetupZones()
     \*---------------------------------------------------------*/
     zone keyboard_zone;
 
-    keyboard_zone.name                  = "Keyboard";
+    keyboard_zone.name                  = ZONE_EN_KEYBOARD;
     keyboard_zone.type                  = ZONE_TYPE_MATRIX;
     keyboard_zone.matrix_map            = new matrix_map_type;
     keyboard_zone.matrix_map->height    = K95_PLATINUM_XT_HEIGHT;
@@ -349,11 +349,6 @@ void RGBController_CorsairK95PlatinumXT::UpdateZoneLEDs(int /*zone*/)
 void RGBController_CorsairK95PlatinumXT::UpdateSingleLED(int /*led*/)
 {
     DeviceUpdateLEDs();
-}
-
-void RGBController_CorsairK95PlatinumXT::SetCustomMode()
-{
-    active_mode = 0;
 }
 
 void RGBController_CorsairK95PlatinumXT::DeviceUpdateMode()

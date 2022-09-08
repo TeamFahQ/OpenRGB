@@ -25,7 +25,7 @@ static unsigned int matrix_map[6][23] =
 
 static const char* zone_names[] =
 {
-    "Keyboard",
+    ZONE_EN_KEYBOARD,
 };
 
 static zone_type zone_types[] =
@@ -291,11 +291,6 @@ void RGBController_HyperXAlloyOrigins::UpdateZoneLEDs(int /*zone*/)
 void RGBController_HyperXAlloyOrigins::UpdateSingleLED(int /*led*/)
 {
     DeviceUpdateLEDs();
-}
-
-void RGBController_HyperXAlloyOrigins::SetCustomMode()
-{
-
 }
 
 void RGBController_HyperXAlloyOrigins::DeviceUpdateMode()

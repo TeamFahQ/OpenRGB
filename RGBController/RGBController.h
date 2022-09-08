@@ -178,6 +178,7 @@ enum
     DEVICE_TYPE_STORAGE,
     DEVICE_TYPE_CASE,
     DEVICE_TYPE_MICROPHONE,
+    DEVICE_TYPE_ACCESSORY,
     DEVICE_TYPE_UNKNOWN,
 };
 
@@ -325,7 +326,7 @@ public:
     virtual void            DeviceUpdateMode()                          = 0;
     void                    DeviceSaveMode();
 
-    virtual void            SetCustomMode()                             = 0;
+    void                    SetCustomMode();
 
 private:
     std::thread*            DeviceCallThread;

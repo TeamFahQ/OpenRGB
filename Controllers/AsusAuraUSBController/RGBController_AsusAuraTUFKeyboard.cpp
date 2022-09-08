@@ -223,7 +223,7 @@ void RGBController_AuraTUFKeyboard::SetupZones()
     int zone_size = 138;
 
     zone keyboard;
-    keyboard.name               = "Keyboard";
+    keyboard.name               = ZONE_EN_KEYBOARD;
     keyboard.type               = ZONE_TYPE_MATRIX;
     keyboard.leds_min           = zone_size;
     keyboard.leds_max           = zone_size;
@@ -269,11 +269,6 @@ void RGBController_AuraTUFKeyboard::UpdateSingleLED(int led)
     unsigned char blue  = RGBGetBValue(colors[led]);
 
     controller->UpdateSingleLed(led, red, green, blue);
-}
-
-void RGBController_AuraTUFKeyboard::SetCustomMode()
-{
-    active_mode = 0;
 }
 
 void RGBController_AuraTUFKeyboard::DeviceUpdateMode()

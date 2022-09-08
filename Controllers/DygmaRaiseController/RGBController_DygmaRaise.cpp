@@ -37,7 +37,7 @@ static unsigned int underglow_matrix[11][14] =
 
 static const char* zone_names[] =
 {
-    "Keyboard",
+    ZONE_EN_KEYBOARD,
     "Underglow",
     "Neuron",
 };
@@ -248,11 +248,6 @@ void RGBController_DygmaRaise::UpdateZoneLEDs(int /*zone*/)
 void RGBController_DygmaRaise::UpdateSingleLED(int /*led*/)
 {
     DeviceUpdateLEDs();
-}
-
-void RGBController_DygmaRaise::SetCustomMode()
-{
-    active_mode = 0;
 }
 
 void RGBController_DygmaRaise::DeviceUpdateMode()

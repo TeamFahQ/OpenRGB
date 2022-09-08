@@ -28,7 +28,7 @@ static unsigned int matrix_map[ZET_BLADE_OPTICAL_ROWS][ZET_BLADE_OPTICAL_COLUMNS
 
 static const char* zone_names[] =
 {
-    "Keyboard",
+    ZONE_EN_KEYBOARD,
 };
 
 static zone_type zone_types[] =
@@ -511,11 +511,6 @@ void RGBController_ZETBladeOptical::UpdateZoneLEDs(int /*zone*/)
 void RGBController_ZETBladeOptical::UpdateSingleLED(int /*led*/)
 {
     DeviceUpdateLEDs();
-}
-
-void RGBController_ZETBladeOptical::SetCustomMode()
-{
-    active_mode = 0;
 }
 
 void RGBController_ZETBladeOptical::DeviceUpdateMode()

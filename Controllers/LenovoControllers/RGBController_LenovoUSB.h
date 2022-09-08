@@ -20,7 +20,7 @@
 
 class RGBController_LenovoUSB : public RGBController
 {
-    public:
+public:
     RGBController_LenovoUSB(LenovoUSBController* controller_ptr);
     ~RGBController_LenovoUSB();
 
@@ -31,14 +31,19 @@ class RGBController_LenovoUSB : public RGBController
     void        UpdateZoneLEDs(int zone);
     void        UpdateSingleLED(int led);
 
-    void        SetCustomMode();
     void        DeviceUpdateMode();
     void        DeviceSaveMode();
 
-    private:
-    unsigned int lenovo_size_of_leds;
+private:
+    std::string ConvertBytesToHex(const std::vector<uint8_t> &input);
+    std::string keyboardToString(LENOVO_KEYBOARD kb);
+    std::string sizeToString(LENOVO_SIZE size);
+    void        DumpControllerInformation();
+
+    LENOVO_KEYBOARD keyboard_type;
+    LENOVO_SIZE chasis_size;
+
     LenovoUSBController *controller;
-    const lenovo_led *lenovo_leds;
 };
 
 #endif

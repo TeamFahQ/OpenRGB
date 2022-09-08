@@ -26,7 +26,7 @@ static unsigned int matrix_map[7][24] =
 
 static const char* zone_names[] =
 {
-    "Keyboard",
+    ZONE_EN_KEYBOARD,
 };
 
 static const unsigned int zone_sizes[] =
@@ -317,11 +317,6 @@ void RGBController_CorsairWireless::UpdateZoneLEDs(int /*zone*/)
 void RGBController_CorsairWireless::UpdateSingleLED(int /*led*/)
 {
     controller->SetLEDs(colors);
-}
-
-void RGBController_CorsairWireless::SetCustomMode()
-{
-    active_mode = 0;
 }
 
 void RGBController_CorsairWireless::DeviceUpdateMode()

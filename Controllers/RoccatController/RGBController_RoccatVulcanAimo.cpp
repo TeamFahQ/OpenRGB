@@ -226,7 +226,7 @@ void RGBController_RoccatVulcanAimo::SetupZones()
     | Set up zones and leds per zone                            |
     \*---------------------------------------------------------*/
     zone new_zone;
-    new_zone.name               = "Keyboard";
+    new_zone.name               = ZONE_EN_KEYBOARD;
     new_zone.type               = ZONE_TYPE_MATRIX;
     new_zone.leds_min           = zone_size;
     new_zone.leds_max           = zone_size;
@@ -274,11 +274,6 @@ void RGBController_RoccatVulcanAimo::UpdateZoneLEDs(int /*zone_idx*/)
 void RGBController_RoccatVulcanAimo::UpdateSingleLED(int /*led_idx*/)
 {
     DeviceUpdateLEDs();
-}
-
-void RGBController_RoccatVulcanAimo::SetCustomMode()
-{
-    active_mode = 0;
 }
 
 void RGBController_RoccatVulcanAimo::DeviceUpdateMode()

@@ -28,7 +28,7 @@ static unsigned int matrix_map[7][27] =
 
 static const char* zone_names[] =
 {
-    "Keyboard",
+    ZONE_EN_KEYBOARD,
 };
 
 static zone_type zone_types[] =
@@ -496,11 +496,6 @@ void RGBController_LogitechG815::UpdateZoneLEDs(int /*zone*/)
 void RGBController_LogitechG815::UpdateSingleLED(int /*led*/)
 {
     DeviceUpdateLEDs();
-}
-
-void RGBController_LogitechG815::SetCustomMode()
-{
-    active_mode = 0;
 }
 
 void RGBController_LogitechG815::DeviceUpdateMode()

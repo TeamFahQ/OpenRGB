@@ -23,7 +23,7 @@ static unsigned int matrix_map[5][14] =
 
 static const char* zone_names[] =
 {
-    "Keyboard",
+    ZONE_EN_KEYBOARD,
 };
 
 static zone_type zone_types[] =
@@ -234,11 +234,6 @@ void RGBController_AnnePro2::UpdateZoneLEDs(int /*zone*/)
 void RGBController_AnnePro2::UpdateSingleLED(int /*led*/)
 {
     DeviceUpdateLEDs();
-}
-
-void RGBController_AnnePro2::SetCustomMode()
-{
-    active_mode = 0;
 }
 
 void RGBController_AnnePro2::DeviceUpdateMode()

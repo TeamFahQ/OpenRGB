@@ -32,7 +32,7 @@ static unsigned int matrix_map_tkl[6][19] =
 
 static const char* zone_names[] =
 {
-    "Keyboard"
+    ZONE_EN_KEYBOARD
 };
 
 static zone_type zone_types[] =
@@ -315,11 +315,6 @@ void RGBController_DuckyKeyboard::UpdateZoneLEDs(int /*zone*/)
 void RGBController_DuckyKeyboard::UpdateSingleLED(int /*led*/)
 {
     DeviceUpdateLEDs();
-}
-
-void RGBController_DuckyKeyboard::SetCustomMode()
-{
-
 }
 
 void RGBController_DuckyKeyboard::DeviceUpdateMode()

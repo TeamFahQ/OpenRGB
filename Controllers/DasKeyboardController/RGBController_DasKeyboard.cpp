@@ -41,7 +41,7 @@ static unsigned int matrix_map_eu[7][21] =
 
 static const char *zone_names[] =
     {
-        "Keyboard"
+        ZONE_EN_KEYBOARD
     };
 
 static zone_type zone_types[] =
@@ -197,7 +197,7 @@ static const char *led_names[] =
     @save :x:
     @direct :white_check_mark:
     @effects :white_check_mark:
-    @detectors DetectDasKeyboardControllers
+    @detectors DetectDasKeyboardControllers,DetectDas4QKeyboard
     @comment
 \*-------------------------------------------------------------------*/
 
@@ -346,11 +346,6 @@ void RGBController_DasKeyboard::UpdateSingleLED(int led)
     {
         controller->SendApply();
     }
-}
-
-void RGBController_DasKeyboard::SetCustomMode()
-{
-    active_mode = 0;
 }
 
 void RGBController_DasKeyboard::DeviceUpdateMode()

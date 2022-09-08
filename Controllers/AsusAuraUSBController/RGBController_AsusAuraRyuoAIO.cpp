@@ -169,7 +169,7 @@ void RGBController_AsusAuraRyuoAIO::SetupZones()
     SetupColors();
 }
 
-void RGBController_AsusAuraRyuoAIO::ResizeZone(int zone, int new_size)
+void RGBController_AsusAuraRyuoAIO::ResizeZone(int /*zone*/, int /*new_size*/)
 {
     /*---------------------------------------------------------*\
     | This device does not support resizing zones               |
@@ -192,11 +192,6 @@ void RGBController_AsusAuraRyuoAIO::UpdateZoneLEDs(int zone)
 void RGBController_AsusAuraRyuoAIO::UpdateSingleLED(int led)
 {
     UpdateZoneLEDs(GetLED_Zone(led));
-}
-
-void RGBController_AsusAuraRyuoAIO::SetCustomMode()
-{
-    active_mode = 0;
 }
 
 void RGBController_AsusAuraRyuoAIO::DeviceUpdateMode()

@@ -119,6 +119,7 @@
 #define ASUS_VEGA64_STRIX                               0x04C4
 #define ASUS_RX5600XT_STRIX_O6G_GAMING                  0x04EC
 #define ASUS_RX5700XT_STRIX_GAMING_OC                   0x04E2
+#define ASUS_RX6800_TUF_GAMING_OC                       0x04F6
 #define ASUS_RX480_STRIX_GAMING_OC                      0x04FB
 #define ASUS_RX560_STRIX_4G_GAMING                      0x04BC
 #define ASUS_RX570_STRIX_O4G_GAMING_OC                  0x04C2
@@ -181,8 +182,10 @@
 #define ASUS_ROG_STRIX_RTX_3060TI_O8G_V2_GAMING         0x8834
 #define ASUS_TUF_RTX_3060_TI_O8G_OC_V2                  0x8827
 #define ASUS_ROG_STRIX_RTX_3070_OC                      0x87B8
+#define ASUS_ROG_STRIX_RTX_3070_O8G_GAMING              0x87B9
 #define ASUS_ROG_STRIX_RTX_3070_O8G_WHITE               0x87E0
-#define ASUS_ROG_STRIX_RTX_3070_08G_V2_GAMING           0x882C
+#define ASUS_ROG_STRIX_RTX_3070_O8G_V2_GAMING           0x882C
+#define ASUS_ROG_STRIX_RTX_3070_O8G_V2_WHITE            0x8832
 #define ASUS_KO_RTX_3070_O8G_GAMING                     0x8842
 #define ASUS_TUF_RTX_3070_O8G_GAMING                    0x87C1
 #define ASUS_TUF_RTX_3070_O8G_V2_GAMING                 0x8825
@@ -276,6 +279,7 @@
 #define EVGA_RTX3080_FTW3_ULTRA_HYBRID_LHR_SUB_DEV      0x4898
 #define EVGA_RTX3080_FTW3_ULTRA_HYBRID_GAMING_SUB_DEV   0x4878
 #define EVGA_RTX3080_FTW3_ULTRA_HC_SUB_DEV              0x3899
+#define EVGA_RTX3080_FTW3_ULTRA_HC_12G_SUB_DEV          0x4879
 #define EVGA_RTX3080TI_XC3_GAMING_SUB_DEV               0x3953
 #define EVGA_RTX3080TI_XC3_ULTRA_GAMING_SUB_DEV         0x3955
 #define EVGA_RTX3080TI_XC3_GAMING_HYBRID_SUB_DEV        0x3958
@@ -297,6 +301,7 @@
 #define EVGA_RTX3090_KINGPIN_HYBRID_SUB_DEV             0x3998
 #define EVGA_RTX3090_KINGPIN_HC_SUB_DEV                 0x3999
 #define EVGA_RTX3090TI_FTW3_GAMING_SUB_DEV              0x4983
+#define EVGA_RTX3090TI_FTW3_ULTRA_GAMING_SUB_DEV        0x4985
 
 /*-----------------------------------------------------*\
 | Gainward Sub-Device IDs                               |
@@ -310,6 +315,7 @@
 #define KFA2_RTX_2070_EX_SUB_DEV                        0x12FE
 #define GALAX_RTX_2070S_EX_GAMER_BLACK_SUB_DEV          0x139F
 #define KFA2_RTX_2080_EX_OC_SUB_DEV                     0x12B0
+#define KFA2_RTX_2080_TI_EX_OC_SUB_DEV                  0x1323
 
 /*-----------------------------------------------------*\
 | Gigabyte (Aorus) Sub-Device IDs                       |
@@ -358,6 +364,7 @@
 #define GIGABYTE_AORUS_RTX2080TI_EXTREME_SUB_DEV        0x37BC
 #define GIGABYTE_RTX3050_GAMING_OC_8GB_SUB_DEV          0x40AA
 #define GIGABYTE_RTX3060_EAGLE_OC_12GB_SUB_DEV          0x4072
+#define GIGABYTE_RTX3060_VISION_OC_12GB_SUB_DEV         0x4073
 #define GIGABYTE_RTX3060_GAMING_OC_12GB_SUB_DEV         0x4074
 #define GIGABYTE_RTX3060_ELITE_12GB_SUB_DEV	            0x407B
 #define GIGABYTE_RTX3060TI_EAGLE_OC_SUB_DEV             0x405B
@@ -431,12 +438,20 @@
 #define MSI_RTX3090_GAMING_X_TRIO_SUB_DEV               0x3884
 #define MSI_RTX3090_SUPRIM_X_SUB_DEV                    0x3882
 #define MSI_RTX3090TI_SUPRIM_X_SUB_DEV                  0x5090
+#define MSI_RTX3090TI_GAMING_X_TRIO_SUB_DEV             0x5091
+#define MSI_RX6600XT_GAMING_X_SUB_DEV                   0x5020
+#define MSI_RX6700XT_GAMING_X_SUB_DEV                   0x3981
+#define MSI_RX6800_GAMING_X_TRIO_SUB_DEV                0x3961
+#define MSI_RX6800XT_GAMING_X_TRIO_SUB_DEV              0x3951
 #define MSI_RX6800XT_GAMING_Z_TRIO_SUB_DEV              0x3953
+#define MSI_RX6900XT_GAMING_X_TRIO_SUB_DEV              0x3952
+#define MSI_RX6950XT_GAMING_X_TRIO_SUB_DEV              0x3955
 
 /*-----------------------------------------------------*\
 | PNY Sub-Device IDs                                    |
 \*-----------------------------------------------------*/
 #define PNY_RTX_3060_XLR8_REVEL_EPIC_X_SUB_DEV          0x138E
+#define PNY_RTX_3080_XLR8_REVEL_EPIC_X_SUB_DEV          0x136B
 #define PNY_RTX_3090_XLR8_REVEL_EPIC_X_SUB_DEV          0x136A
 #define PNY_RTX_3060TI_XLR8_REVEL_EPIC_X_SUB_DEV        0x1389
 
@@ -476,6 +491,8 @@
 #define SAPPHIRE_NAVI21_NITRO_PLUS_SUB_DEV3             0xE439
 #define SAPPHIRE_NAVI22_NITRO_PLUS_SUB_DEV              0xE445
 #define SAPPHIRE_NAVI23_NITRO_PLUS_SUB_DEV              0xE448
+#define SAPPHIRE_NAVI21_6900XT_NITRO_PLUS_SUB_DEV       0x440E
+#define SAPPHIRE_NAVI21_6900XT_TOXIC_AC_SUB_DEV         0x440F
 #define SAPPHIRE_NAVI21_TOXIC_SUB_DEV                   0xF440
 #define SAPPHIRE_NAVI21_TOXIC_SUB_DEV1                  0xF441
 

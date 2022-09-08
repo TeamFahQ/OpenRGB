@@ -33,6 +33,9 @@ static QString GetIconString(device_type type, bool dark)
     QString filename;
     switch(type)
     {
+    case DEVICE_TYPE_ACCESSORY:
+        filename = "accessory";
+        break;
     case DEVICE_TYPE_MOTHERBOARD:
         filename = "motherboard";
         break;
@@ -1348,7 +1351,7 @@ void OpenRGBDialog2::UpdateDevicesList()
         | Remove all remaining device information tabs, leaving |
         | other information tabs alone                          |
         \*-----------------------------------------------------*/
-        for(std::size_t tab_idx = controllers.size(); tab_idx < ui->InformationTabBar->count(); tab_idx++)
+        for(int tab_idx = controllers.size(); tab_idx < ui->InformationTabBar->count(); tab_idx++)
         {
             std::string type_str = ui->InformationTabBar->widget(base_tab)->metaObject()->className();
             if(type_str == "Ui::OpenRGBDeviceInfoPage")

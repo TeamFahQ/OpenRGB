@@ -10,14 +10,14 @@
 #include "RGBController_StrimerLConnect.h"
 
 /**------------------------------------------------------------------*\
-    @name Strimer L Connect
+    @name Lian Li Strimer L Connect
     @category LEDStrip
     @type USB
     @save :x:
     @direct :rotating_light:
     @effects :white_check_mark:
     @detectors DetectStrimerControllers
-    @comment The Strimer L Connect `Direct` mode stutters at high frame rates and
+    @comment The Lian Li Strimer L Connect `Direct` mode stutters at high frame rates and
         and has been rate limited to ~10FPS.
 \*-------------------------------------------------------------------*/
 
@@ -25,7 +25,7 @@ RGBController_StrimerLConnect::RGBController_StrimerLConnect(StrimerLConnectCont
 {
     controller                  = controller_ptr;
 
-    name                        = "StrimerLConnect";
+    name                        = "Lian Li Strimer L Connect";
     vendor                      = "Lian Li";
     type                        = DEVICE_TYPE_LEDSTRIP;
     description                 = controller->GetDeviceName();
@@ -257,18 +257,6 @@ void RGBController_StrimerLConnect::UpdateSingleLED(int led)
 {
     UpdateZoneLEDs(GetLED_Zone(led));
     controller->SendApply();
-}
-
-void RGBController_StrimerLConnect::SetCustomMode()
-{
-    for(std::size_t mode_idx = 0; mode_idx < modes.size() ; mode_idx++)
-    {
-        if (modes[mode_idx].value == STRIMERLCONNECT_MODE_DIRECT)
-        {
-            active_mode = mode_idx;
-            break;
-        }
-    }
 }
 
 void RGBController_StrimerLConnect::DeviceUpdateMode()
