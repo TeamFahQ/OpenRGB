@@ -17,8 +17,6 @@ AMDWraithPrismController::AMDWraithPrismController(hid_device* dev_handle, const
     dev         = dev_handle;
     location    = path;
 
-    strcpy(device_name, "AMD Wraith Prism");
-
     current_fan_mode            = AMD_WRAITH_PRISM_FAN_LOGO_MODE_STATIC;
     current_fan_speed           = 0xFF;
     current_fan_random_color    = false;
@@ -33,8 +31,6 @@ AMDWraithPrismController::AMDWraithPrismController(hid_device* dev_handle, const
     current_ring_speed          = 0xFF;
     current_ring_direction      = false;
     current_ring_brightness     = 0xFF;
-
-    SendEnableCommand();
 }
 
 AMDWraithPrismController::~AMDWraithPrismController()
@@ -45,11 +41,6 @@ AMDWraithPrismController::~AMDWraithPrismController()
 std::string AMDWraithPrismController::GetLocationString()
 {
     return("HID: " + location);
-}
-
-char* AMDWraithPrismController::GetDeviceName()
-{
-    return device_name;
 }
 
 std::string AMDWraithPrismController::GetSerialString()
@@ -66,41 +57,6 @@ std::string AMDWraithPrismController::GetSerialString()
     std::string return_string(return_wstring.begin(), return_wstring.end());
 
     return(return_string);
-}
-
-std::string AMDWraithPrismController::GetEffectChannelString(unsigned char channel)
-{
-    std::string ret_string = "";
-
-    unsigned char usb_buf[] =
-    {
-        0x00,
-        0x40, 0x21, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-    };
-
-    usb_buf[0x03] = channel;
-
-    hid_write(dev, usb_buf, 65);
-    hid_read(dev, usb_buf, 64);
-
-    ret_string.append((char *)&usb_buf[0x08]);
-
-    return(ret_string);
 }
 
 std::string AMDWraithPrismController::GetFirmwareVersionString()
@@ -232,7 +188,7 @@ void AMDWraithPrismController::SetRingEffectChannel(unsigned char channel)
     SendChannelRemap(channel, AMD_WRAITH_PRISM_EFFECT_CHANNEL_LOGO_LED, AMD_WRAITH_PRISM_EFFECT_CHANNEL_FAN_LED);
 }
 
-void AMDWraithPrismController::SendEnableCommand()
+void AMDWraithPrismController::SendEnableCommand(bool direct)
 {
     unsigned char usb_buf[] =
     {
@@ -254,6 +210,11 @@ void AMDWraithPrismController::SendEnableCommand()
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
     };
+
+    if(direct)
+    {
+        usb_buf[0x02]   = 0x03;
+    }
 
     hid_write(dev, usb_buf, 65);
     hid_read(dev, usb_buf, 64);
@@ -281,6 +242,48 @@ void AMDWraithPrismController::SendApplyCommand()
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
     };
+
+    hid_write(dev, usb_buf, 65);
+    hid_read(dev, usb_buf, 64);
+}
+
+void AMDWraithPrismController::SendDirectPacket
+    (
+    unsigned char   size,
+    unsigned char * led_ids,
+    RGBColor *      colors
+    )
+{
+    unsigned char usb_buf[] =
+    {
+        0x00,
+        0xC0, 0x01, size, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+    };
+
+    for(unsigned int led_idx = 0; led_idx < size; led_idx++)
+    {
+        unsigned int index  = led_idx * 4;
+
+        usb_buf[index + 5]  = led_ids[led_idx];
+        usb_buf[index + 6]  = RGBGetRValue(colors[led_idx]);
+        usb_buf[index + 7]  = RGBGetGValue(colors[led_idx]);
+        usb_buf[index + 8]  = RGBGetBValue(colors[led_idx]);
+    }
 
     hid_write(dev, usb_buf, 65);
     hid_read(dev, usb_buf, 64);

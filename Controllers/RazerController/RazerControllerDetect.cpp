@@ -269,7 +269,7 @@ REGISTER_HID_DETECTOR_IPU("Razer Huntsman V2 TKL",                           Det
 REGISTER_HID_DETECTOR_IPU("Razer Huntsman V2",                               DetectRazerControllers,        RAZER_VID,  RAZER_HUNTSMAN_V2_PID,                          0x03,   0x0C,   0x01);
 REGISTER_HID_DETECTOR_IPU("Razer Ornata Chroma",                             DetectRazerControllers,        RAZER_VID,  RAZER_ORNATA_CHROMA_PID,                        0x02,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Ornata Chroma V2",                          DetectRazerControllers,        RAZER_VID,  RAZER_ORNATA_CHROMA_V2_PID,                     0x02,   0x01,   0x02);
-
+REGISTER_HID_DETECTOR_IPU("Razer Ornata V3",                                 DetectRazerControllers,        RAZER_VID,  RAZER_ORNATA_V3_PID,                            0x02,   0x01,   0x02);
 /*-----------------------------------------------------------------------------------------------------*\
 | Laptops                                                                                               |
 \*-----------------------------------------------------------------------------------------------------*/
@@ -359,6 +359,7 @@ REGISTER_HID_DETECTOR_IPU("Razer Viper Ultimate (Wireless)",                 Det
 \*-----------------------------------------------------------------------------------------------------*/
 REGISTER_HID_DETECTOR_IPU("Razer Orbweaver Chroma",                          DetectRazerControllers,        RAZER_VID,  RAZER_ORBWEAVER_CHROMA_PID,                     0x02,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Tartarus Chroma",                           DetectRazerControllers,        RAZER_VID,  RAZER_TARTARUS_CHROMA_PID,                      0x02,   0x01,   0x02);
+REGISTER_HID_DETECTOR_IPU("Razer Tartarus Pro",                              DetectRazerControllers,        RAZER_VID,  RAZER_TARTARUS_PRO_PID,                         0x02,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Tartarus V2",                               DetectRazerControllers,        RAZER_VID,  RAZER_TARTARUS_V2_PID,                          0x02,   0x01,   0x02);
 
 /*-----------------------------------------------------------------------------------------------------*\
@@ -381,6 +382,7 @@ REGISTER_HID_DETECTOR_IPU("Razer Firefly V2",                                Det
 REGISTER_HID_DETECTOR_IPU("Razer Firefly Hyperflux",                         DetectRazerControllers,        RAZER_VID,  RAZER_FIREFLY_HYPERFLUX_PID,                    0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Goliathus",                                 DetectRazerControllers,        RAZER_VID,  RAZER_GOLIATHUS_CHROMA_PID,                     0x00,   0x01,   0x02);
 REGISTER_HID_DETECTOR_IPU("Razer Goliathus Extended",                        DetectRazerControllers,        RAZER_VID,  RAZER_GOLIATHUS_CHROMA_EXTENDED_PID,            0x00,   0x01,   0x02);
+REGISTER_HID_DETECTOR_IPU("Razer Strider Chroma",                            DetectRazerControllers,        RAZER_VID,  RAZER_STRIDER_CHROMA_PID,                       0x00,   0x01,   0x02);
 
 /*-----------------------------------------------------------------------------------------------------*\
 | Accessories                                                                                           |

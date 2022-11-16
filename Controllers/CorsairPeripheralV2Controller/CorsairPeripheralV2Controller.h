@@ -65,13 +65,13 @@ class CorsairPeripheralV2Controller
 {
 public:
     CorsairPeripheralV2Controller(hid_device* dev_handle, const char* path, std::string name, uint16_t pid);
-    ~CorsairPeripheralV2Controller();
+    virtual ~CorsairPeripheralV2Controller();
 
     std::string                     GetDeviceLocation();
     std::string                     GetFirmwareString();
     std::string                     GetName();
     std::string                     GetSerialString();
-    const corsair_device*           GetDeviceData();
+    const corsair_v2_device*        GetDeviceData();
 
     void                            SetRenderMode(corsair_v2_device_mode mode);
     void                            LightingControl(uint8_t opt1, uint8_t opt2);

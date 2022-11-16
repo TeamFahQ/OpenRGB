@@ -9,6 +9,7 @@
 #include <string>
 #include "RGBController.h"
 #include "RGBControllerKeyNames.h"
+#include "RazerController.h"
 
 /*-----------------------------------------------------*\
 | Razer vendor ID                                       |
@@ -96,7 +97,9 @@
 #define RAZER_ORBWEAVER_CHROMA_PID                      0x0207
 #define RAZER_ORNATA_CHROMA_PID                         0x021E
 #define RAZER_ORNATA_CHROMA_V2_PID                      0x025D
+#define RAZER_ORNATA_V3_PID                             0x028F
 #define RAZER_TARTARUS_CHROMA_PID                       0x0208
+#define RAZER_TARTARUS_PRO_PID                          0x0244
 #define RAZER_TARTARUS_V2_PID                           0x022B
 
 /*-----------------------------------------------------*\
@@ -208,6 +211,7 @@
 #define RAZER_NOMMO_PRO_PID                             0x0518
 #define RAZER_O11_DYNAMIC_PID                           0x0F13
 #define RAZER_SEIREN_EMOTE_PID                          0x0F1B
+#define RAZER_STRIDER_CHROMA_PID                        0x0C05
 
 typedef struct
 {
@@ -223,6 +227,7 @@ typedef struct
     unsigned int row;
     unsigned int col;
     const char* name;
+    unsigned char layout = RAZER_LAYOUT_TYPE_ALL;
 } razer_key;
 
 typedef struct

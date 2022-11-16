@@ -54,7 +54,9 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_BLADE_2021_BASE_V2_PID:
         case RAZER_CYNOSA_V2_PID:
         case RAZER_ORNATA_CHROMA_V2_PID:
+        case RAZER_ORNATA_V3_PID:
         case RAZER_TARTARUS_CHROMA_PID:
+        case RAZER_TARTARUS_PRO_PID:
         case RAZER_TARTARUS_V2_PID:
         case RAZER_DEATHADDER_CHROMA_PID:
         case RAZER_DEATHADDER_ESSENTIAL_V2_PID:
@@ -106,6 +108,7 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_FIREFLY_V2_PID:
         case RAZER_NOMMO_CHROMA_PID:
         case RAZER_NOMMO_PRO_PID:
+        case RAZER_STRIDER_CHROMA_PID:
         default:
             dev_transaction_id = 0x3F;
             break;
@@ -135,6 +138,8 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_NAGA_CLASSIC_PID:
         case RAZER_NAGA_LEFT_HANDED_PID:
         case RAZER_O11_DYNAMIC_PID:
+        case RAZER_STRIDER_CHROMA_PID:
+        case RAZER_TARTARUS_PRO_PID:
         case RAZER_TARTARUS_V2_PID:
             dev_led_id = RAZER_LED_ID_ZERO;
             break;
@@ -162,6 +167,7 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_HUNTSMAN_V2_PID:
         case RAZER_ORNATA_CHROMA_PID:
         case RAZER_ORNATA_CHROMA_V2_PID:
+        case RAZER_ORNATA_V3_PID:
         case RAZER_CORE_PID:
         case RAZER_FIREFLY_PID:
         default:
@@ -283,7 +289,10 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_O11_DYNAMIC_PID:
         case RAZER_ORNATA_CHROMA_PID:
         case RAZER_ORNATA_CHROMA_V2_PID:
+        case RAZER_ORNATA_V3_PID:
         case RAZER_SEIREN_EMOTE_PID:
+        case RAZER_STRIDER_CHROMA_PID:
+        case RAZER_TARTARUS_PRO_PID:
         case RAZER_TARTARUS_V2_PID:
         case RAZER_TIAMAT_71_V2_PID:
         case RAZER_VIPER_8KHZ_PID:
@@ -569,6 +578,7 @@ bool RazerController::SupportsWave()
         case RAZER_DEATHSTALKER_CHROMA_PID:
         case RAZER_ORNATA_CHROMA_PID:
         case RAZER_ORNATA_CHROMA_V2_PID:
+        case RAZER_ORNATA_V3_PID:
         case RAZER_HUNTSMAN_PID:
         case RAZER_HUNTSMAN_ELITE_PID:
         case RAZER_HUNTSMAN_MINI_PID:
@@ -577,6 +587,7 @@ bool RazerController::SupportsWave()
         case RAZER_HUNTSMAN_V2_TKL_PID:
         case RAZER_HUNTSMAN_V2_PID:
         case RAZER_ORBWEAVER_CHROMA_PID:
+        case RAZER_TARTARUS_PRO_PID:
         case RAZER_TARTARUS_V2_PID:
 
         /*-----------------------------------------------------*\
@@ -616,6 +627,7 @@ bool RazerController::SupportsWave()
         case RAZER_NOMMO_CHROMA_PID:
         case RAZER_NOMMO_PRO_PID:
         case RAZER_O11_DYNAMIC_PID:
+        case RAZER_STRIDER_CHROMA_PID:
 
             supports_wave = true;
             break;
@@ -1146,6 +1158,108 @@ std::string RazerController::razer_get_serial()
 
     std::string ret_string = serial_string;
     return ret_string;
+}
+
+void RazerController::razer_get_keyboard_info(unsigned char* layout, unsigned char* variant)
+{
+    struct razer_report report              = razer_create_report(0x00, RAZER_COMMAND_ID_GET_KEYBOARD_INFO, 0x00);
+    struct razer_report response_report     = razer_create_response();
+
+    std::this_thread::sleep_for(1ms);
+    razer_usb_send(&report);
+    std::this_thread::sleep_for(1ms);
+    razer_usb_receive(&response_report);
+
+    *layout = response_report.arguments[0];
+    *variant = response_report.arguments[1];
+}
+
+unsigned char RazerController::GetKeyboardLayoutType()
+{
+    unsigned char layout;
+    unsigned char variant;
+
+    RazerController::razer_get_keyboard_info(&layout, &variant);
+
+    switch(layout)
+    {
+        case RAZER_KEYBOARD_LAYOUT_US:
+        case RAZER_KEYBOARD_LAYOUT_RUSSIAN:                // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_CHT:                    // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_TURKISH:                // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_THAILAND:               // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_ARABIC:                 // Unconfirmed
+            return RAZER_LAYOUT_TYPE_ANSI;
+
+        case RAZER_KEYBOARD_LAYOUT_GREEK:                  // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_GERMAN:                 // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_FRENCH:        
+        case RAZER_KEYBOARD_LAYOUT_UK:
+        case RAZER_KEYBOARD_LAYOUT_NORDIC:
+        case RAZER_KEYBOARD_LAYOUT_KOREAN:                 // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_PORTUGESE_BRAZIL:       // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_SPANISH_LATIN_AMERICAN: // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_SWISS:                  // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_SPANISH_EUR:            // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_ITALIAN:                // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_PORTUGESE_PORTUGA:      // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_HEBREW:                 // Unconfirmed
+            return RAZER_LAYOUT_TYPE_ISO;
+
+        case RAZER_KEYBOARD_LAYOUT_JAPAN:                  // Unconfirmed
+            return RAZER_LAYOUT_TYPE_JIS;
+
+        default:
+            return RAZER_LAYOUT_TYPE_ALL;
+    }
+}
+
+std::string RazerController::GetKeyboardLayoutName()
+{
+    unsigned char layout;
+    unsigned char variant;
+
+    RazerController::razer_get_keyboard_info(&layout, &variant);
+
+    switch(layout)
+    {
+        case RAZER_KEYBOARD_LAYOUT_US:                     return "US (ANSI)";
+        case RAZER_KEYBOARD_LAYOUT_GERMAN:                 return "German (ISO)";                  // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_GREEK:                  return "Greek (ISO)";                   // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_FRENCH:                 return "French (ISO)";
+        case RAZER_KEYBOARD_LAYOUT_RUSSIAN:                return "Russian (ANSI)";                // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_UK:                     return "UK (ISO)";
+        case RAZER_KEYBOARD_LAYOUT_NORDIC:                 return "Nordic (ISO)";
+        case RAZER_KEYBOARD_LAYOUT_CHT:                    return "Chinese Traditional (ANSI)";    // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_KOREAN:                 return "Korean (ISO)";                  // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_TURKISH:                return "Turkish (ANSI)";                // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_THAILAND:               return "Thai (ANSI)";                   // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_JAPAN:                  return "Japanese (JIS)";                // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_PORTUGESE_BRAZIL:       return "Portugese (Brazil) (ISO)";      // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_SPANISH_LATIN_AMERICAN: return "Spanish (Latin america) (ISO)"; // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_SWISS:                  return "Swiss (ISO)";                   // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_SPANISH_EUR:            return "Spanish (Europe) (ISO)";        // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_ITALIAN:                return "Italian (ISO)";                 // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_PORTUGESE_PORTUGA:      return "Portugese (Portugal) (ISO)";    // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_HEBREW:                 return "Hebrew (ISO)";                  // Unconfirmed
+        case RAZER_KEYBOARD_LAYOUT_ARABIC:                 return "Arabic (ANSI)";                 // Unconfirmed
+        default:                                           return "Unknown";
+    }
+}
+
+std::string RazerController::GetVariantName()
+{
+    unsigned char layout;
+    unsigned char variant;
+    
+    RazerController::razer_get_keyboard_info(&layout, &variant);
+
+    switch(variant)
+    {
+        case RAZER_KEYBOARD_VARIANT_BLACK:   return "Black";
+        case RAZER_KEYBOARD_VARIANT_MERCURY: return "Mercury";
+        default:                             return "Unkown Variant";
+    }
 }
 
 /*---------------------------------------------------------------------------------*\

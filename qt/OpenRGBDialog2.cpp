@@ -87,6 +87,9 @@ static QString GetIconString(device_type type, bool dark)
     case DEVICE_TYPE_CASE:
         filename = "case";
         break;
+    case DEVICE_TYPE_KEYPAD:
+        filename = "keypad";
+        break;
     default:
         filename = "unknown";
         break;
@@ -468,6 +471,11 @@ OpenRGBDialog2::OpenRGBDialog2(QWidget *parent) : QMainWindow(parent), ui(new Op
     | Add the Nanoleaf settings page                        |
     \*-----------------------------------------------------*/
     AddNanoleafSettingsPage();
+
+    /*-----------------------------------------------------*\
+    | Add the ElgatoKeyLight settings page                  |
+    \*-----------------------------------------------------*/
+    AddElgatoKeyLightSettingsPage();
 
     /*-----------------------------------------------------*\
     | Add the SMBus Tools page if enabled                   |
@@ -929,6 +937,34 @@ void OpenRGBDialog2::AddNanoleafSettingsPage()
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
     TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, "Nanoleaf Devices");
+
+    ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
+}
+
+void OpenRGBDialog2::AddElgatoKeyLightSettingsPage()
+{
+    /*-----------------------------------------------------*\
+    | Create the Settings page                              |
+    \*-----------------------------------------------------*/
+    ElgatoKeyLightSettingsPage = new OpenRGBElgatoKeyLightSettingsPage();
+
+    ui->SettingsTabBar->addTab(ElgatoKeyLightSettingsPage, "");
+
+    QString SettingsLabelString;
+
+    if(OpenRGBThemeManager::IsDarkTheme())
+    {
+        SettingsLabelString = "light_dark.png";
+    }
+    else
+    {
+        SettingsLabelString = "light.png";
+    }
+
+    /*-----------------------------------------------------*\
+    | Create the tab label                                  |
+    \*-----------------------------------------------------*/
+    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, "Elgato KeyLight Devices");
 
     ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
 }

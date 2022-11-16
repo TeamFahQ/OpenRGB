@@ -71,6 +71,11 @@ RGBController_LenovoUSB::RGBController_LenovoUSB(LenovoUSBController* controller
     std::vector<uint8_t> response;
     switch(controller->getPid())
     {
+        /*-----------------------*\
+        |Default to ANSI keyboard |
+        \*-----------------------*/
+        keyboard_type = ANSI;
+
         case LEGION_Y740:
             response = controller->getInformation(0x01);
             if(response.size() > 4 && response[4] <= 100)
@@ -88,10 +93,6 @@ RGBController_LenovoUSB::RGBController_LenovoUSB(LenovoUSBController* controller
                 if(response[4] >= 16 && response[4] <=48)
                 {
                     keyboard_type = ISO;
-                }
-                else
-                {
-                    keyboard_type = ANSI;
                 }
             }
 
@@ -111,10 +112,6 @@ RGBController_LenovoUSB::RGBController_LenovoUSB(LenovoUSBController* controller
                 {
                     keyboard_type = ISO;
                 }
-                else
-                {
-                    keyboard_type = ANSI;
-                }
             }
 
             description = "Lenovo Y750 " + keyboardToString(keyboard_type);
@@ -132,10 +129,6 @@ RGBController_LenovoUSB::RGBController_LenovoUSB(LenovoUSBController* controller
                 else if(response[4] == 0x91)
                 {
                     keyboard_type = ISO;
-                }
-                else
-                {
-                    keyboard_type = ANSI;
                 }
             }
 
@@ -155,10 +148,6 @@ RGBController_LenovoUSB::RGBController_LenovoUSB(LenovoUSBController* controller
                 {
                     keyboard_type = ISO;
                 }
-                else
-                {
-                    keyboard_type = ANSI;
-                }
             }
 
             description = "Lenovo Y760 " + keyboardToString(keyboard_type);
@@ -177,16 +166,12 @@ RGBController_LenovoUSB::RGBController_LenovoUSB(LenovoUSBController* controller
                 {
                     keyboard_type = ISO;
                 }
-                else
-                {
-                    keyboard_type = ANSI;
-                }
             }
 
             description = "Lenovo Y760S " + keyboardToString(keyboard_type);
-
-            break;
     }
+
+    LOG_DEBUG("[Lenovo Controller] detected: %s", description.c_str());
 
     SetupZones();
 }
@@ -209,15 +194,78 @@ void RGBController_LenovoUSB::SetupZones()
     switch(controller->getPid())
     {
         case LEGION_Y740:
-            /*--------------------------------*\
-            | not yet implemeted               |
-            \*--------------------------------*/
+            switch(chasis_size)
+            {
+                case FIFTEEN:
+                    switch(keyboard_type)
+                    {
+                        case ISO:
+                            lenovo_zones.push_back(lenovo_legion_Y740_15_kbd_iso);
+                            break;
+
+                        default:
+                            lenovo_zones.push_back(lenovo_legion_Y740_15_kbd_ansi);
+                            break;
+                    }
+                    break;
+
+                case SEVENTEEN:
+                default:
+                    switch(keyboard_type)
+                    {
+                        case ISO:
+                            lenovo_zones.push_back(lenovo_legion_Y740_17_kbd_iso);
+                            break;
+
+                        default:
+                            lenovo_zones.push_back(lenovo_legion_Y740_17_kbd_ansi);
+                            break;
+                    }
+                    break;
+            }
+            lenovo_zones.push_back(lenovo_legion_Y740_logo);
+            lenovo_zones.push_back(lenovo_legion_Y740_pwrbtn);
+            lenovo_zones.push_back(lenovo_legion_Y740_vents);
+            lenovo_zones.push_back(lenovo_legion_Y740_ports);
             break;
 
         case LEGION_Y750:
+            switch(keyboard_type)
+            {
+                case JAPAN:
+                    lenovo_zones.push_back(lenovo_legion_Y760_kbd_jp);
+                    break;
+
+                case ISO:
+                    lenovo_zones.push_back(lenovo_legion_Y760_kbd_iso);
+                    break;
+
+                default:
+                    lenovo_zones.push_back(lenovo_legion_Y760_kbd_ansi);
+                    break;
+            }
+            lenovo_zones.push_back(lenovo_legion_Y750_logo);
+            lenovo_zones.push_back(lenovo_legion_Y750_vents);
+            lenovo_zones.push_back(lenovo_legion_Y750_neon);
+            break;
         case LEGION_Y750S:
-        case LEGION_Y760:
         case LEGION_Y760S:
+            switch(keyboard_type)
+            {
+                case JAPAN:
+                    lenovo_zones.push_back(lenovo_legion_Y760_kbd_jp);
+                    break;
+
+                case ISO:
+                    lenovo_zones.push_back(lenovo_legion_Y760_kbd_iso);
+                    break;
+
+                default:
+                    lenovo_zones.push_back(lenovo_legion_Y760_kbd_ansi);
+                    break;
+            }
+            break;
+        case LEGION_Y760:
             switch(keyboard_type)
             {
                 case JAPAN:
@@ -238,7 +286,7 @@ void RGBController_LenovoUSB::SetupZones()
             lenovo_zones.push_back(lenovo_legion_Y760_vent_back_right);
             lenovo_zones.push_back(lenovo_legion_Y760_vent_back_left);
             lenovo_zones.push_back(lenovo_legion_Y760_neon);
-        break;
+            break;
     }
 
     for(unsigned int i = 0; i < lenovo_zones.size(); i++)
@@ -249,6 +297,8 @@ void RGBController_LenovoUSB::SetupZones()
         new_zone.leds_count = lenovo_zones[i].end - lenovo_zones[i].start + 1;
         new_zone.leds_max   = new_zone.leds_count;
         new_zone.leds_min   = new_zone.leds_count;
+
+        LOG_DEBUG("[Lenovo Controller] adding zone: %s with %u LEDs", new_zone.name.c_str(), new_zone.leds_count);
 
         if(lenovo_zones[i].type == ZONE_TYPE_MATRIX)
         {
@@ -269,7 +319,7 @@ void RGBController_LenovoUSB::SetupZones()
 
         zones.push_back(new_zone);
 
-        for(int led_idx = lenovo_zones[i].start; led_idx <= lenovo_zones[i].end; led_idx++ )
+        for(unsigned int led_idx = lenovo_zones[i].start; led_idx <= lenovo_zones[i].end; led_idx++ )
         {
             led new_led;
             new_led.name = lenovo_zones[i].leds[led_idx].name;

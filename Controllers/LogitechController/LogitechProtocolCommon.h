@@ -77,13 +77,8 @@ enum LOGITECH_DEVICE_MODE
     LOGITECH_DEVICE_LED_CUSTOM          = 0x000C
 };
 
-static const char* logitech_led_locations[] = {
-    "Unknown",
-    "Primary",
-    "Logo",
-    "Left",
-    "Right"
-};
+extern const char* logitech_led_locations[];
+extern const int NUM_LOGITECH_LED_LOCATIONS;
 
 // Used for: {GET,SET}_REGISTER_{REQ,RSP}, SET_LONG_REGISTER_RSP, GET_LONG_REGISTER_REQ
 struct message_short
@@ -200,7 +195,7 @@ static std::map<V, K> reverse_map(const std::map<K, V>& map)
 {
     std::map<V, K> reversed_map;
 
-    for(const std::pair<K, V>& entry : map)
+    for(const std::pair<const K, V>& entry : map)
     {
         reversed_map[entry.second] = entry.first;
     }

@@ -47,6 +47,8 @@
 #define AURA_ROG_STRIX_SCOPE_PID                0x18F8
 #define AURA_ROG_STRIX_SCOPE_RX_PID             0x1951
 #define AURA_ROG_STRIX_SCOPE_TKL_PID            0x190C
+#define AURA_ROG_STRIX_SCOPE_TKL_PNK_LTD_PID    0x1954
+#define AURA_ROG_CLAYMORE_PID                   0x184D
 #define AURA_TUF_K7_GAMING_PID                  0x18AA
 #define AURA_TUF_K3_GAMING_PID                  0x194B
 
@@ -100,6 +102,7 @@ AuraKeyboardMappingLayoutType GetKeyboardMappingLayoutType(int pid)
             return SCOPE_RX_LAYOUT;
 
         case AURA_ROG_STRIX_SCOPE_TKL_PID:
+        case AURA_ROG_STRIX_SCOPE_TKL_PNK_LTD_PID:
             return SCOPE_TKL_LAYOUT;
 
         case AURA_ROG_FALCHION_WIRED_PID:
@@ -258,7 +261,7 @@ void DetectAsusAuraTUFUSBKeyboard(hid_device_info* info, const std::string& name
 
     if(dev)
     {
-        AuraTUFKeyboardController*     controller           = new AuraTUFKeyboardController(dev, info->path, info->product_id);
+        AuraTUFKeyboardController*     controller           = new AuraTUFKeyboardController(dev, info->path, info->product_id, info->release_number);
         RGBController_AuraTUFKeyboard* rgb_controller       = new RGBController_AuraTUFKeyboard(controller);
         rgb_controller->name                                = name;
         ResourceManager::get()->RegisterRGBController(rgb_controller);
@@ -299,6 +302,8 @@ REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Flare PNK LTD",                DetectAs
 REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Scope",                        DetectAsusAuraUSBKeyboards,     AURA_USB_VID, AURA_ROG_STRIX_SCOPE_PID,                     1,  0xFF00);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Scope RX",                     DetectAsusAuraUSBKeyboards,     AURA_USB_VID, AURA_ROG_STRIX_SCOPE_RX_PID,                  1,  0xFF00);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Scope TKL",                    DetectAsusAuraUSBKeyboards,     AURA_USB_VID, AURA_ROG_STRIX_SCOPE_TKL_PID,                 1,  0xFF00);
+REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Scope TKL PNK LTD",            DetectAsusAuraUSBKeyboards,     AURA_USB_VID, AURA_ROG_STRIX_SCOPE_TKL_PNK_LTD_PID,         1,  0xFF00);
+REGISTER_HID_DETECTOR_IP("ASUS ROG Claymore",                           DetectAsusAuraTUFUSBKeyboard,   AURA_USB_VID, AURA_ROG_CLAYMORE_PID,                        1,  0xFF00);
 REGISTER_HID_DETECTOR_IP("ASUS TUF Gaming K7",                          DetectAsusAuraTUFUSBKeyboard,   AURA_USB_VID, AURA_TUF_K7_GAMING_PID,                       1,  0xFF00);
 REGISTER_HID_DETECTOR_IP("ASUS TUF Gaming K3",                          DetectAsusAuraTUFUSBKeyboard,   AURA_USB_VID, AURA_TUF_K3_GAMING_PID,                       1,  0xFF00);
 
@@ -312,6 +317,7 @@ REGISTER_HID_DETECTOR_IP("ASUS ROG Gladius II Origin PNK LTD",          DetectAs
 REGISTER_HID_DETECTOR_IP("ASUS ROG Gladius II Origin COD",              DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_GLADIUS_II_ORIGIN_COD_PID,           2,  0xFF01);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Gladius II Wireless",                DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_GLADIUS_II_WIRELESS_1_PID,           1,  0xFF13);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Gladius II Wireless",                DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_GLADIUS_II_WIRELESS_2_PID,           2,  0xFF01);
+REGISTER_HID_DETECTOR_IP("ASUS ROG Gladius III",                        DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_GLADIUS_III_PID,                     0,  0xFF01);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Gladius III Wireless USB",           DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_GLADIUS_III_WIRELESS_USB_PID,        0,  0xFF01);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Gladius III Wireless 2.4Ghz",        DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_GLADIUS_III_WIRELESS_2_4_PID,        0,  0xFF01);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Gladius III Wireless Bluetooth",     DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_GLADIUS_III_WIRELESS_BT_PID,         0,  0xFF01);

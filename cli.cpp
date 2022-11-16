@@ -932,7 +932,7 @@ void ApplyOptions(DeviceOptions& options, std::vector<RGBController *>& rgb_cont
         case MODE_COLORS_PER_LED:
             if(options.colors.size() != 0)
             {
-                std::size_t last_set_color;
+                std::size_t last_set_color = 0;
 
                 for(std::size_t led_idx = 0; led_idx < device->leds.size(); led_idx++)
                 {
@@ -1135,7 +1135,7 @@ unsigned int cli_pre_detection(int argc, char* argv[])
                         break;
                     }
                 }
-                catch(std::invalid_argument& e)
+                catch(std::invalid_argument& /*e*/)
                 {
                     std::cout << "Error: Invalid data in --server-port argument (expected a number in range 1024-65535)" << std::endl;
                     print_help = true;
@@ -1194,7 +1194,7 @@ unsigned int cli_pre_detection(int argc, char* argv[])
                         break;
                     }
                 }
-                catch(std::invalid_argument& e)
+                catch(std::invalid_argument& /*e*/)
                 {
                     if(!strcasecmp(argument.c_str(), "fatal"))
                     {
