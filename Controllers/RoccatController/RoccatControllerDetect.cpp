@@ -10,11 +10,13 @@
 #include "RoccatBurstController.h"
 #include "RoccatKoneAimoController.h"
 #include "RoccatVulcanAimoController.h"
+#include "RoccatKovaController.h"
 #include "RGBController.h"
 #include "RGBController_RoccatBurst.h"
 #include "RGBController_RoccatHordeAimo.h"
 #include "RGBController_RoccatKoneAimo.h"
 #include "RGBController_RoccatVulcanAimo.h"
+#include "RGBController_RoccatKova.h"
 #include <hidapi/hidapi.h>
 #include <unordered_set>
 
@@ -26,6 +28,7 @@
 #define ROCCAT_HORDE_AIMO_PID       0x303E
 #define ROCCAT_BURST_CORE_PID       0x2DE6
 #define ROCCAT_BURST_PRO_PID        0x2DE1
+#define ROCCAT_KOVA_PID             0x2CEE
 
 void DetectRoccatMouseControllers(hid_device_info* info, const std::string& name)
 {
@@ -40,24 +43,24 @@ void DetectRoccatMouseControllers(hid_device_info* info, const std::string& name
     }
 }
 
-/*---------------------------------------------------------------------------*\
-| Tracks the paths used in DetectRoccatKeyboardControllers so multiple Roccat |
-| devices can be detected without all controlling the same device.            |
-\*---------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------*\
+| Tracks the paths used in DetectRoccatVulcanAimoControllers so multiple Roccat |
+| devices can be detected without all controlling the same device.              |
+\*-----------------------------------------------------------------------------*/
 static std::unordered_set<std::string> used_paths;
 
 /*--------------------------------------------------------------------------------*\
 | Removes all entries in used_paths so device discovery does not skip any of them. |
 \*--------------------------------------------------------------------------------*/
-void ResetRoccatKeyboardControllersPaths()
+void ResetRoccatVulcanAimoControllersPaths()
 {
     used_paths.clear();
 }
 
-void DetectRoccatKeyboardControllers(hid_device_info* info, const std::string& name)
+void DetectRoccatVulcanAimoControllers(hid_device_info* info, const std::string& name)
 {
     /*-------------------------------------------------------------------------------------------------*\
-    | Create a local copy of the HID enumerations for the Roccat Keyboard VID/PID and iterate           |
+    | Create a local copy of the HID enumerations for the Roccat Vulcan Aimo VID/PID and iterate        |
     | through it.  This prevents detection from failing if interface 1 comes before interface 0 in the  |
     | main info list.                                                                                   |
     \*-------------------------------------------------------------------------------------------------*/
@@ -73,10 +76,10 @@ void DetectRoccatKeyboardControllers(hid_device_info* info, const std::string& n
 
     while(info_temp)
     {
-        /*---------------------------------------------------------------------------------*\
-        | Check for paths used on an already registered Roccat Keyboard controller to avoid |
-        | registering multiple controllers that refer to the same physical hardware.        |
-        \*---------------------------------------------------------------------------------*/
+        /*------------------------------------------------------------------------------------*\
+        | Check for paths used on an already registered Roccat Vulcan Aimo controller to avoid |
+        | registering multiple controllers that refer to the same physical hardware.           |
+        \*------------------------------------------------------------------------------------*/
         if(info_temp->vendor_id             == info->vendor_id
         && info_temp->product_id            == info->product_id
         && used_paths.find(info_temp->path) == used_paths.end() )
@@ -157,10 +160,25 @@ void DetectRoccatBurstProControllers(hid_device_info* info, const std::string& n
     }
 }
 
+void DetectRoccatKovaControllers(hid_device_info* info, const std::string& name)
+{
+    hid_device* dev = hid_open_path(info->path);
+
+    if(dev)
+    {
+        RoccatKovaController *     controller     = new RoccatKovaController(dev, info->path);
+        RGBController_RoccatKova * rgb_controller = new RGBController_RoccatKova(controller);
+        rgb_controller->name                      = name;
+        ResourceManager::get()->RegisterRGBController(rgb_controller);
+    }
+}
+
+REGISTER_PRE_DETECTION_HOOK(ResetRoccatVulcanAimoControllersPaths);
+
 REGISTER_HID_DETECTOR_IPU("Roccat Kone Aimo",               DetectRoccatMouseControllers,               ROCCAT_VID, ROCCAT_KONE_AIMO_PID,          0, 0x0B,    0 );
 REGISTER_HID_DETECTOR_IPU("Roccat Kone Aimo 16K",           DetectRoccatMouseControllers,               ROCCAT_VID, ROCCAT_KONE_AIMO_16K_PID,      0, 0x0B,    0 );
-REGISTER_HID_DETECTOR_IP ("Roccat Vulcan 120 Aimo",         DetectRoccatKeyboardControllers,            ROCCAT_VID, ROCCAT_VULCAN_120_AIMO_PID,    1,          11);
-REGISTER_DYNAMIC_DETECTOR("Roccat Vulcan 120 Aimo Setup",   ResetRoccatKeyboardControllersPaths);
+REGISTER_HID_DETECTOR_IP ("Roccat Vulcan 120-Series Aimo",  DetectRoccatVulcanAimoControllers,          ROCCAT_VID, ROCCAT_VULCAN_120_AIMO_PID,    1,          11);
 REGISTER_HID_DETECTOR_IPU("Roccat Horde Aimo",              DetectRoccatHordeAimoKeyboardControllers,   ROCCAT_VID, ROCCAT_HORDE_AIMO_PID,         1, 0x0B,    0);
 REGISTER_HID_DETECTOR_IPU("Roccat Burst Core",              DetectRoccatBurstCoreControllers,           ROCCAT_VID, ROCCAT_BURST_CORE_PID,         3, 0xFF01,  1);
 REGISTER_HID_DETECTOR_IPU("Roccat Burst Pro",               DetectRoccatBurstProControllers,            ROCCAT_VID, ROCCAT_BURST_PRO_PID,          3, 0xFF01,  1);
+REGISTER_HID_DETECTOR_IPU("Roccat Kova",                    DetectRoccatKovaControllers,                ROCCAT_VID, ROCCAT_KOVA_PID,               0, 0x0B,    0);

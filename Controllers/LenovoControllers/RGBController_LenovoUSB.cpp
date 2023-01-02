@@ -69,13 +69,14 @@ RGBController_LenovoUSB::RGBController_LenovoUSB(LenovoUSBController* controller
     }
 
     std::vector<uint8_t> response;
+
+    /*-----------------------*\
+    |Default to ANSI keyboard |
+    \*-----------------------*/
+    keyboard_type = ANSI;
+
     switch(controller->getPid())
     {
-        /*-----------------------*\
-        |Default to ANSI keyboard |
-        \*-----------------------*/
-        keyboard_type = ANSI;
-
         case LEGION_Y740:
             response = controller->getInformation(0x01);
             if(response.size() > 4 && response[4] <= 100)
@@ -155,14 +156,14 @@ RGBController_LenovoUSB::RGBController_LenovoUSB(LenovoUSBController* controller
             break;
 
         case LEGION_Y760S:
-            response = controller->getInformation(0x02);
+            response = controller->getInformation(0x01);
             if(response.size() > 4)
             {
-                if(response[4] == 41)
+                if(response[4] == 0x97)
                 {
                     keyboard_type = JAPAN;
                 }
-                else if(response[4] >= 16 && response[4] <=40)
+                else if(response[4] == 0x8F)
                 {
                     keyboard_type = ISO;
                 }
@@ -305,12 +306,7 @@ void RGBController_LenovoUSB::SetupZones()
             new_zone.matrix_map         = new matrix_map_type;
             new_zone.matrix_map->height = lenovo_zones[i].height;
             new_zone.matrix_map->width  = lenovo_zones[i].width;
-            new_zone.matrix_map->map    = new unsigned int[new_zone.matrix_map->height * new_zone.matrix_map->width];
-
-            if(lenovo_zones[i].matrix_map != NULL)
-            {
-                new_zone.matrix_map->map = (unsigned int *) lenovo_zones[i].matrix_map;
-            }
+            new_zone.matrix_map->map    = (unsigned int *) lenovo_zones[i].matrix_map;
         }
         else
         {

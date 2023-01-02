@@ -33,6 +33,13 @@ for DEV in ${ASUS_TUF_DEVICES[@]}; do
   UDEV_HEADER+='ACTION=="add", SUBSYSTEM=="platform", KERNEL=="faustus", RUN+="/bin/chmod a+w /sys/bus/platform/devices/%k/kbbl/kbbl_'${DEV}'"\n'
 done
 
+# asus-wmi rules
+ASUS_WMI_DEVICES=('kbd_rgb_mode' 'brightness')
+UDEV_HEADER+='\n'${UDEV_LINE}'#  ASUS TUF Laptops (asus-wmi)                                  #\n'${UDEV_LINE}
+for DEV in ${ASUS_WMI_DEVICES[@]}; do
+  UDEV_HEADER+='ACTION=="add", SUBSYSTEM=="leds", KERNEL=="asus::kbd_backlight", RUN+="/bin/chmod a+w /sys%p/'${DEV}'"\n'
+done
+
 echo -e "$UDEV_HEADER" > "$UDEV_FILE"
 
 #-----------------------------------------------------------------------------#
@@ -52,7 +59,7 @@ DUMMY_LIST=$( grep -hR -e DUMMY_DEVICE_DETECTOR ${CONTROLLER_PATH} | cut -d '(' 
 #  Create a list of RGBController.cpp classes including path                  #
 #-----------------------------------------------------------------------------#
 echo -e "Creating file list to parse metadata"
-FILE_LIST=$(find ${CONTROLLER_PATH} | grep RGBController_ | grep cpp)
+FILE_LIST=$(find ${CONTROLLER_PATH} | sort | grep RGBController_ | grep cpp)
 
 #Check the output of the file_list
 # echo -e "$FILE_LIST" >> "file_list.txt"

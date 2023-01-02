@@ -43,6 +43,7 @@ before_script:
     name: "${CI_PROJECT_NAME}_Supported_Devices_${CI_COMMIT_SHORT_SHA}"
     paths:
     - ./*.md
+    - Supported Devices.csv
     exclude:
     - README.md
     - CONTRIBUTING.md
@@ -346,7 +347,6 @@ before_script:
   - apt update
   - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*i386.deb
   - openrgb --version
-  - openrgb -l
   - apt remove -y openrgb
   dependencies:
   - "Linux 32 .deb (Debian Buster)"
@@ -363,7 +363,6 @@ before_script:
   - apt update
   - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
   - openrgb --version
-  - openrgb -l
   - apt remove -y openrgb
   dependencies:
   - "Linux 64 .deb (Debian Buster)"
@@ -380,7 +379,6 @@ before_script:
   - apt update
   - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*i386.deb
   - openrgb --version
-  - openrgb -l
   - apt remove -y openrgb
   dependencies:
   - "Linux 32 .deb (Debian Bullseye)"
@@ -397,7 +395,6 @@ before_script:
   - apt update
   - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
   - openrgb --version
-  - openrgb -l
   - apt remove -y openrgb
   dependencies:
   - "Linux 64 .deb (Debian Bullseye)"
@@ -414,7 +411,6 @@ before_script:
   - apt update
   - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*i386.deb
   - openrgb --version
-  - openrgb -l
   - apt remove -y openrgb
   dependencies:
   - "Linux 32 .deb (Debian Bookworm)"
@@ -431,7 +427,6 @@ before_script:
   - apt update
   - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
   - openrgb --version
-  - openrgb -l
   - apt remove -y openrgb
   dependencies:
   - "Linux 64 .deb (Debian Bookworm)"
@@ -448,7 +443,6 @@ before_script:
   - apt update
   - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
   - openrgb --version
-  - openrgb -l
   - apt remove -y openrgb
   dependencies:
   - "Linux 64 .deb (Debian Buster)"
@@ -465,7 +459,6 @@ before_script:
   - apt update
   - DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends ./openrgb*amd64.deb
   - openrgb --version
-  - openrgb -l
   - apt remove -y openrgb
   dependencies:
   - "Linux 64 .deb (Debian Bookworm)"
@@ -481,7 +474,6 @@ before_script:
   script:
   - yum -y localinstall ./openrgb*64.rpm
   - openrgb --version
-  - openrgb -l
   - yum -y remove openrgb
   dependencies:
   - "Linux 64 f35 rpm"
@@ -497,7 +489,6 @@ before_script:
   script:
   - yum -y localinstall ./openrgb*64.rpm
   - openrgb --version
-  - openrgb -l
   - yum -y remove openrgb
   dependencies:
   - "Linux 64 f36 rpm"
@@ -545,10 +536,6 @@ before_script:
   - (Get-Content ${qconfig-pri-folder}).replace('QT_EDITION = Enterprise', 'QT_EDITION = OpenSource') | Set-Content ${qconfig-pri-folder}
   - (Get-Content ${qconfig-pri-folder}).replace('QT_LICHECK = licheck.exe', '')                       | Set-Content ${qconfig-pri-folder}
   - Pop-Location
-  - _fold_final_
-
-  - _fold_start_ 'Generate qm files'
-  - .\_qt\5.15.0\msvc2019\bin\lrelease OpenRGB.pro
   - _fold_final_
 
   - _fold_start_ 'run qmake and generate the msvc nmake makefile'
@@ -625,10 +612,6 @@ before_script:
   - (Get-Content ${qconfig-pri-folder}).replace('QT_EDITION = Enterprise', 'QT_EDITION = OpenSource') | Set-Content ${qconfig-pri-folder}
   - (Get-Content ${qconfig-pri-folder}).replace('QT_LICHECK = licheck.exe', '')                       | Set-Content ${qconfig-pri-folder}
   - Pop-Location
-  - _fold_final_
-
-  - _fold_start_ 'Generate qm files'
-  - .\_qt\5.15.0\msvc2019_64\bin\lrelease OpenRGB.pro
   - _fold_final_
 
   - _fold_start_ 'run qmake and generate the msvc nmake makefile'

@@ -28,7 +28,9 @@ RGBController_AuraTUFKeyboard::RGBController_AuraTUFKeyboard(AuraTUFKeyboardCont
 
     pid = controller->device_pid;
 
-    if(pid != AURA_ROG_CLAYMORE_PID) 
+    const unsigned char AURA_KEYBOARD_SPEED_MIN = (pid == AURA_ROG_FALCHION_WIRED_PID || pid == AURA_ROG_FALCHION_WIRELESS_PID) ? 255 : 15;
+
+    if(pid != AURA_ROG_CLAYMORE_PID)
     {
         name        = "ASUS Aura Keyboard";
         vendor      = "ASUS";
@@ -347,6 +349,13 @@ void RGBController_AuraTUFKeyboard::SetupZones()
 
     switch(pid)
     {
+        case AURA_TUF_K7_GAMING_PID:
+            keyboard_ptr = &AsusTUFK7Layouts;
+            break;
+        case AURA_ROG_FALCHION_WIRED_PID:
+        case AURA_ROG_FALCHION_WIRELESS_PID:
+            keyboard_ptr = &AsusFalchionLayouts;
+            break;
         case AURA_ROG_CLAYMORE_PID:
             unsigned char numpad;
             numpad = controller->GetNumpadLocation();
@@ -364,9 +373,6 @@ void RGBController_AuraTUFKeyboard::SetupZones()
                 default:
                     keyboard_ptr = &AsusClaymoreNoNumpadLayouts;
             }
-            break;
-        case AURA_TUF_K7_GAMING_PID:
-            keyboard_ptr = &AsusTUFK7Layouts;
             break;
         default:
             keyboard_ptr = &AsusTUFK7Layouts;
@@ -398,7 +404,7 @@ void RGBController_AuraTUFKeyboard::SetupZones()
     keyboard_zone.matrix_map->map    = keyboard[layout].matrix_map;
     zones.push_back(keyboard_zone);
 
-    for(unsigned int led_id = 0; led_id < keyboard[layout].size; led_id++)
+    for(int led_id = 0; led_id < keyboard[layout].size; led_id++)
     {
         led new_led;
         new_led.name  = keyboard[layout].led_names[led_id].name;
@@ -429,7 +435,6 @@ void RGBController_AuraTUFKeyboard::DeviceUpdateLEDs()
     }
 
     controller->UpdateLeds(led_color_list);
-
 }
 
 void RGBController_AuraTUFKeyboard::UpdateZoneLEDs(int /*zone*/)
@@ -448,13 +453,13 @@ void RGBController_AuraTUFKeyboard::UpdateSingleLED(int led)
 
 static const uint8_t direction_map[2][6] =
 {
-    { 4,  0,  6,  2,  8,  1 },          // Default directions Left, Right, Up, Down, Horizontal, Vertical   
+    { 4,  0,  6,  2,  8,  1 },          // Default directions Left, Right, Up, Down, Horizontal, Vertical
     { 0,  4,  6,  2,  0xFF,  0xFF },    // AURA_ROG_CLAYMORE directions Left, Right, Up, Down
 };
 
 void RGBController_AuraTUFKeyboard::DeviceUpdateMode()
 {
-    if(pid == AURA_ROG_CLAYMORE_PID) 
+    if(pid == AURA_ROG_CLAYMORE_PID)
     {
         controller->AllowRemoteControl(1);
     }
@@ -468,7 +473,7 @@ void RGBController_AuraTUFKeyboard::DeviceUpdateMode()
         if(pid == AURA_ROG_CLAYMORE_PID) controller->AllowRemoteControl(3);
         return;
     };
-    
+
     if(pid != AURA_ROG_CLAYMORE_PID)
     {
         brightness = modes[active_mode].brightness * 25;
@@ -521,7 +526,7 @@ void RGBController_AuraTUFKeyboard::DeviceUpdateMode()
 
     controller->UpdateDevice(modes[active_mode].value, std::vector<RGBColor>(modes[active_mode].colors), direction, color_mode, modes[active_mode].speed, brightness);
 
-    if(pid == AURA_ROG_CLAYMORE_PID) 
+    if(pid == AURA_ROG_CLAYMORE_PID)
     {
         controller->UpdateMode(modes[active_mode].value);
         controller->SaveMode();
@@ -534,7 +539,7 @@ void RGBController_AuraTUFKeyboard::DeviceSaveMode()
     /*----------------------------------------------------------*\
     | not available for Claymore                                 |
     \*----------------------------------------------------------*/
-    if(pid != AURA_ROG_CLAYMORE_PID) 
+    if(pid != AURA_ROG_CLAYMORE_PID)
     {
         DeviceUpdateMode();
         controller->SaveMode();

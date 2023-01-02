@@ -295,6 +295,7 @@ RazerController::RazerController(hid_device* dev_handle, hid_device* dev_argb_ha
         case RAZER_TARTARUS_PRO_PID:
         case RAZER_TARTARUS_V2_PID:
         case RAZER_TIAMAT_71_V2_PID:
+        case RAZER_THUNDERBOLT_4_DOCK_CHROMA_PID:
         case RAZER_VIPER_8KHZ_PID:
         case RAZER_VIPER_MINI_PID:
         case RAZER_VIPER_PID:
@@ -599,6 +600,7 @@ bool RazerController::SupportsWave()
         case RAZER_DIAMONDBACK_CHROMA_PID:
         case RAZER_MAMBA_2015_WIRED_PID:
         case RAZER_MAMBA_2015_WIRELESS_PID:
+        case RAZER_MAMBA_ELITE_PID:
         case RAZER_MAMBA_TE_PID:
         case RAZER_NAGA_LEFT_HANDED_PID:
 
@@ -628,6 +630,7 @@ bool RazerController::SupportsWave()
         case RAZER_NOMMO_PRO_PID:
         case RAZER_O11_DYNAMIC_PID:
         case RAZER_STRIDER_CHROMA_PID:
+        case RAZER_THUNDERBOLT_4_DOCK_CHROMA_PID:
 
             supports_wave = true;
             break;
@@ -1193,7 +1196,7 @@ unsigned char RazerController::GetKeyboardLayoutType()
 
         case RAZER_KEYBOARD_LAYOUT_GREEK:                  // Unconfirmed
         case RAZER_KEYBOARD_LAYOUT_GERMAN:                 // Unconfirmed
-        case RAZER_KEYBOARD_LAYOUT_FRENCH:        
+        case RAZER_KEYBOARD_LAYOUT_FRENCH:
         case RAZER_KEYBOARD_LAYOUT_UK:
         case RAZER_KEYBOARD_LAYOUT_NORDIC:
         case RAZER_KEYBOARD_LAYOUT_KOREAN:                 // Unconfirmed
@@ -1243,7 +1246,10 @@ std::string RazerController::GetKeyboardLayoutName()
         case RAZER_KEYBOARD_LAYOUT_PORTUGESE_PORTUGA:      return "Portugese (Portugal) (ISO)";    // Unconfirmed
         case RAZER_KEYBOARD_LAYOUT_HEBREW:                 return "Hebrew (ISO)";                  // Unconfirmed
         case RAZER_KEYBOARD_LAYOUT_ARABIC:                 return "Arabic (ANSI)";                 // Unconfirmed
-        default:                                           return "Unknown";
+        default:
+            std::string tmp = "Unknown: ";
+            tmp            += layout;
+            return tmp;
     }
 }
 
@@ -1251,7 +1257,7 @@ std::string RazerController::GetVariantName()
 {
     unsigned char layout;
     unsigned char variant;
-    
+
     RazerController::razer_get_keyboard_info(&layout, &variant);
 
     switch(variant)
