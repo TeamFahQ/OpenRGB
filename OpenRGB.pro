@@ -131,6 +131,7 @@ INCLUDEPATH +=                                                                  
     Controllers/HyperXMouseController/                                                          \
     Controllers/HyperXMousematController/                                                       \
     Controllers/IntelArcA770LEController/                                                       \
+    Controllers/IonicoController/                                                               \
     Controllers/LEDStripController/                                                             \
     Controllers/LenovoControllers/                                                              \
     Controllers/LenovoMotherboardController/                                                    \
@@ -170,6 +171,7 @@ INCLUDEPATH +=                                                                  
     Controllers/WootingKeyboardController/                                                      \
     Controllers/YeelightController/                                                             \
     Controllers/ZalmanZSyncController/                                                          \
+    Controllers/ZotacTuringGPUController/                                                       \
     RGBController/                                                                              \
     qt/
 
@@ -454,6 +456,8 @@ HEADERS +=                                                                      
     Controllers/HyperXMousematController/RGBController_HyperXMousemat.h                         \
     Controllers/IntelArcA770LEController/IntelArcA770LEController.h                             \
     Controllers/IntelArcA770LEController/RGBController_IntelArcA770LE.h                         \
+    Controllers/IonicoController/IonicoController.h                                             \
+    Controllers/IonicoController/RGBController_Ionico.h                                         \
     Controllers/KeychronKeyboardController/KeychronKeyboardController.h                         \
     Controllers/KeychronKeyboardController/RGBController_KeychronKeyboard.h                     \
     Controllers/LEDStripController/LEDStripController.h                                         \
@@ -505,7 +509,9 @@ HEADERS +=                                                                      
     Controllers/MSI3ZoneController/MSI3ZoneController.h                                         \
     Controllers/MSI3ZoneController/RGBController_MSI3Zone.h                                     \
     Controllers/MSIGPUController/MSIGPUController.h                                             \
+    Controllers/MSIGPUController/MSIGPUv2Controller.h                                           \
     Controllers/MSIGPUController/RGBController_MSIGPU.h                                         \
+    Controllers/MSIGPUController/RGBController_MSIGPUv2.h                                       \
     Controllers/MSIMysticLightController/MSIMysticLightCommon.h                                 \
     Controllers/MSIMysticLightController/MSIMysticLight64Controller.h                           \
     Controllers/MSIMysticLightController/MSIMysticLight112Controller.h                          \
@@ -558,16 +564,18 @@ HEADERS +=                                                                      
     Controllers/RazerController/RGBController_Razer.h                                           \
     Controllers/RazerController/RGBController_RazerAddressable.h                                \
     Controllers/RazerController/RGBController_RazerKraken.h                                     \
-    Controllers/RedragonController/RedragonM711Controller.h                                     \
-    Controllers/RedragonController/RGBController_RedragonM711.h                                 \
+    Controllers/RedragonController/RGBController_RedragonMouse.h                                \
+    Controllers/RedragonController/RedragonMouseController.h                                    \
     Controllers/RedSquareKeyroxController/RedSquareKeyroxController.h                           \
     Controllers/RedSquareKeyroxController/RGBController_RedSquareKeyrox.h                       \
     Controllers/RoccatController/RGBController_RoccatBurst.h                                    \
+    Controllers/RoccatController/RGBController_RoccatElo.h                                      \
     Controllers/RoccatController/RGBController_RoccatHordeAimo.h                                \
     Controllers/RoccatController/RGBController_RoccatKoneAimo.h                                 \
     Controllers/RoccatController/RGBController_RoccatKova.h                                     \
     Controllers/RoccatController/RGBController_RoccatVulcanAimo.h                               \
     Controllers/RoccatController/RoccatBurstController.h                                        \
+    Controllers/RoccatController/RoccatEloController.h                                          \
     Controllers/RoccatController/RoccatHordeAimoController.h                                    \
     Controllers/RoccatController/RoccatKoneAimoController.h                                     \
     Controllers/RoccatController/RoccatKovaController.h                                         \
@@ -651,6 +659,8 @@ HEADERS +=                                                                      
     Controllers/ZETEdgeAirProController/RGBController_ZETEdgeAirPro.h                           \
     Controllers/ZETKeyboardController/ZETBladeOpticalController.h                               \
     Controllers/ZETKeyboardController/RGBController_ZETBladeOptical.h                           \
+    Controllers/ZotacTuringGPUController/ZotacTuringGPUController.h                             \
+    Controllers/ZotacTuringGPUController/RGBController_ZotacTuringGPU.h                         \
     RGBController/RGBController.h                                                               \
     RGBController/RGBController_Dummy.h                                                         \
     RGBController/RGBControllerKeyNames.h                                                       \
@@ -1027,6 +1037,9 @@ SOURCES +=                                                                      
     Controllers/HyperXMousematController/RGBController_HyperXMousemat.cpp                       \
     Controllers/IntelArcA770LEController/IntelArcA770LEController.cpp                           \
     Controllers/IntelArcA770LEController/IntelArcA770LEControllerDetect.cpp                     \
+    Controllers/IonicoController/IonicoController.cpp                                           \
+    Controllers/IonicoController/IonicoControllerDetect.cpp                                     \
+    Controllers/IonicoController/RGBController_Ionico.cpp                                       \
     Controllers/IntelArcA770LEController/RGBController_IntelArcA770LE.cpp                       \
     Controllers/KeychronKeyboardController/KeychronKeyboardController.cpp                       \
     Controllers/KeychronKeyboardController/KeychronKeyboardControllerDetect.cpp                 \
@@ -1088,7 +1101,10 @@ SOURCES +=                                                                      
     Controllers/MSI3ZoneController/RGBController_MSI3Zone.cpp                                   \
     Controllers/MSIGPUController/MSIGPUController.cpp                                           \
     Controllers/MSIGPUController/MSIGPUControllerDetect.cpp                                     \
+    Controllers/MSIGPUController/MSIGPUv2Controller.cpp                                         \
+    Controllers/MSIGPUController/MSIGPUv2ControllerDetect.cpp                                   \
     Controllers/MSIGPUController/RGBController_MSIGPU.cpp                                       \
+    Controllers/MSIGPUController/RGBController_MSIGPUv2.cpp                                     \
     Controllers/MSIMysticLightController/MSIMysticLight64Controller.cpp                         \
     Controllers/MSIMysticLightController/MSIMysticLight162Controller.cpp                        \
     Controllers/MSIMysticLightController/MSIMysticLight112Controller.cpp                        \
@@ -1157,18 +1173,20 @@ SOURCES +=                                                                      
     Controllers/RazerController/RGBController_Razer.cpp                                         \
     Controllers/RazerController/RGBController_RazerAddressable.cpp                              \
     Controllers/RazerController/RGBController_RazerKraken.cpp                                   \
-    Controllers/RedragonController/RedragonM711Controller.cpp                                   \
+    Controllers/RedragonController/RGBController_RedragonMouse.cpp                              \
     Controllers/RedragonController/RedragonControllerDetect.cpp                                 \
-    Controllers/RedragonController/RGBController_RedragonM711.cpp                               \
+    Controllers/RedragonController/RedragonMouseController.cpp                                  \
     Controllers/RedSquareKeyroxController/RedSquareKeyroxController.cpp                         \
     Controllers/RedSquareKeyroxController/RedSquareKeyroxControllerDetect.cpp                   \
     Controllers/RedSquareKeyroxController/RGBController_RedSquareKeyrox.cpp                     \
     Controllers/RoccatController/RGBController_RoccatBurst.cpp                                  \
+    Controllers/RoccatController/RGBController_RoccatElo.cpp                                    \
     Controllers/RoccatController/RGBController_RoccatHordeAimo.cpp                              \
     Controllers/RoccatController/RGBController_RoccatKoneAimo.cpp                               \
     Controllers/RoccatController/RGBController_RoccatKova.cpp                                   \
     Controllers/RoccatController/RGBController_RoccatVulcanAimo.cpp                             \
     Controllers/RoccatController/RoccatBurstController.cpp                                      \
+    Controllers/RoccatController/RoccatEloController.cpp                                        \
     Controllers/RoccatController/RoccatHordeAimoController.cpp                                  \
     Controllers/RoccatController/RoccatKoneAimoController.cpp                                   \
     Controllers/RoccatController/RoccatKovaController.cpp                                       \
@@ -1264,6 +1282,9 @@ SOURCES +=                                                                      
     Controllers/ZETKeyboardController/ZETBladeOpticalController.cpp                             \
     Controllers/ZETKeyboardController/ZETKeyboardControllerDetect.cpp                           \
     Controllers/ZETKeyboardController/RGBController_ZETBladeOptical.cpp                         \
+    Controllers/ZotacTuringGPUController/ZotacTuringGPUController.cpp                           \
+    Controllers/ZotacTuringGPUController/ZotacTuringGPUControllerDetect.cpp                     \
+    Controllers/ZotacTuringGPUController/RGBController_ZotacTuringGPU.cpp                       \
     RGBController/RGBController.cpp                                                             \
     RGBController/RGBController_Dummy.cpp                                                       \
     RGBController/RGBControllerKeyNames.cpp                                                     \

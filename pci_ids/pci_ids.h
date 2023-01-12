@@ -29,6 +29,7 @@
 #define AMD_NAVI21_DEV3                                 0x73A5
 #define AMD_NAVI22_DEV                                  0x73DF
 #define AMD_NAVI23_DEV                                  0x73FF
+#define AMD_NAVI31_DEV                                  0x744C
 
 /*-----------------------------------------------------*\
 | Intel Device IDs                                      |
@@ -154,6 +155,7 @@
 #define ASUS_ROG_STRIX_GTX1080TI_11G_GAMING             0x85F1
 #define ASUS_ROG_STRIX_GTX1650S_OC                      0x874F
 #define ASUS_ROG_STRIX_GTX1660S_O6G_GAMING              0x8752
+#define ASUS_ROG_STRIX_LC_RX6800XT_O16G_GAMING          0x04F0
 #define ASUS_ROG_GTX1660TI_OC                           0x86A5
 #define ASUS_ROG_STRIX_RTX2060_EVO_GAMING               0x86D3
 #define ASUS_ROG_STRIX_RTX2060_O6G_GAMING               0x868E
@@ -237,6 +239,7 @@
 #define ASUS_TUF_RX_6800XT_O16G_GAMING                  0x04F2
 #define ASUS_TUF_RX_6900XT_O16G_GAMING                  0x04FA
 #define ASUS_TUF_RX_6900XT_T16G_GAMING                  0x04FE
+#define ASUS_ROG_STRIX_LC_RX_6950XT_O16G_GAMING         0x05E9
 #define ASUS_TUF_RTX_4090_O24G_OC_GAMING                0x889A
 #define ASUS_TUF_RTX_4090_O24G_GAMING                   0x889B
 #define ASUS_ROG_STRIX_RTX_4090_O24G_GAMING             0x889C
@@ -245,6 +248,7 @@
 | Colorful Sub-Device IDs                               |
 \*-----------------------------------------------------*/
 #define COLORFUL_IGAME_RTX_3060_ULTRAW_OC_12G           0x150A
+#define COLORFUL_IGAME_RTX_3060_ULTRAW_OC_12G_2         0x1501
 #define COLORFUL_IGAME_RTX_3070_ADVANCED_OCV            0x140A
 #define COLORFUL_IGAME_RTX_3070_ADVANCED_OCV2           0x1401
 #define COLORFUL_IGAME_RTX_3070_ULTRAW_OC               0x150A
@@ -483,6 +487,7 @@
 #define MSI_RTX3080_12G_GAMING_Z_TRIO_SUB_DEV           0x389B
 #define MSI_RTX3070TI_SUPRIM_X_SUB_DEV                  0x5051
 #define MSI_RTX3070TI_GAMING_X_TRIO_SUB_DEV             0x5052
+#define MSI_RTX3070_SUPRIM_SUB_DEV                      0x390C
 #define MSI_RTX3070_SUPRIM_X_SUB_DEV                    0x3901
 #define MSI_RTX3080_GAMING_X_TRIO_SUB_DEV               0x3892
 #define MSI_RTX3080_SUPRIM_X_SUB_DEV                    0x3897
@@ -492,6 +497,10 @@
 #define MSI_RTX3090_SUPRIM_X_SUB_DEV                    0x3882
 #define MSI_RTX3090TI_SUPRIM_X_SUB_DEV                  0x5090
 #define MSI_RTX3090TI_GAMING_X_TRIO_SUB_DEV             0x5091
+#define MSI_RTX4090_SUPRIM_LIQUID_X_SUB_DEV             0x5104
+#define MSI_RTX4080_SUPRIM_X_SUB_DEV                    0x5110
+#define MSI_RTX4090_GAMING_X_TRIO_SUB_DEV               0x5103
+#define MSI_RTX4090_SUPRIM_X_SUB_DEV                    0x5102
 #define MSI_RX6600XT_GAMING_X_SUB_DEV                   0x5020
 #define MSI_RX6700XT_GAMING_X_SUB_DEV                   0x3981
 #define MSI_RX6750XT_GAMING_X_TRIO_SUB_DEV              0x3990
@@ -552,6 +561,14 @@
 #define SAPPHIRE_NAVI21_6950XT_NITRO_PLUS_SUB_DEV       0x441D
 #define SAPPHIRE_NAVI21_TOXIC_SUB_DEV                   0xF440
 #define SAPPHIRE_NAVI21_TOXIC_SUB_DEV1                  0xF441
+#define SAPPHIRE_NAVI31_NITRO_PLUS_SUB_DEV              0xE471
+
+/*-----------------------------------------------------*\
+| Zotac Sub-Device IDs                                  |
+\*-----------------------------------------------------*/
+#define ZOTAC_RTX2060S_AMP_SUB_DEV                      0x5511
+#define ZOTAC_RTX2070S_GAMING_SUB_DEV                   0x7500
+#define ZOTAC_RTX2080_AMP_SUB_DEV                       0x3500
 
 /*---------------------------------------------------------*\
 | PCI ID Macros                                             |

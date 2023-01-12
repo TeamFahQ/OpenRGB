@@ -39,6 +39,10 @@ void DetectMSIGPUControllers(i2c_smbus_interface* bus, uint8_t i2c_addr, const s
 
 } /* DetectMSIGPUControllers() */
 
+/*-----------------------------------------*\
+|  NVidia GPUs                              |
+\*-----------------------------------------*/
+
 REGISTER_I2C_PCI_DETECTOR("MSI GeForce GTX 1070 Gaming X",                  DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_GTX1070_DEV,         MSI_SUB_VEN,    MSI_GTX1070_GAMING_X_SUB_DEV,           0x68);
 REGISTER_I2C_PCI_DETECTOR("MSI GeForce GTX 1660 Gaming X 6G",               DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_GTX1660_DEV,         MSI_SUB_VEN,    MSI_GTX1660_GAMING_X_6G_SUB_DEV,        0x68);
 REGISTER_I2C_PCI_DETECTOR("MSI GeForce GTX 1660Ti Gaming 6G",               DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_GTX1660TI_DEV,       MSI_SUB_VEN,    MSI_GTX1660TI_GAMING_6G_SUB_DEV,        0x68);
@@ -79,6 +83,7 @@ REGISTER_I2C_PCI_DETECTOR("MSI GeForce RTX 3060 Ti 8GB Gaming X LHR",       Dete
 REGISTER_I2C_PCI_DETECTOR("MSI GeForce RTX 3060 Ti 8GB Gaming X Trio LHR",  DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_RTX3060TI_LHR_DEV,   MSI_SUB_VEN,    MSI_RTX3070_GAMING_X_TRIO_SUB_DEV,      0x68);
 REGISTER_I2C_PCI_DETECTOR("MSI GeForce RTX 3070 8GB Gaming Trio",           DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_RTX3070_LHR_DEV,     MSI_SUB_VEN,    MSI_RTX3070_GAMING_TRIO_SUB_DEV,        0x68);
 REGISTER_I2C_PCI_DETECTOR("MSI GeForce RTX 3070 8GB Gaming X Trio",         DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_RTX3070_DEV,         MSI_SUB_VEN,    MSI_RTX3070_GAMING_X_TRIO_SUB_DEV,      0x68);
+REGISTER_I2C_PCI_DETECTOR("MSI GeForce RTX 3070 8GB Suprim",                DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_RTX3070_DEV,         MSI_SUB_VEN,    MSI_RTX3070_SUPRIM_SUB_DEV,             0x68);
 REGISTER_I2C_PCI_DETECTOR("MSI GeForce RTX 3070 8GB Suprim X",              DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_RTX3070_DEV,         MSI_SUB_VEN,    MSI_RTX3070_SUPRIM_X_SUB_DEV,           0x68);
 REGISTER_I2C_PCI_DETECTOR("MSI GeForce RTX 3070 8GB Suprim X LHR",          DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_RTX3070_LHR_DEV,     MSI_SUB_VEN,    MSI_RTX3070_SUPRIM_X_SUB_DEV,           0x68);
 REGISTER_I2C_PCI_DETECTOR("MSI GeForce RTX 3070 Ti 8GB Gaming X Trio",      DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_RTX3070TI_DEV,       MSI_SUB_VEN,    MSI_RTX3070TI_GAMING_X_TRIO_SUB_DEV,    0x68);
@@ -96,6 +101,11 @@ REGISTER_I2C_PCI_DETECTOR("MSI GeForce RTX 3090 24GB Gaming X Trio",        Dete
 REGISTER_I2C_PCI_DETECTOR("MSI GeForce RTX 3090 Suprim X 24G",              DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_RTX3090_DEV,         MSI_SUB_VEN,    MSI_RTX3090_SUPRIM_X_SUB_DEV,           0x68);
 REGISTER_I2C_PCI_DETECTOR("MSI GeForce RTX 3090 Ti Suprim X 24G",           DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_RTX3090TI_DEV,       MSI_SUB_VEN,    MSI_RTX3090TI_SUPRIM_X_SUB_DEV,         0x68);
 REGISTER_I2C_PCI_DETECTOR("MSI GeForce RTX 3090 Ti Gaming X Trio 24G",      DetectMSIGPUControllers,    NVIDIA_VEN,     NVIDIA_RTX3090TI_DEV,       MSI_SUB_VEN,    MSI_RTX3090TI_GAMING_X_TRIO_SUB_DEV,    0x68);
+
+/*-----------------------------------------*\
+|  AMD GPUs                                 |
+\*-----------------------------------------*/
+
 REGISTER_I2C_PCI_DETECTOR("MSI Radeon RX 6600 XT Gaming X",                 DetectMSIGPUControllers,    AMD_GPU_VEN,    AMD_NAVI23_DEV,             MSI_SUB_VEN,    MSI_RX6600XT_GAMING_X_SUB_DEV,          0x68);
 REGISTER_I2C_PCI_DETECTOR("MSI Radeon RX 6700 XT Gaming X",                 DetectMSIGPUControllers,    AMD_GPU_VEN,    AMD_NAVI23_DEV,             MSI_SUB_VEN,    MSI_RX6700XT_GAMING_X_SUB_DEV,          0x68);
 REGISTER_I2C_PCI_DETECTOR("MSI Radeon RX 6750 XT Gaming X Trio 12G",        DetectMSIGPUControllers,    AMD_GPU_VEN,    AMD_NAVI22_DEV,             MSI_SUB_VEN,    MSI_RX6750XT_GAMING_X_TRIO_SUB_DEV,     0x68);

@@ -1,24 +1,23 @@
 /*-----------------------------------------*\
-|  RGBController_AsusAuraMouse.h            |
+|  RGBController_MSIGPUv2.h                 |
 |                                           |
-|  Generic RGB Interface for Asus Aura      |
-|  USB controller driver                    |
+|  ITE9 RGB Interface for MSI GPU           |
+|  Wojciech Lazarski 03/Jan/2023            |
 |                                           |
-|  Adam Honse (CalcProgrammer1) 10/25/2020  |
 \*-----------------------------------------*/
 
 #pragma once
-#include "RGBController.h"
-#include "AsusAuraMouseController.h"
 
-class RGBController_AuraMouse : public RGBController
+#include "RGBController.h"
+#include "MSIGPUv2Controller.h"
+
+class RGBController_MSIGPUv2 : public RGBController
 {
 public:
-    RGBController_AuraMouse(AuraMouseController* controller_ptr);
-    ~RGBController_AuraMouse();
+    RGBController_MSIGPUv2(MSIGPUv2Controller* msi_gpu_ptr);
+    ~RGBController_MSIGPUv2();
 
     void        SetupZones();
-
     void        ResizeZone(int zone, int new_size);
 
     void        DeviceUpdateLEDs();
@@ -29,6 +28,9 @@ public:
     void        DeviceSaveMode();
 
 private:
-    AuraMouseController*  controller;
-    uint16_t              pid;
+    MSIGPUv2Controller* msi_gpu;
+    std::chrono::time_point<std::chrono::steady_clock> last_commit_time;
+
+    bool       TimeToSend();
+    void       DeviceUpdateAll();
 };
