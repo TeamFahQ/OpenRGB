@@ -17,12 +17,14 @@
 #include <thread>
 #include <string>
 
+#include "hidapi_wrapper.h"
 #include "i2c_smbus.h"
 #include "NetworkClient.h"
 #include "NetworkServer.h"
 #include "ProfileManager.h"
 #include "RGBController.h"
 #include "SettingsManager.h"
+#include "filesystem.h"
 
 #define HID_INTERFACE_ANY   -1
 #define HID_USAGE_ANY       -1
@@ -32,13 +34,14 @@
 
 struct hid_device_info;
 
-typedef std::function<bool()>                                                   I2CBusDetectorFunction;
-typedef std::function<void(std::vector<RGBController*>&)>                       DeviceDetectorFunction;
-typedef std::function<void(std::vector<i2c_smbus_interface*>&)>                 I2CDeviceDetectorFunction;
-typedef std::function<void(i2c_smbus_interface*, uint8_t, const std::string&)>  I2CPCIDeviceDetectorFunction;
-typedef std::function<void(hid_device_info*, const std::string&)>               HIDDeviceDetectorFunction;
-typedef std::function<void()>                                                   DynamicDetectorFunction;
-typedef std::function<void()>                                                   PreDetectionHookFunction;
+typedef std::function<bool()>                                                               I2CBusDetectorFunction;
+typedef std::function<void()>                                                               DeviceDetectorFunction;
+typedef std::function<void(std::vector<i2c_smbus_interface*>&)>                             I2CDeviceDetectorFunction;
+typedef std::function<void(i2c_smbus_interface*, uint8_t, const std::string&)>              I2CPCIDeviceDetectorFunction;
+typedef std::function<void(hid_device_info*, const std::string&)>                           HIDDeviceDetectorFunction;
+typedef std::function<void(hidapi_wrapper wrapper, hid_device_info*, const std::string&)>   HIDWrappedDeviceDetectorFunction;
+typedef std::function<void()>                                                               DynamicDetectorFunction;
+typedef std::function<void()>                                                               PreDetectionHookFunction;
 
 typedef struct
 {
@@ -49,6 +52,16 @@ typedef struct
     int                         usage_page;
     int                         usage;
 } HIDDeviceDetectorBlock;
+
+typedef struct
+{
+    std::string                         name;
+    HIDWrappedDeviceDetectorFunction    function;
+    unsigned int                        address;
+    int                                 interface;
+    int                                 usage_page;
+    int                                 usage;
+} HIDWrappedDeviceDetectorBlock;
 
 typedef struct
 {
@@ -91,7 +104,7 @@ public:
 
     virtual unsigned int                        GetDetectionPercent()                                                                               = 0;
 
-    virtual std::string                         GetConfigurationDirectory()                                                                         = 0;
+    virtual filesystem::path                    GetConfigurationDirectory()                                                                         = 0;
 
     virtual std::vector<NetworkClient*>&        GetClients()                                                                                        = 0;
     virtual NetworkServer*                      GetServer()                                                                                         = 0;
@@ -110,18 +123,18 @@ class ResourceManager: public ResourceManagerInterface
 {
 public:
     static ResourceManager *get();
-    
+
     ResourceManager();
     ~ResourceManager();
 
     void RegisterI2CBus(i2c_smbus_interface *);
     std::vector<i2c_smbus_interface*> & GetI2CBusses();
-    
+
     void RegisterRGBController(RGBController *rgb_controller);
     void UnregisterRGBController(RGBController *rgb_controller);
 
     std::vector<RGBController*> & GetRGBControllers();
-    
+
     void RegisterI2CBusDetector         (I2CBusDetectorFunction     detector);
     void RegisterDeviceDetector         (std::string name, DeviceDetectorFunction     detector);
     void RegisterI2CDeviceDetector      (std::string name, I2CDeviceDetectorFunction  detector);
@@ -133,9 +146,16 @@ public:
                                          int interface  = HID_INTERFACE_ANY,
                                          int usage_page = HID_USAGE_PAGE_ANY,
                                          int usage      = HID_USAGE_ANY);
+    void RegisterHIDWrappedDeviceDetector   (std::string name,
+                                            HIDWrappedDeviceDetectorFunction  detector,
+                                            uint16_t vid,
+                                            uint16_t pid,
+                                            int interface  = HID_INTERFACE_ANY,
+                                            int usage_page = HID_USAGE_PAGE_ANY,
+                                            int usage      = HID_USAGE_ANY);
     void RegisterDynamicDetector        (std::string name, DynamicDetectorFunction detector);
     void RegisterPreDetectionHook       (PreDetectionHookFunction hook);
-    
+
     void RegisterDeviceListChangeCallback(DeviceListChangeCallback new_callback, void * new_callback_arg);
     void RegisterDetectionProgressCallback(DetectionProgressCallback new_callback, void * new_callback_arg);
     void RegisterDetectionStartCallback(DetectionStartCallback new_callback, void * new_callback_arg);
@@ -152,7 +172,7 @@ public:
     unsigned int GetDetectionPercent();
     const char*  GetDetectionString();
 
-    std::string                     GetConfigurationDirectory();
+    filesystem::path                GetConfigurationDirectory();
 
     void RegisterNetworkClient(NetworkClient* new_client);
     void UnregisterNetworkClient(NetworkClient* network_client);
@@ -163,7 +183,7 @@ public:
     ProfileManager*                 GetProfileManager();
     SettingsManager*                GetSettingsManager();
 
-    void                            SetConfigurationDirectory(std::string directory);
+    void                            SetConfigurationDirectory(const filesystem::path &directory);
 
     void ProcessPreDetectionHooks();
     void ProcessDynamicDetectors();
@@ -196,7 +216,7 @@ private:
     | Detection enabled flag                                                                |
     \*-------------------------------------------------------------------------------------*/
     bool                                        detection_enabled;
-    
+
     /*-------------------------------------------------------------------------------------*\
     | Profile Manager                                                                       |
     \*-------------------------------------------------------------------------------------*/
@@ -239,6 +259,7 @@ private:
     std::vector<std::string>                    i2c_device_detector_strings;
     std::vector<I2CPCIDeviceDetectorBlock>      i2c_pci_device_detectors;
     std::vector<HIDDeviceDetectorBlock>         hid_device_detectors;
+    std::vector<HIDWrappedDeviceDetectorBlock>  hid_wrapped_device_detectors;
     std::vector<DynamicDetectorFunction>        dynamic_detectors;
     std::vector<std::string>                    dynamic_detector_strings;
     std::vector<PreDetectionHookFunction>       pre_detection_hooks;
@@ -253,8 +274,11 @@ private:
 
     std::atomic<bool>                           detection_is_required;
     std::atomic<unsigned int>                   detection_percent;
+    std::atomic<unsigned int>                   detection_prev_size;
+    std::vector<bool>                           detection_size_entry_used;
     const char*                                 detection_string;
-    
+
+
     /*-------------------------------------------------------------------------------------*\
     | Device List Changed Callback                                                          |
     \*-------------------------------------------------------------------------------------*/
@@ -282,5 +306,5 @@ private:
     std::vector<I2CBusListChangeCallback>       I2CBusListChangeCallbacks;
     std::vector<void *>                         I2CBusListChangeCallbackArgs;
 
-    std::string config_dir;
+    filesystem::path config_dir;
 };

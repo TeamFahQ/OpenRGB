@@ -146,63 +146,147 @@ RGBController* Ui::OpenRGBDevicePage::GetController()
     return device;
 }
 
-void Ui::OpenRGBDevicePage::on_ZoneBox_currentIndexChanged(int /*index*/)
+void Ui::OpenRGBDevicePage::on_ZoneBox_currentIndexChanged(int index)
 {
     /*-----------------------------------------------------*\
     | Read selected mode                                    |
     \*-----------------------------------------------------*/
     unsigned int selected_mode   = (unsigned int)ui->ModeBox->currentIndex();
 
+    /*-----------------------------------------------------*\
+    | Process zone box change based on color mode           |
+    \*-----------------------------------------------------*/
     switch(device->modes[selected_mode].color_mode)
     {
         case MODE_COLORS_PER_LED:
             {
-                int selected_zone = ui->ZoneBox->currentIndex();
+                /*-----------------------------------------*\
+                | Initialize both selected zone and segment |
+                | to -1 to indicate there is no selection   |
+                \*-----------------------------------------*/
+                unsigned int    current_index       = 0;
+                bool            selected_all_zones  = false;
+                int             selected_zone       = -1;
+                int             selected_segment    = -1;
 
-                QString msLine;
-                if(MultipleSelected)
+                /*-----------------------------------------*\
+                | Handle condition where device has more    |
+                | than one zone, which adds an "All Zones"  |
+                | entry to the Zone menu in the first index |
+                \*-----------------------------------------*/
+                if(device->zones.size() > 1)
                 {
-                    msLine = ui->LEDBox->itemText(ui->LEDBox->count() - 1);
+                    if(index == (int)current_index)
+                    {
+                        selected_all_zones = true;
+                    }
+
+                    current_index++;
                 }
+
+                /*-----------------------------------------*\
+                | Determine selected zone and optionally    |
+                | selected segment based on index if "All   |
+                | Zones" is not the selected index          |
+                \*-----------------------------------------*/
+                if(!selected_all_zones)
+                {
+                    for(std::size_t zone_idx = 0; zone_idx < device->zones.size(); zone_idx++)
+                    {
+                        if(index == (int)current_index)
+                        {
+                            selected_zone = zone_idx;
+                            break;
+                        }
+
+                        current_index++;
+
+                        for(std::size_t segment_idx = 0; segment_idx < device->zones[zone_idx].segments.size(); segment_idx++)
+                        {
+                            if(index == (int)current_index)
+                            {
+                                selected_zone    = zone_idx;
+                                selected_segment = segment_idx;
+                                break;
+                            }
+
+                            current_index++;
+                        }
+
+                        if(selected_segment != -1)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                /*-----------------------------------------*\
+                | Clear LED box                             |
+                \*-----------------------------------------*/
                 ui->LEDBox->blockSignals(true);
                 ui->LEDBox->clear();
 
-                if(device->zones.size() > 1)
-                {
-                    if(selected_zone == 0)
-                    {
-                        if(device->leds.size() > 1)
-                        {
-                            ui->LEDBox->addItem(tr("Entire Device"));
-                            ui->LEDBox->setEnabled(1);
-                        }
-                        else
-                        {
-                            ui->LEDBox->setDisabled(1);
-                        }
-                        for (std::size_t i = 0; i < device->leds.size(); i++)
-                        {
-                            ui->LEDBox->addItem(device->leds[i].name.c_str());
-                        }
-                        if(MultipleSelected) // Preserve the multiple() option
-                        {
-                            ui->LEDBox->addItem(msLine);
-                            ui->LEDBox->setCurrentIndex((int)device->leds.size());
-                        }
+                /*-----------------------------------------*\
+                | Clear multiple selected flag              |
+                \*-----------------------------------------*/
+                MultipleSelected = false;
 
-                        ui->ResizeButton->setEnabled(false);
-                        if(!ui->ZoneBox->signalsBlocked())
-                        {
-                            ui->DeviceViewBox->blockSignals(true);
-                            ui->DeviceViewBox->clearSelection();
-                            ui->DeviceViewBox->blockSignals(false);
-                        }
-                    }
-                    selected_zone = selected_zone - 1;
-                }
-                if(device->zones.size() == 1 || selected_zone != -1)
+                /*-----------------------------------------*\
+                | Handle "All Zones" selected condition or  |
+                | multiple selection condition              |
+                \*-----------------------------------------*/
+                if(selected_all_zones)
                 {
-                    // Disable led box if there's only one LED anyway
+                    /*-------------------------------------*\
+                    | If there are multiple LEDs, add the   |
+                    | "Entire Device" option to the LED box |
+                    | and enable it, otherwise there is     |
+                    | only one LED so disable it            |
+                    \*-------------------------------------*/
+                    if(device->leds.size() > 1)
+                    {
+                        ui->LEDBox->addItem(tr("Entire Device"));
+                        ui->LEDBox->setEnabled(1);
+                    }
+                    else
+                    {
+                        ui->LEDBox->setDisabled(1);
+                    }
+
+                    /*-------------------------------------*\
+                    | Fill in the LED list with all LEDs in |
+                    | the device                            |
+                    \*-------------------------------------*/
+                    for(std::size_t i = 0; i < device->leds.size(); i++)
+                    {
+                        ui->LEDBox->addItem(device->leds[i].name.c_str());
+                    }
+
+                    /*-------------------------------------*\
+                    | Editing is not allowed when all       |
+                    | zones are selected at once            |
+                    \*-------------------------------------*/
+                    ui->EditZoneButton->setEnabled(false);
+
+                    if(!ui->ZoneBox->signalsBlocked())
+                    {
+                        ui->DeviceViewBox->blockSignals(true);
+                        ui->DeviceViewBox->clearSelection();
+                        ui->DeviceViewBox->blockSignals(false);
+                    }
+                }
+
+                /*-----------------------------------------*\
+                | Handle a zone selected condition          |
+                \*-----------------------------------------*/
+                else if(selected_zone != -1 && selected_segment == -1)
+                {
+                    /*-------------------------------------*\
+                    | If there are multiple LEDs, add the   |
+                    | "Entire Zone" option to the LED box   |
+                    | and enable it, otherwise there is     |
+                    | only one LED so disable it            |
+                    \*-------------------------------------*/
                     if(device->zones[selected_zone].leds_count > 1)
                     {
                         ui->LEDBox->addItem(tr("Entire Zone"));
@@ -212,23 +296,85 @@ void Ui::OpenRGBDevicePage::on_ZoneBox_currentIndexChanged(int /*index*/)
                     {
                         ui->LEDBox->setDisabled(1);
                     }
-                    for (std::size_t led_idx = 0; led_idx < device->zones[selected_zone].leds_count; led_idx++)
+
+                    /*-------------------------------------*\
+                    | Fill in the LED list with all LEDs in |
+                    | the zone                              |
+                    \*-------------------------------------*/
+                    for(std::size_t led_idx = 0; led_idx < device->zones[selected_zone].leds_count; led_idx++)
                     {
                         ui->LEDBox->addItem(device->zones[selected_zone].leds[led_idx].name.c_str());
                     }
 
-                    if(device->zones[selected_zone].leds_min == device->zones[selected_zone].leds_max)
+                    /*-------------------------------------*\
+                    | Enable editing if:                    |
+                    |   Zone has variable size              |
+                    | OR                                    |
+                    |   Zone is LINEAR and device type is   |
+                    |   LEDSTRIP                            |
+                    \*-------------------------------------*/
+                    bool zone_is_editable = false;
+
+                    if(device->zones[selected_zone].leds_min != device->zones[selected_zone].leds_max)
                     {
-                        ui->ResizeButton->setEnabled(false);
+                        zone_is_editable = true;
                     }
-                    else
+
+                    if((device->zones[selected_zone].type == ZONE_TYPE_LINEAR) && (device->type == DEVICE_TYPE_LEDSTRIP))
                     {
-                        ui->ResizeButton->setEnabled(true);
+                        zone_is_editable = true;
                     }
+
+                    ui->EditZoneButton->setEnabled(zone_is_editable);
+
                     if(!ui->ZoneBox->signalsBlocked())
                     {
                         ui->DeviceViewBox->blockSignals(true);
                         ui->DeviceViewBox->selectZone(selected_zone);
+                        ui->DeviceViewBox->blockSignals(false);
+                    }
+                }
+
+                /*-----------------------------------------*\
+                | Handle a segment selected condition       |
+                \*-----------------------------------------*/
+                else if(selected_zone != -1 && selected_segment != -1)
+                {
+                    /*-------------------------------------*\
+                    | If there are multiple LEDs, add the   |
+                    | "Entire Segment" option to the LED    |
+                    | box and enable it, otherwise there is |
+                    | only one LED so disable it            |
+                    \*-------------------------------------*/
+                    if(device->zones[selected_zone].segments[selected_segment].leds_count > 1)
+                    {
+                        ui->LEDBox->addItem(tr("Entire Segment"));
+                        ui->LEDBox->setEnabled(1);
+                    }
+                    else
+                    {
+                        ui->LEDBox->setDisabled(1);
+                    }
+
+                    /*-------------------------------------*\
+                    | Fill in the LED list with all LEDs in |
+                    | the segment                           |
+                    \*-------------------------------------*/
+                    for(std::size_t led_idx = 0; led_idx < device->zones[selected_zone].segments[selected_segment].leds_count; led_idx++)
+                    {
+                        ui->LEDBox->addItem(device->zones[selected_zone].leds[led_idx + device->zones[selected_zone].segments[selected_segment].start_idx].name.c_str());
+                    }
+
+                    /*-------------------------------------*\
+                    | Editing is not allowed when a         |
+                    | segment is selected                   |
+                    \*-------------------------------------*/
+                    ui->EditZoneButton->setEnabled(false);
+
+                    if(!ui->ZoneBox->signalsBlocked())
+                    {
+                        ui->DeviceViewBox->blockSignals(true);
+                        ui->DeviceViewBox->selectSegment(selected_zone, selected_segment);
                         ui->DeviceViewBox->blockSignals(false);
                     }
                 }
@@ -243,84 +389,258 @@ void Ui::OpenRGBDevicePage::on_ZoneBox_currentIndexChanged(int /*index*/)
 
 void Ui::OpenRGBDevicePage::on_LEDBox_currentIndexChanged(int index)
 {
-    if(index < 0)
-    {
-        return;
-    }
-
     /*-----------------------------------------------------*\
     | Read selected mode                                    |
     \*-----------------------------------------------------*/
     unsigned int selected_mode   = (unsigned int)ui->ModeBox->currentIndex();
 
+    /*-----------------------------------------------------*\
+    | Process zone box change based on color mode           |
+    \*-----------------------------------------------------*/
     switch(device->modes[selected_mode].color_mode)
     {
         case MODE_COLORS_PER_LED:
             {
-                int selected_zone   = ui->ZoneBox->currentIndex();
-                bool multiple       = (std::size_t(index) == (device->leds.size() + 1));
+                /*-----------------------------------------*\
+                | Initialize both selected zone and segment |
+                | to -1 to indicate there is no selection   |
+                \*-----------------------------------------*/
+                unsigned int    current_index       = 0;
+                bool            selected_all_zones  = false;
+                bool            selected_all_leds   = false;
+                int             selected_led        = -1;
+                int             selected_zone       = -1;
+                int             selected_segment    = -1;
 
-                RGBColor color      = 0x00000000;
-                bool updateColor    = 0;
-
+                /*-----------------------------------------*\
+                | Handle condition where device has more    |
+                | than one zone, which adds an "All Zones"  |
+                | entry to the Zone menu in the first index |
+                \*-----------------------------------------*/
                 if(device->zones.size() > 1)
                 {
-                    if(selected_zone == 0) // All zones
+                    if(ui->ZoneBox->currentIndex() == (int)current_index)
                     {
-                        if(device->leds.size() > 1)
-                        {
-                            if(index == 0) // All LEDs on the entire device
-                            {
-                                if(!ui->LEDBox->signalsBlocked())
-                                {
-                                    ui->DeviceViewBox->blockSignals(true);
-                                    ui->DeviceViewBox->clearSelection();
-                                    ui->DeviceViewBox->blockSignals(false);
-                                }
-                            }
-                            index = index - 1;
-                        }
-                        if((device->leds.size() == 1 || index != -1) && !multiple)
-                        {
-                            if(MultipleSelected)
-                            {
-                                ui->LEDBox->removeItem((int)(device->leds.size() + 1));
-                            }
-                            MultipleSelected = 0;
-                            color = device->GetLED(index); // One LED, proceed
-                            updateColor = 1;
-                            if(!ui->LEDBox->signalsBlocked())
-                            {
-                                ui->DeviceViewBox->blockSignals(true);
-                                ui->DeviceViewBox->selectLed(index);
-                                ui->DeviceViewBox->blockSignals(false);
-                            }
-                        }
+                        selected_all_zones = true;
                     }
-                    selected_zone = selected_zone - 1;
+
+                    current_index++;
                 }
-                if(device->zones.size() == 1 || selected_zone != -1) // A specific zone is selected
+
+                /*-----------------------------------------*\
+                | Determine selected zone and optionally    |
+                | selected segment based on index if "All   |
+                | Zones" is not the selected index          |
+                \*-----------------------------------------*/
+                if(!selected_all_zones)
                 {
-                    if(device->zones[selected_zone].leds_count > 1)
+                    for(std::size_t zone_idx = 0; zone_idx < device->zones.size(); zone_idx++)
                     {
-                        if(index == 0) // Entire zone
+                        if(ui->ZoneBox->currentIndex() == (int)current_index)
                         {
+                            selected_zone = zone_idx;
+                            break;
+                        }
+
+                        current_index++;
+
+                        for(std::size_t segment_idx = 0; segment_idx < device->zones[zone_idx].segments.size(); segment_idx++)
+                        {
+                            if(ui->ZoneBox->currentIndex() == (int)current_index)
+                            {
+                                selected_zone    = zone_idx;
+                                selected_segment = segment_idx;
+                                break;
+                            }
+
+                            current_index++;
+                        }
+
+                        if(selected_segment != -1)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                /*-----------------------------------------*\
+                | Handle selection of "Entire Device/Zone/  |
+                | Segment" index is selected                |
+                |                                           |
+                | There should always be an Entire index as |
+                | long as the LED box is enabled            |
+                \*-----------------------------------------*/
+                if(index == 0)
+                {
+                    selected_all_leds = true;
+                }
+                /*-----------------------------------------*\
+                | Determine selected LED if "Entire Device/ |
+                | Zone/Segment" is not selected             |
+                \*-----------------------------------------*/
+                else
+                {
+                    selected_led = index - 1;
+                }
+
+                /*-----------------------------------------*\
+                | Initialize variables                      |
+                \*-----------------------------------------*/
+                bool        multiple    = (std::size_t(selected_led) == (device->leds.size() + 1));
+                RGBColor    color       = 0x00000000;
+                bool        updateColor = false;
+
+                /*-----------------------------------------*\
+                | Remove multiple selection                 |
+                \*-----------------------------------------*/
+                if(MultipleSelected)
+                {
+                    ui->LEDBox->removeItem((int)(device->leds.size() + 1));
+                }
+
+                MultipleSelected = false;
+
+                /*-----------------------------------------*\
+                | Handle "All Zones" selected condition     |
+                \*-----------------------------------------*/
+                if(selected_all_zones)
+                {
+                    /*-------------------------------------*\
+                    | Handle Entire Device selection        |
+                    \*-------------------------------------*/
+                    if(selected_all_leds)
+                    {
+                        if(!ui->LEDBox->signalsBlocked())
+                        {
+                            ui->DeviceViewBox->blockSignals(true);
+                            ui->DeviceViewBox->clearSelection();
+                            ui->DeviceViewBox->blockSignals(false);
+                        }
+                    }
+
+                    /*-------------------------------------*\
+                    | Handle single selected LED            |
+                    \*-------------------------------------*/
+                    if((device->leds.size() == 1 || selected_led != -1) && !multiple)
+                    {
+                        /*---------------------------------*\
+                        | Get selected LED's current color  |
+                        \*---------------------------------*/
+                        color = device->GetLED(selected_led);
+
+                        /*---------------------------------*\
+                        | Set update color flag             |
+                        \*---------------------------------*/
+                        updateColor = true;
+
+                        /*---------------------------------*\
+                        | Select LED in device view         |
+                        \*---------------------------------*/
+                        if(!ui->LEDBox->signalsBlocked())
+                        {
+                            ui->DeviceViewBox->blockSignals(true);
+                            ui->DeviceViewBox->selectLed(selected_led);
+                            ui->DeviceViewBox->blockSignals(false);
+                        }
+                    }
+                }
+                /*-----------------------------------------*\
+                | Handle a zone selected condition          |
+                \*-----------------------------------------*/
+                else if(selected_zone != -1 && selected_segment == -1)
+                {
+                    /*-------------------------------------*\
+                    | Handle Entire Zone selection          |
+                    \*-------------------------------------*/
+                    if(selected_all_leds)
+                    {
+                        if(!ui->LEDBox->signalsBlocked())
+                        {
+                            ui->DeviceViewBox->blockSignals(true);
+                            ui->DeviceViewBox->selectZone(selected_zone);
+                            ui->DeviceViewBox->blockSignals(false);
+                        }
+                    }
+
+                    /*-------------------------------------*\
+                    | Handle single selected LED            |
+                    \*-------------------------------------*/
+                    if(device->zones[selected_zone].leds_count == 1 || selected_led != -1)
+                    {
+                        if((unsigned int)selected_led < device->zones[selected_zone].leds_count)
+                        {
+                            /*-----------------------------*\
+                            | Get selected LED's current    |
+                            | color                         |
+                            \*-----------------------------*/
+                            color = device->zones[selected_zone].colors[selected_led];
+
+                            /*-----------------------------*\
+                            | Set update color flag         |
+                            \*-----------------------------*/
+                            updateColor = 1;
+
+                            /*-----------------------------*\
+                            | Set global index              |
+                            \*-----------------------------*/
+                            int globalIndex = device->zones[selected_zone].leds - &(device->leds[0]) + selected_led;
+
+                            /*-----------------------------*\
+                            | Select LED in device view     |
+                            \*-----------------------------*/
                             if(!ui->LEDBox->signalsBlocked())
                             {
                                 ui->DeviceViewBox->blockSignals(true);
-                                ui->DeviceViewBox->selectZone(selected_zone);
+                                ui->DeviceViewBox->selectLed(globalIndex);
                                 ui->DeviceViewBox->blockSignals(false);
                             }
                         }
-                        index = index - 1;
                     }
-                    if(device->zones[selected_zone].leds_count == 1 || index != -1)
+                }
+                /*-----------------------------------------*\
+                | Handle a segment selected condition       |
+                \*-----------------------------------------*/
+                else if(selected_zone != -1 && selected_segment != -1)
+                {
+                    /*-------------------------------------*\
+                    | Handle Entire Zone selection          |
+                    \*-------------------------------------*/
+                    if(selected_all_leds)
                     {
-                        if((unsigned int)index < device->zones[selected_zone].leds_count)
+                        if(!ui->LEDBox->signalsBlocked())
                         {
-                            color = device->zones[selected_zone].colors[index];
+                            ui->DeviceViewBox->blockSignals(true);
+                            ui->DeviceViewBox->selectSegment(selected_zone, selected_segment);
+                            ui->DeviceViewBox->blockSignals(false);
+                        }
+                    }
+
+                    /*-------------------------------------*\
+                    | Handle single selected LED            |
+                    \*-------------------------------------*/
+                    if(device->zones[selected_zone].segments[selected_segment].leds_count == 1 || selected_led != -1)
+                    {
+                        if((unsigned int)selected_led < device->zones[selected_zone].segments[selected_segment].leds_count)
+                        {
+                            /*-----------------------------*\
+                            | Get selected LED's current    |
+                            | color                         |
+                            \*-----------------------------*/
+                            color = device->zones[selected_zone].colors[selected_led + device->zones[selected_zone].segments[selected_segment].start_idx];
+
+                            /*-----------------------------*\
+                            | Set update color flag         |
+                            \*-----------------------------*/
                             updateColor = 1;
-                            int globalIndex = device->zones[selected_zone].leds - &(device->leds[0]) + index;
+
+                            /*-----------------------------*\
+                            | Set global index              |
+                            \*-----------------------------*/
+                            int globalIndex = device->zones[selected_zone].leds - &(device->leds[0]) + selected_led + device->zones[selected_zone].segments[selected_segment].start_idx;
+
+                            /*-----------------------------*\
+                            | Select LED in device view     |
+                            \*-----------------------------*/
                             if(!ui->LEDBox->signalsBlocked())
                             {
                                 ui->DeviceViewBox->blockSignals(true);
@@ -686,7 +1006,7 @@ void Ui::OpenRGBDevicePage::UpdateModeUi()
                 ui->LEDBox->clear();
                 ui->LEDBox->blockSignals(false);
 
-                ui->ResizeButton->setEnabled(false);
+                ui->EditZoneButton->setEnabled(false);
                 ui->ApplyColorsButton->setEnabled(false);
                 //ui->AutoFillCheck->setEnabled(false);
                 break;
@@ -700,15 +1020,24 @@ void Ui::OpenRGBDevicePage::UpdateModeUi()
                     ui->ZoneBox->setEnabled(1);
                     ui->ZoneBox->addItem(tr("All Zones"));
                 }
+                else if(device->zones.size() == 1 && device->zones[0].segments.size() > 1)
+                {
+                    ui->ZoneBox->setEnabled(1);
+                }
                 else
                 {
                     ui->ZoneBox->setDisabled(1);
-                    ui->ResizeButton->setEnabled(false);
+                    ui->EditZoneButton->setEnabled(false);
                 }
 
-                for (std::size_t i = 0; i < device->zones.size(); i++)
+                for(std::size_t zone_idx = 0; zone_idx < device->zones.size(); zone_idx++)
                 {
-                    ui->ZoneBox->addItem(device->zones[i].name.c_str());
+                    ui->ZoneBox->addItem(device->zones[zone_idx].name.c_str());
+
+                    for(std::size_t segment_idx = 0; segment_idx < device->zones[zone_idx].segments.size(); segment_idx++)
+                    {
+                        ui->ZoneBox->addItem(("    " + device->zones[zone_idx].segments[segment_idx].name).c_str());
+                    }
                 }
 
                 ui->ZoneBox->setCurrentIndex(0);
@@ -738,11 +1067,11 @@ void Ui::OpenRGBDevicePage::UpdateModeUi()
 
                 if(device->modes[selected_mode].colors_min == device->modes[selected_mode].colors_max)
                 {
-                    ui->ResizeButton->setEnabled(false);
+                    ui->EditZoneButton->setEnabled(false);
                 }
                 else
                 {
-                    ui->ResizeButton->setEnabled(true);
+                    ui->EditZoneButton->setEnabled(true);
                 }
 
                 for(unsigned int i = 0; i < device->modes[selected_mode].colors.size(); i++)
@@ -1029,44 +1358,47 @@ void Ui::OpenRGBDevicePage::on_ValSpinBox_valueChanged(int val)
 
 void Ui::OpenRGBDevicePage::on_DeviceViewBox_selectionChanged(QVector<int> indices)
 {
-    ui->ZoneBox->blockSignals(true);
-    ui->LEDBox->blockSignals(true);
-    ui->ZoneBox->setCurrentIndex(0);
-    on_ZoneBox_currentIndexChanged(0);
-    //updateLeds(); // We want to update the LED box, but we don't want any of the side effects of that action
-    ui->ZoneBox->blockSignals(false);
-    if(indices.size() != 0 && size_t(indices.size()) != device->leds.size())
+    if(device->modes[device->active_mode].color_mode == MODE_COLORS_PER_LED)
     {
-        if(indices.size() == 1)
+        ui->ZoneBox->blockSignals(true);
+        ui->LEDBox->blockSignals(true);
+        ui->ZoneBox->setCurrentIndex(0);
+        on_ZoneBox_currentIndexChanged(0);
+        //updateLeds(); // We want to update the LED box, but we don't want any of the side effects of that action
+        ui->ZoneBox->blockSignals(false);
+        if(indices.size() != 0 && size_t(indices.size()) != device->leds.size())
         {
-            if(device->leds.size() == 1)
+            if(indices.size() == 1)
             {
-                ui->LEDBox->setCurrentIndex(0);
+                if(device->leds.size() == 1)
+                {
+                    ui->LEDBox->setCurrentIndex(0);
+                }
+                else
+                {
+                    ui->LEDBox->setCurrentIndex(indices[0] + 1);
+                    // Set everything to it's color
+                }
+                MultipleSelected = 0;
             }
             else
             {
-                ui->LEDBox->setCurrentIndex(indices[0] + 1);
-                // Set everything to it's color
+                if(MultipleSelected)
+                {
+                    ui->LEDBox->removeItem((int)(device->leds.size() + 1));
+                }
+                // TODO: translate
+                ui->LEDBox->addItem("Multiple (" + QVariant(indices.size()).toString() + ")");
+                ui->LEDBox->setCurrentIndex((int)(device->leds.size() + 1));
+                MultipleSelected = 1;
             }
-            MultipleSelected = 0;
         }
         else
         {
-            if(MultipleSelected)
-            {
-                ui->LEDBox->removeItem((int)(device->leds.size() + 1));
-            }
-            // TODO: translate
-            ui->LEDBox->addItem("Multiple (" + QVariant(indices.size()).toString() + ")");
-            ui->LEDBox->setCurrentIndex((int)(device->leds.size() + 1));
-            MultipleSelected = 1;
+            ui->LEDBox->setCurrentIndex(0);
         }
+        ui->LEDBox->blockSignals(false);
     }
-    else
-    {
-        ui->LEDBox->setCurrentIndex(0);
-    }
-    ui->LEDBox->blockSignals(false);
 }
 
 void Ui::OpenRGBDevicePage::on_SetAllButton_clicked()
@@ -1074,30 +1406,97 @@ void Ui::OpenRGBDevicePage::on_SetAllButton_clicked()
     emit SetAllDevices(current_color.red(), current_color.green(), current_color.blue());
 }
 
-void Ui::OpenRGBDevicePage::on_ResizeButton_clicked()
+void Ui::OpenRGBDevicePage::on_EditZoneButton_clicked()
 {
     switch(device->modes[device->active_mode].color_mode)
     {
     case MODE_COLORS_PER_LED:
         {
-            int selected_zone = ui->ZoneBox->currentIndex();
+            /*-----------------------------------------*\
+            | Initialize both selected zone and segment |
+            | to -1 to indicate there is no selection   |
+            \*-----------------------------------------*/
+            unsigned int    current_index       = 0;
+            bool            selected_all_zones  = false;
+            int             selected_zone       = -1;
+            int             selected_segment    = -1;
 
-            if (device->zones.size() > 1)
+            /*-----------------------------------------*\
+            | Handle condition where device has more    |
+            | than one zone, which adds an "All Zones"  |
+            | entry to the Zone menu in the first index |
+            \*-----------------------------------------*/
+            if(device->zones.size() > 1)
             {
-                selected_zone -= 1;
+                if(ui->ZoneBox->currentIndex() == (int)current_index)
+                {
+                    selected_all_zones = true;
+                }
+
+                current_index++;
             }
 
+            /*-----------------------------------------*\
+            | Determine selected zone and optionally    |
+            | selected segment based on index if "All   |
+            | Zones" is not the selected index          |
+            \*-----------------------------------------*/
+            if(!selected_all_zones)
+            {
+                for(std::size_t zone_idx = 0; zone_idx < device->zones.size(); zone_idx++)
+                {
+                    if(ui->ZoneBox->currentIndex() == (int)current_index)
+                    {
+                        selected_zone = zone_idx;
+                        break;
+                    }
+
+                    current_index++;
+
+                    for(std::size_t segment_idx = 0; segment_idx < device->zones[zone_idx].segments.size(); segment_idx++)
+                    {
+                        if(ui->ZoneBox->currentIndex() == (int)current_index)
+                        {
+                            selected_zone    = zone_idx;
+                            selected_segment = segment_idx;
+                            break;
+                        }
+
+                        current_index++;
+                    }
+
+                    if(selected_segment != -1)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            /*-----------------------------------------*\
+            | If all zones or a segment are selected,   |
+            | the edit button should not be clickable.  |
+            | If somehow this did get clicked, ignore.  |
+            \*-----------------------------------------*/
+            if(selected_all_zones || selected_segment != -1)
+            {
+                return;
+            }
+
+            /*-----------------------------------------*\
+            | Only allow resizing linear zones          |
+            \*-----------------------------------------*/
             if(device->zones[selected_zone].type == ZONE_TYPE_LINEAR)
             {
-                OpenRGBZoneResizeDialog dlg(device->zones[selected_zone].leds_min,
-                                            device->zones[selected_zone].leds_max,
-                                            device->zones[selected_zone].leds_count);
+                OpenRGBZoneResizeDialog dlg(device, selected_zone);
 
                 int new_size = dlg.show();
 
                 if(new_size >= 0)
                 {
-                    device->ResizeZone(selected_zone, new_size);
+                    /*-----------------------------------------------------*\
+                    | Update mode UI to update Zone box                     |
+                    \*-----------------------------------------------------*/
+                    UpdateModeUi();
 
                     /*-----------------------------------------------------*\
                     | Update LED box                                        |
@@ -1147,7 +1546,7 @@ void Ui::OpenRGBDevicePage::ShowDeviceView()
 
     DeviceViewShowing = true;
 
-    if(device->modes[selected_mode].flags & MODE_FLAG_HAS_PER_LED_COLOR)
+    if(device->modes[selected_mode].flags & MODE_FLAG_HAS_PER_LED_COLOR && device->leds.size() >= 1)
     {
         ui->DeviceViewBoxFrame->show();
     }

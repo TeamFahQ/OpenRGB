@@ -49,6 +49,7 @@ private:
     bool per_led;
 
     std::vector<matrix_pos_size_type>   zone_pos;
+    std::vector<matrix_pos_size_type>   segment_pos;
     std::vector<matrix_pos_size_type>   led_pos;
     std::vector<QString>                led_labels;
 
@@ -68,6 +69,7 @@ signals:
 public slots:
     bool selectLed(int);
     bool selectLeds(QVector<int>);
+    bool selectSegment(int zone, int segment, bool add = false);
     bool selectZone(int zone, bool add = false);
     void clearSelection(); // Same as selecting the entire device
     void setSelectionColor(RGBColor);

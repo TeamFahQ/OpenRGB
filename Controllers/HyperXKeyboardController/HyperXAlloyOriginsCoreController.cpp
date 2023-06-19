@@ -27,7 +27,7 @@ HyperXAlloyOriginsCoreController::HyperXAlloyOriginsCoreController(hid_device* d
     memset(fw_version_buf, '\0', sizeof(fw_version_buf));
 
     unsigned short version = dev_info->release_number;
-    sprintf(fw_version_buf, "%.2X.%.2X", (version & 0xFF00) >> 8, version & 0x00FF);
+    snprintf(fw_version_buf, 8, "%.2X.%.2X", (version & 0xFF00) >> 8, version & 0x00FF);
 
     firmware_version = fw_version_buf;
 }
@@ -62,6 +62,19 @@ std::string HyperXAlloyOriginsCoreController::GetFirmwareVersion()
 {
     return(firmware_version);
 }
+
+void HyperXAlloyOriginsCoreController::SetBrightness(unsigned int brightness)
+{
+    unsigned char packet[65];
+    memset(packet, 0x00, sizeof(packet));
+
+    packet[1] = 0xA7;
+    packet[4] = 0x01;
+    packet[5] = brightness;
+
+    hid_write(dev, packet, 65);
+}
+
 
 void HyperXAlloyOriginsCoreController::SetLEDsDirect(std::vector<RGBColor> colors)
 {

@@ -10,6 +10,7 @@
 #include "RGBController.h"
 #include "RGBControllerKeyNames.h"
 #include "RazerController.h"
+#include "KeyboardLayoutManager.h"
 
 /*-----------------------------------------------------*\
 | Razer vendor ID                                       |
@@ -61,8 +62,11 @@
 #define RAZER_BLADE_2021_ADVANCED_PID                   0x026D
 #define RAZER_BLADE_2021_BASE_PID                       0x026F
 #define RAZER_BLADE_2021_BASE_V2_PID                    0x027A
+#define RAZER_BLADE_LATE_2021_ADVANCED_PID              0x0276
 
 #define RAZER_BLADE_14_2021_PID                         0x0270
+#define RAZER_BLADE_14_2022_PID                         0x028C
+#define RAZER_BLADE_15_2022_PID                         0x028A
 
 #define RAZER_BLADE_PRO_2016_PID                        0x0210
 #define RAZER_BLADE_PRO_2017_PID                        0x0225
@@ -87,6 +91,9 @@
 #define RAZER_CYNOSA_LITE_PID                           0x023F
 #define RAZER_CYNOSA_V2_PID                             0x025E
 #define RAZER_DEATHSTALKER_CHROMA_PID                   0x0204
+#define RAZER_DEATHSTALKER_V2_PID                       0x0295
+#define RAZER_DEATHSTALKER_V2_PRO_WIRELESS_PID          0x0290
+#define RAZER_DEATHSTALKER_V2_PRO_WIRED_PID             0x0292
 #define RAZER_HUNTSMAN_ELITE_PID                        0x0226
 #define RAZER_HUNTSMAN_PID                              0x0227
 #define RAZER_HUNTSMAN_MINI_PID                         0x0257
@@ -98,6 +105,7 @@
 #define RAZER_ORNATA_CHROMA_PID                         0x021E
 #define RAZER_ORNATA_CHROMA_V2_PID                      0x025D
 #define RAZER_ORNATA_V3_PID                             0x028F
+#define RAZER_ORNATA_V3_X_PID                           0x0294
 #define RAZER_TARTARUS_CHROMA_PID                       0x0208
 #define RAZER_TARTARUS_PRO_PID                          0x0244
 #define RAZER_TARTARUS_V2_PID                           0x022B
@@ -120,6 +128,9 @@
 #define RAZER_BASILISK_X_HYPERSPEED_PID                 0x0083
 #define RAZER_BASILISK_V2_PID                           0x0085
 #define RAZER_BASILISK_V3_PID                           0x0099
+#define RAZER_BASILISK_V3_PRO_WIRED_PID                 0x00AA
+#define RAZER_BASILISK_V3_PRO_WIRELESS_PID              0x00AB
+#define RAZER_BASILISK_V3_PRO_BLUETOOTH_PID             0x00AC
 #define RAZER_DEATHADDER_1800_PID                       0x0038
 #define RAZER_DEATHADDER_2000_PID                       0x004F
 #define RAZER_DEATHADDER_2013_PID                       0x0037
@@ -207,6 +218,7 @@
 #define RAZER_LAPTOP_STAND_CHROMA_V2_PID                0x0F2B
 #define RAZER_MOUSE_BUNGEE_V3_CHROMA_PID                0x0F1D
 #define RAZER_MOUSE_DOCK_CHROMA_PID                     0x007E
+#define RAZER_MOUSE_DOCK_PRO_PID                        0x00A4
 #define RAZER_NOMMO_CHROMA_PID                          0x0517
 #define RAZER_NOMMO_PRO_PID                             0x0518
 #define RAZER_O11_DYNAMIC_PID                           0x0F13
@@ -216,32 +228,33 @@
 
 typedef struct
 {
-    std::string name;
-    unsigned int type;
-    unsigned int rows;
-    unsigned int cols;
+    std::string                         name;
+    unsigned int                        type;
+    unsigned int                        rows;
+    unsigned int                        cols;
 } razer_zone;
 
 typedef struct
 {
-    unsigned int zone;
-    unsigned int row;
-    unsigned int col;
-    const char* name;
-    unsigned char layout = RAZER_LAYOUT_TYPE_ALL;
+    unsigned int                        zone;
+    unsigned int                        row;
+    unsigned int                        col;
+    const char*                         name;
+    unsigned char                       layout = RAZER_LAYOUT_TYPE_ALL;
 } razer_key;
 
 typedef struct
 {
-    std::string name;
-    unsigned short pid;
-    device_type type;
-    bool matrix_type;
-    unsigned int rows;
-    unsigned int cols;
-    const razer_zone* zones[RAZER_MAX_ZONES];
-    const razer_key* keymap;
-    unsigned int keymap_size;
+    std::string                         name;
+    unsigned short                      pid;
+    device_type                         type;
+    bool                                matrix_type;
+    unsigned int                        rows;
+    unsigned int                        cols;
+    const razer_zone*                   zones[RAZER_MAX_ZONES];
+    const razer_key*                    keymap;
+    unsigned int                        keymap_size;
+    keyboard_keymap_overlay_values*     layout;
 } razer_device;
 
 /*-----------------------------------------------------*\

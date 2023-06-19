@@ -7,8 +7,10 @@
 \*-----------------------------------------------------*/
 
 #include "DeviceView.h"
+#include "ResourceManager.h"
 #include "RGBControllerKeyNames.h"
 #include "RGBController.h"
+#include "SettingsManager.h"
 #include <QPainter>
 #include <QResizeEvent>
 #include <QStyleOption>
@@ -20,6 +22,7 @@
 #define PAD_LED     0.1
 #define PAD_TEXT    0.1
 #define PAD_ZONE    1.0
+#define PAD_SEGMENT 0.9
 #define SIZE_TEXT   0.5
 
 DeviceView::DeviceView(QWidget *parent) :
@@ -98,9 +101,11 @@ static const std::map<std::string, led_label> led_label_lookup =
     { KEY_EN_F12,               { "F12"   , "F12",              }},
     { KEY_EN_BACK_TICK,         { "`"     , "`",                }},
     { KEY_EN_MINUS,             { "-"     , "-",                }},
+    { KEY_EN_PLUS,              { "+"     , "+",                }},
     { KEY_EN_EQUALS,            { "="     , "=",                }},
     { KEY_EN_LEFT_BRACKET,      { "["     , "[",                }},
     { KEY_EN_RIGHT_BRACKET,     { "]"     , "]",                }},
+    { KEY_EN_BACK_SLASH,        { "\\"    , "\\",               }},
     { KEY_EN_ANSI_BACK_SLASH,   { "\\"    , "\\",               }},
     { KEY_EN_ISO_BACK_SLASH,    { "\\"    , "\\",               }},
     { KEY_EN_SEMICOLON,         { ";"     , ";",                }},
@@ -164,6 +169,7 @@ static const std::map<std::string, led_label> led_label_lookup =
     { KEY_EN_MEDIA_MUTE,        { "Mte"   , "\xF0\x9F\x94\x87", }}, // 🔇
     { KEY_EN_MEDIA_VOLUME_DOWN, { "Vl-"   , "\xF0\x9F\x94\x88", }}, // 🔉
     { KEY_EN_MEDIA_VOLUME_UP,   { "Vl+"   , "\xF0\x9F\x94\x89", }}, // 🔊
+    { KEY_EN_POWER,             { "Pwr"   , "\xE2\x8F\xBB",     }}, // ⏻
     { KEY_JP_RO,                { "_"     , "_",                }},
     { KEY_JP_EJ,                { "E/J"   , "E/J",              }},
     { KEY_JP_ZENKAKU,           { "Zen"   , "\xE5\x8D\x8A\xE8"
@@ -198,6 +204,24 @@ static const std::map<std::string, led_label> led_label_lookup =
     { KEY_NORD_CHEVRON,         { "^/~"   , "^/~",              }},
     { KEY_NORD_QUOTE,           { "'/*"   , "'/*",              }},
     { KEY_NORD_ANGLE_BRACKET,   { "</>"   , "</>"               }},
+    { KEY_DE_ESZETT,            { "ß"     , "\xc3\x9F",         }},
+    { KEY_DE_DIAERESIS_A,       { "Ä"     , "\xC3\x84",         }},
+    { KEY_DE_DIAERESIS_O,       { "Ö"     , "\xC3\x96",         }},
+    { KEY_DE_DIAERESIS_U,       { "Ü"     , "\xC3\x9C"          }},
+    { KEY_FR_SUPER_2,           { "²"     , "\xc2\xb2"          }},
+    { KEY_FR_AMPERSAND,         { "&"     , "&"                 }},
+    { KEY_FR_ACUTE_E,           { "é"     , "\xc3\xa9"          }},
+    { KEY_FR_DOUBLEQUOTE,       { "\""    , "\""                }},
+    { KEY_FR_LEFT_PARENTHESIS,  { "("     , "("                 }},
+    { KEY_FR_GRAVE_E,           { "è"     , "\xc3\xa8"          }},
+    { KEY_FR_UNDERSCORE,        { "_"     , "_"                 }},
+    { KEY_FR_CEDILLA_C,         { "ç"     , "\xc3\xa7"          }},
+    { KEY_FR_GRAVE_A,           { "à"     , "\xc3\xa0"          }},
+    { KEY_FR_RIGHT_PARENTHESIS, { ")"     , ")"                 }},
+    { KEY_FR_DOLLAR,            { "$"     , "$"                 }},
+    { KEY_FR_GRAVE_U,           { "ù"     , "\xc3\xb9"          }},
+    { KEY_FR_ASTERIX,           { "*"     , "*"                 }},
+    { KEY_FR_EXCLAIMATION,      { "!"     , "!"                 }},
 };
 
 void DeviceView::setController(RGBController * controller_ptr)
@@ -226,7 +250,24 @@ void DeviceView::InitDeviceView()
     | Process position and size for zones                   |
     \*-----------------------------------------------------*/
     unsigned int maxWidth       = 0;
+    unsigned int segment_count  = 0;
     float        totalHeight    = 0;
+
+    /*-----------------------------------------------------*\
+    | Get device view settings                              |
+    \*-----------------------------------------------------*/
+    SettingsManager*    settings_manager    = ResourceManager::get()->GetSettingsManager();
+    std::string         ui_string           = "UserInterface";
+    json                ui_settings;
+
+    bool                disable_expansion   = false;
+
+    ui_settings = settings_manager->GetSettings(ui_string);
+
+    if(ui_settings.contains("disable_key_expansion"))
+    {
+        disable_expansion       = ui_settings["disable_key_expansion"];
+    }
 
     /*-----------------------------------------------------*\
     | Determine the total height (in LEDs) of all zones     |
@@ -245,6 +286,17 @@ void DeviceView::InitDeviceView()
         | For all other zones, compute the height including     |
         | wrap-around                                           |
         \*-----------------------------------------------------*/
+        else if(controller->zones[zone_idx].segments.size() > 0)
+        {
+            for(std::size_t segment_idx = 0; segment_idx < controller->zones[zone_idx].segments.size(); segment_idx++)
+            {
+                unsigned int count          = controller->zones[zone_idx].segments[segment_idx].leds_count;
+                zone_pos[zone_idx].matrix_w = std::min(count, (unsigned int)MAX_COLS);
+                totalHeight                += (count / MAX_COLS) + ((count % MAX_COLS) > 0);
+
+                segment_count++;
+            }
+        }
         else
         {
             unsigned int count          = controller->zones[zone_idx].leds_count;
@@ -261,13 +313,17 @@ void DeviceView::InitDeviceView()
         }
     }
 
+    segment_pos.resize(segment_count);
+
     /*-----------------------------------------------------*\
     | Add some space for zone names and padding             |
     \*-----------------------------------------------------*/
     totalHeight    += controller->zones.size() * PAD_ZONE;
+    totalHeight    += segment_count * PAD_SEGMENT;
 
     float current_y = 0;                    // We will be descending, placing each zone one unit below the previous one
     matrix_h        = totalHeight;
+    segment_count   = 0;
 
     for(std::size_t zone_idx = 0; zone_idx < controller->zones.size(); zone_idx++)
     {
@@ -304,60 +360,63 @@ void DeviceView::InitDeviceView()
                         led_pos[color_idx].matrix_w = (1 - (2 * PAD_LED));
                         led_pos[color_idx].matrix_h = (1 - (2 * PAD_LED));
 
-                        /*-----------------------------------------------------*\
-                        | Expand large keys to fill empty spaces in matrix, if  |
-                        | possible.  Large keys can fill left, down, up, or wide|
-                        | Fill Left:                                            |
-                        |    Tab                                                |
-                        |    Caps Lock                                          |
-                        |    Left Shift                                         |
-                        |    Right Shift                                        |
-                        |    Backspace                                          |
-                        |    Number Pad 0                                       |
-                        |                                                       |
-                        | Fill Up or Down:                                      |
-                        |    Number Pad Enter                                   |
-                        |    Number Pad +                                       |
-                        |                                                       |
-                        | Fill Wide:                                            |
-                        |    Space                                              |
-                        \*-----------------------------------------------------*/
-                        if(led_x < map->width - 1 && map->map[map_idx + 1] == 0xFFFFFFFF)
+                        if(!disable_expansion)
                         {
-                            if( ( controller->leds[color_idx].name == KEY_EN_TAB        )
-                             || ( controller->leds[color_idx].name == KEY_EN_CAPS_LOCK  )
-                             || ( controller->leds[color_idx].name == KEY_EN_LEFT_SHIFT )
-                             || ( controller->leds[color_idx].name == KEY_EN_RIGHT_SHIFT)
-                             || ( controller->leds[color_idx].name == KEY_EN_BACKSPACE  )
-                             || ( controller->leds[color_idx].name == KEY_EN_NUMPAD_0   ) )
+                            /*-----------------------------------------------------*\
+                            | Expand large keys to fill empty spaces in matrix, if  |
+                            | possible.  Large keys can fill left, down, up, or wide|
+                            | Fill Left:                                            |
+                            |    Tab                                                |
+                            |    Caps Lock                                          |
+                            |    Left Shift                                         |
+                            |    Right Shift                                        |
+                            |    Backspace                                          |
+                            |    Number Pad 0                                       |
+                            |                                                       |
+                            | Fill Up or Down:                                      |
+                            |    Number Pad Enter                                   |
+                            |    Number Pad +                                       |
+                            |                                                       |
+                            | Fill Wide:                                            |
+                            |    Space                                              |
+                            \*-----------------------------------------------------*/
+                            if(led_x < map->width - 1 && map->map[map_idx + 1] == 0xFFFFFFFF)
                             {
-                                led_pos[color_idx].matrix_w += 1;
+                                if( ( controller->leds[color_idx].name == KEY_EN_TAB        )
+                                 || ( controller->leds[color_idx].name == KEY_EN_CAPS_LOCK  )
+                                 || ( controller->leds[color_idx].name == KEY_EN_LEFT_SHIFT )
+                                 || ( controller->leds[color_idx].name == KEY_EN_RIGHT_SHIFT)
+                                 || ( controller->leds[color_idx].name == KEY_EN_BACKSPACE  )
+                                 || ( controller->leds[color_idx].name == KEY_EN_NUMPAD_0   ) )
+                                {
+                                    led_pos[color_idx].matrix_w += 1;
+                                }
                             }
-                        }
-                        if( ( controller->leds[color_idx].name == KEY_EN_NUMPAD_ENTER   )
-                         || ( controller->leds[color_idx].name == KEY_EN_NUMPAD_PLUS    ) )
-                        {
-                            if(led_y < map->height - 1 && map->map[map_idx + map->width] == 0xFFFFFFFF)
+                            if( ( controller->leds[color_idx].name == KEY_EN_NUMPAD_ENTER   )
+                             || ( controller->leds[color_idx].name == KEY_EN_NUMPAD_PLUS    ) )
                             {
-                                led_pos[color_idx].matrix_h += 1;
+                                if(led_y < map->height - 1 && map->map[map_idx + map->width] == 0xFFFFFFFF)
+                                {
+                                    led_pos[color_idx].matrix_h += 1;
+                                }
+                                /* TODO: check if there isn't another widened key above */
+                                else if(led_y > 0 && map->map[map_idx - map->width] == 0xFFFFFFFF)
+                                {
+                                    led_pos[color_idx].matrix_y -= 1;
+                                    led_pos[color_idx].matrix_h += 1;
+                                }
                             }
-                            /* TODO: check if there isn't another widened key above */
-                            else if(led_y > 0 && map->map[map_idx - map->width] == 0xFFFFFFFF)
+                            else if(controller->leds[color_idx].name == KEY_EN_SPACE)
                             {
-                                led_pos[color_idx].matrix_y -= 1;
-                                led_pos[color_idx].matrix_h += 1;
-                            }
-                        }
-                        else if(controller->leds[color_idx].name == KEY_EN_SPACE)
-                        {
-                            for(unsigned int map_idx2 = map_idx - 1; map_idx2 > led_y * map->width && map->map[map_idx2] == 0xFFFFFFFF; --map_idx2)
-                            {
-                                led_pos[color_idx].matrix_x -= 1;
-                                led_pos[color_idx].matrix_w += 1;
-                            }
-                            for(unsigned int map_idx2 = map_idx + 1; map_idx2 < (led_y + 1) * map->width && map->map[map_idx2] == 0xFFFFFFFF; ++map_idx2)
-                            {
-                                led_pos[color_idx].matrix_w += 1;
+                                for(unsigned int map_idx2 = map_idx - 1; map_idx2 > led_y * map->width && map->map[map_idx2] == 0xFFFFFFFF; --map_idx2)
+                                {
+                                    led_pos[color_idx].matrix_x -= 1;
+                                    led_pos[color_idx].matrix_w += 1;
+                                }
+                                for(unsigned int map_idx2 = map_idx + 1; map_idx2 < (led_y + 1) * map->width && map->map[map_idx2] == 0xFFFFFFFF; ++map_idx2)
+                                {
+                                    led_pos[color_idx].matrix_w += 1;
+                                }
                             }
                         }
                     }
@@ -365,6 +424,43 @@ void DeviceView::InitDeviceView()
             }
 
             current_y += map->height;
+        }
+        else if(controller->zones[zone_idx].segments.size() > 0)
+        {
+            for(std::size_t segment_idx = 0; segment_idx < controller->zones[zone_idx].segments.size(); segment_idx++)
+            {
+                /*-----------------------------------------------------*\
+                | Calculate segment label position and size             |
+                \*-----------------------------------------------------*/
+                segment_pos[segment_count].matrix_x = (maxWidth - zone_pos[zone_idx].matrix_w) / 2.0;
+                segment_pos[segment_count].matrix_y = current_y + SIZE_TEXT;
+                segment_pos[segment_count].matrix_w = zone_pos[zone_idx].matrix_w;
+                segment_pos[segment_count].matrix_h = SIZE_TEXT - PAD_TEXT;
+                current_y                          += PAD_SEGMENT;
+
+                segment_count++;
+
+                /*-----------------------------------------------------*\
+                | Calculate LED box positions for segmented zones       |
+                \*-----------------------------------------------------*/
+                unsigned int leds_count = controller->zones[zone_idx].segments[segment_idx].leds_count;
+
+                for(unsigned int led_idx = 0; led_idx < leds_count; led_idx++)
+                {
+                    unsigned int led_pos_idx = controller->zones[zone_idx].start_idx + controller->zones[zone_idx].segments[segment_idx].start_idx + led_idx;
+
+                    led_pos[led_pos_idx].matrix_x = zone_pos[zone_idx].matrix_x + ((led_idx % MAX_COLS) + PAD_LED);
+                    led_pos[led_pos_idx].matrix_y = current_y + ((led_idx / MAX_COLS) + PAD_LED);
+
+                    /*-----------------------------------------------------*\
+                    | LED is a 1x1 square, minus padding on all sides       |
+                    \*-----------------------------------------------------*/
+                    led_pos[led_pos_idx].matrix_w = (1 - (2 * PAD_LED));
+                    led_pos[led_pos_idx].matrix_h = (1 - (2 * PAD_LED));
+                }
+
+                current_y += (leds_count / MAX_COLS) + ((leds_count % MAX_COLS) > 0);
+            }
         }
         else
         {
@@ -409,7 +505,7 @@ void DeviceView::InitDeviceView()
     }
 
     /*-----------------------------------------------------*\
-    | Scale the zones and LEDs                              |
+    | Scale the zones, segments, and LEDs                   |
     |                                                       |
     | Atom is the width of a single square; if the whole    |
     | thing becomes too tall, we ignore it and let the view |
@@ -423,6 +519,14 @@ void DeviceView::InitDeviceView()
         zone_pos[zone_idx].matrix_y *= atom;
         zone_pos[zone_idx].matrix_w *= atom;
         zone_pos[zone_idx].matrix_h *= atom;
+    }
+
+    for(std::size_t segment_idx = 0; segment_idx < segment_pos.size(); segment_idx++)
+    {
+        segment_pos[segment_idx].matrix_x *= atom;
+        segment_pos[segment_idx].matrix_y *= atom;
+        segment_pos[segment_idx].matrix_w *= atom;
+        segment_pos[segment_idx].matrix_h *= atom;
     }
 
     for(std::size_t led_idx = 0; led_idx < led_pos.size(); led_idx++)
@@ -545,9 +649,11 @@ void DeviceView::mouseReleaseEvent(QMouseEvent* event)
                 offset_x = (width() - size) / 2;
             }
 
+            unsigned int segment_count = 0;
+
             for(std::size_t zone_idx = 0; zone_idx < controller->zones.size(); zone_idx++)
             {
-                int posx = zone_pos[zone_idx].matrix_x * size + offset_x;
+                int posx = zone_pos[zone_idx].matrix_x * size + offset_x + 12;
                 int posy = zone_pos[zone_idx].matrix_y * size;
                 int posw = zone_pos[zone_idx].matrix_w * size;
                 int posh = zone_pos[zone_idx].matrix_h * size;
@@ -557,6 +663,23 @@ void DeviceView::mouseReleaseEvent(QMouseEvent* event)
                 if(rect.contains(event->pos()))
                 {
                     selectZone(zone_idx, ctrlDown);
+                }
+
+                for(std::size_t segment_idx = 0; segment_idx < controller->zones[zone_idx].segments.size(); segment_idx++)
+                {
+                    posx = segment_pos[segment_count].matrix_x * size + offset_x + 12;
+                    posy = segment_pos[segment_count].matrix_y * size;
+                    posw = segment_pos[segment_count].matrix_w * size;
+                    posh = segment_pos[segment_count].matrix_h * size;
+
+                    segment_count++;
+
+                    rect = {posx, posy, posw, posh};
+
+                    if(rect.contains(event->pos()))
+                    {
+                        selectSegment(zone_idx, segment_idx, ctrlDown);
+                    }
                 }
             }
         }
@@ -656,8 +779,10 @@ void DeviceView::paintEvent(QPaintEvent* /* event */)
     painter.setFont(font);
 
     /*-----------------------------------------------------*\
-    | Zone names                                            |
+    | Zone and Segment names                                |
     \*-----------------------------------------------------*/
+    unsigned int segment_count = 0;
+
     for(std::size_t zone_idx = 0; zone_idx < controller->zones.size(); zone_idx++)
     {
         int posx = zone_pos[zone_idx].matrix_x * size + offset_x;
@@ -676,6 +801,28 @@ void DeviceView::paintEvent(QPaintEvent* /* event */)
             painter.setPen(palette().windowText().color());
         }
         painter.drawText(posx, posy + posh, QString(controller->zones[zone_idx].name.c_str()));
+
+        for(std::size_t segment_idx = 0; segment_idx < controller->zones[zone_idx].segments.size(); segment_idx++)
+        {
+            posx = segment_pos[segment_count].matrix_x * size + offset_x;
+            posy = segment_pos[segment_count].matrix_y * size;
+            posw = segment_pos[segment_count].matrix_w * size;
+            posh = segment_pos[segment_count].matrix_h * size;
+
+            segment_count++;
+
+            rect = {posx, posy, posw, posh};
+
+            if(rect.contains(lastMousePos) && (!mouseDown || !mouseMoved))
+            {
+                painter.setPen(palette().highlight().color());
+            }
+            else
+            {
+                painter.setPen(palette().windowText().color());
+            }
+            painter.drawText(posx, posy + posh, QString(controller->zones[zone_idx].segments[segment_idx].name.c_str()));
+        }
     }
 
     /*-----------------------------------------------------*\
@@ -792,6 +939,47 @@ bool DeviceView::selectLeds(QVector<int> target)
         if(selectionFlags[i])
         {
             selectedLeds.push_back(i);
+        }
+    }
+
+    update();
+
+    /*-----------------------------------------------------*\
+    | Send selection changed signal                         |
+    \*-----------------------------------------------------*/
+    emit selectionChanged(selectedLeds);
+
+    return true;
+}
+
+bool DeviceView::selectSegment(int zone, int segment, bool add)
+{
+    if(zone < 0 || size_t(zone) >= controller->zones.size())
+    {
+        return false;
+    }
+
+    if(segment < 0 || size_t(segment) >= controller->zones[zone].segments.size())
+    {
+        return false;
+    }
+
+    if(!add)
+    {
+        selectedLeds.clear();
+        selectionFlags.clear();
+        selectionFlags.resize(controller->leds.size());
+    }
+
+    int zoneStart = controller->zones[zone].start_idx;
+    int segStart = controller->zones[zone].segments[segment].start_idx;
+
+    for(std::size_t led_idx = 0; led_idx < controller->zones[zone].segments[segment].leds_count; ++led_idx)
+    {
+        if(!selectionFlags[zoneStart + segStart + led_idx])
+        {
+            selectedLeds.push_back(zoneStart + segStart + led_idx);
+            selectionFlags[zoneStart + segStart + led_idx] = 1;
         }
     }
 

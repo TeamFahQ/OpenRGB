@@ -16,7 +16,7 @@ PluginManager::PluginManager()
     /*-------------------------------------------------------------------------*\
     | Create OpenRGB plugins directory                                          |
     \*-------------------------------------------------------------------------*/
-    std::string plugins_dir = ResourceManager::get()->GetConfigurationDirectory() + plugins_path;
+    filesystem::path plugins_dir = ResourceManager::get()->GetConfigurationDirectory() / plugins_path;
 
     filesystem::create_directories(plugins_dir);
 }
@@ -41,44 +41,45 @@ void PluginManager::ScanAndLoadPlugins()
     | The plugins directory is a directory named "plugins" in   |
     | the configuration directory                               |
     \*---------------------------------------------------------*/
-    ScanAndLoadPluginsFrom(QString(ResourceManager::get()->GetConfigurationDirectory().c_str()).append(plugins_path));
+    filesystem::path plugins_dir = ResourceManager::get()->GetConfigurationDirectory() / plugins_path;
+    ScanAndLoadPluginsFrom(plugins_dir);
 
 #ifdef OPENRGB_EXTRA_PLUGIN_DIRECTORY
     /*-----------------------------------------------------------------*\
     | An additional plugin directory can be set during build time, e.g. |
     | by the Linux distro to load plugins installed via package manager |
     \*-----------------------------------------------------------------*/
-    ScanAndLoadPluginsFrom(QString().fromStdString(OPENRGB_EXTRA_PLUGIN_DIRECTORY));
+    ScanAndLoadPluginsFrom(OPENRGB_EXTRA_PLUGIN_DIRECTORY);
 #endif
 }
 
-void PluginManager::ScanAndLoadPluginsFrom(QDir plugins_dir)
+void PluginManager::ScanAndLoadPluginsFrom(const filesystem::path & plugins_dir)
 {
-    LOG_TRACE("[PluginManager] Scanning plugin directory: %s", plugins_dir.absolutePath().toStdString().c_str());
+    LOG_TRACE("[PluginManager] Scanning plugin directory: %s", plugins_dir.generic_u8string().c_str());
+
+    if(!filesystem::is_directory(plugins_dir))
+    {
+        return;
+    }
 
     /*---------------------------------------------------------*\
     | Get a list of all files in the plugins directory          |
     \*---------------------------------------------------------*/
-    std::vector<std::string> FileList;
 
-    for(int i = 0; i < QDir(plugins_dir).entryList(QDir::Files).size(); i++)
+    for(const filesystem::directory_entry& entry: filesystem::directory_iterator(plugins_dir))
     {
-        LOG_TRACE("[PluginManager] Found plugin file %s", QDir(plugins_dir).entryList(QDir::Files)[i].toStdString().c_str());
-        FileList.push_back(QDir(plugins_dir).entryList(QDir::Files)[i].toStdString());
-    }
+        if(filesystem::is_directory(entry.path()))
+        {
+            continue;
+        }
 
-    /*---------------------------------------------------------*\
-    | Attempt to load each file in the plugins directory        |
-    \*---------------------------------------------------------*/
-    for(const std::string &plugin_name : FileList)
-    {
-        const std::string plugin_path = plugins_dir.absoluteFilePath(QString().fromStdString(plugin_name)).toStdString();
-
+        filesystem::path plugin_path = entry.path();
+        LOG_TRACE("[PluginManager] Found plugin file %s", plugin_path.filename().generic_u8string().c_str());
         AddPlugin(plugin_path);
     }
 }
 
-void PluginManager::AddPlugin(std::string path)
+void PluginManager::AddPlugin(const filesystem::path& path)
 {
     OpenRGBPluginInterface* plugin = nullptr;
 
@@ -103,7 +104,8 @@ void PluginManager::AddPlugin(std::string path)
         /*-----------------------------------------------------------------*\
         | Create a QPluginLoader and load the plugin                        |
         \*-----------------------------------------------------------------*/
-        QPluginLoader*  loader      = new QPluginLoader(QString().fromStdString(path));
+        std::string     path_string = path.generic_u8string();
+        QPluginLoader*  loader      = new QPluginLoader(QString::fromStdString(path_string));
         QObject*        instance    = loader->instance();
 
         /*-----------------------------------------------------------------*\
@@ -193,7 +195,7 @@ void PluginManager::AddPlugin(std::string path)
                     entry.plugin  = plugin;
                     entry.loader  = loader;
                     entry.loaded  = false;
-                    entry.path    = path;
+                    entry.path    = path_string;
                     entry.enabled = enabled;
                     entry.widget  = nullptr;
 
@@ -216,7 +218,7 @@ void PluginManager::AddPlugin(std::string path)
     }
 }
 
-void PluginManager::RemovePlugin(std::string path)
+void PluginManager::RemovePlugin(const filesystem::path& path)
 {
     unsigned int plugin_idx;
 
@@ -257,7 +259,7 @@ void PluginManager::RemovePlugin(std::string path)
     ActivePlugins.erase(ActivePlugins.begin() + plugin_idx);
 }
 
-void PluginManager::LoadPlugin(std::string path)
+void PluginManager::LoadPlugin(const filesystem::path& path)
 {
     unsigned int plugin_idx;
 
@@ -317,7 +319,7 @@ void PluginManager::LoadPlugin(std::string path)
     }
 }
 
-void PluginManager::UnloadPlugin(std::string path)
+void PluginManager::UnloadPlugin(const filesystem::path& path)
 {
     unsigned int plugin_idx;
 

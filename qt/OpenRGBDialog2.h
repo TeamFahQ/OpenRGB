@@ -9,8 +9,10 @@
 #include "OpenRGBSystemInfoPage.h"
 #include "OpenRGBSupportedDevicesPage.h"
 #include "OpenRGBSettingsPage.h"
+#include "OpenRGBDMXSettingsPage/OpenRGBDMXSettingsPage.h"
 #include "OpenRGBE131SettingsPage/OpenRGBE131SettingsPage.h"
 #include "OpenRGBElgatoKeyLightSettingsPage/OpenRGBElgatoKeyLightSettingsPage.h"
+#include "OpenRGBKasaSmartSettingsPage/OpenRGBKasaSmartSettingsPage.h"
 #include "OpenRGBLIFXSettingsPage/OpenRGBLIFXSettingsPage.h"
 #include "OpenRGBPhilipsHueSettingsPage/OpenRGBPhilipsHueSettingsPage.h"
 #include "OpenRGBPhilipsWizSettingsPage/OpenRGBPhilipsWizSettingsPage.h"
@@ -69,6 +71,7 @@ signals:
 public slots:
     void changeEvent(QEvent *event);
     void SetTrayIcon(bool tray_icon);
+    void handleAboutToQuit();
 
 private:
     const char* context = "Ui::OpenRGBDialog2";
@@ -82,8 +85,10 @@ private:
     OpenRGBSoftwareInfoPage *SoftInfoPage;
     OpenRGBSupportedDevicesPage *SupportedPage;
     OpenRGBSettingsPage *SettingsPage;
+    OpenRGBDMXSettingsPage *DMXSettingsPage;
     OpenRGBE131SettingsPage *E131SettingsPage;
     OpenRGBElgatoKeyLightSettingsPage *ElgatoKeyLightSettingsPage;
+    OpenRGBKasaSmartSettingsPage *KasaSmartSettingsPage;
     OpenRGBLIFXSettingsPage *LIFXSettingsPage;
     OpenRGBPhilipsHueSettingsPage *PhilipsHueSettingsPage;
     OpenRGBPhilipsWizSettingsPage *PhilipsWizSettingsPage;
@@ -109,8 +114,10 @@ private:
     void AddSoftwareInfoPage();
     void AddSupportedDevicesPage();
     void AddSettingsPage();
+    void AddDMXSettingsPage();
     void AddE131SettingsPage();
     void AddElgatoKeyLightSettingsPage();
+    void AddKasaSmartSettingsPage();
     void AddLIFXSettingsPage();
     void AddPhilipsHueSettingsPage();
     void AddPhilipsWizSettingsPage();

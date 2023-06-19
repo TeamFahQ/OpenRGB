@@ -18,7 +18,7 @@
 
 #define ENE_APPLY_VAL                   0x01        /* Value for Apply Changes Register     */
 #define ENE_SAVE_VAL                    0xAA        /* Value for Save Changes               */
-
+#define ENE_NUM_ZONES                   8           /* Number of ENE config table zones     */
 enum
 {
     ENE_REG_DEVICE_NAME                 = 0x1000,   /* Device String 16 bytes               */
@@ -90,6 +90,7 @@ enum
 {
     ENE_CONFIG_LED_COUNT                = 0x02,     /* LED Count configuration offset       */
     ENE_CONFIG_LED_COUNT_0107           = 0x03,     /* LED Count configuration offset       */
+    ENE_CONFIG_LED_COUNT_1110           = 0x03,     /* LED Count configuration offset       */
     ENE_CONFIG_CHANNEL_V1               = 0x13,     /* LED Channel configuration offset     */
     ENE_CONFIG_CHANNEL_V2               = 0x1B,     /* LED Channel V2 configuration offset  */
 };
@@ -102,9 +103,8 @@ public:
 
     std::string   GetDeviceName();
     std::string   GetDeviceLocation();
-    unsigned char GetChannel(unsigned int led);
-    const char*   GetChannelName(unsigned int led);
-    unsigned int  GetLEDCount();
+    const char*   GetChannelName(unsigned int cfg_zone);
+    unsigned int  GetLEDCount(unsigned int cfg_zone);
     unsigned char GetLEDRed(unsigned int led);
     unsigned char GetLEDGreen(unsigned int led);
     unsigned char GetLEDBlue(unsigned int led);

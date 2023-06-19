@@ -433,9 +433,19 @@ OpenRGBDialog2::OpenRGBDialog2(QWidget *parent) : QMainWindow(parent), ui(new Op
     AddPluginsPage();
 
     /*-----------------------------------------------------*\
+    | Add the DMX settings page                             |
+    \*-----------------------------------------------------*/
+    AddDMXSettingsPage();
+
+    /*-----------------------------------------------------*\
     | Add the E1.31 settings page                           |
     \*-----------------------------------------------------*/
     AddE131SettingsPage();
+
+    /*-----------------------------------------------------*\
+    | Add the Kasa Smart settings page                      |
+    \*-----------------------------------------------------*/
+    AddKasaSmartSettingsPage();
 
     /*-----------------------------------------------------*\
     | Add the LIFX settings page                            |
@@ -504,6 +514,11 @@ OpenRGBDialog2::OpenRGBDialog2(QWidget *parent) : QMainWindow(parent), ui(new Op
         AddConsolePage();
     }
 
+    /*-----------------------------------------------------*\
+    | Connect aboutToQuit signal to handleAboutToQuit       |
+    \*-----------------------------------------------------*/
+    connect(qApp, &QCoreApplication::aboutToQuit, this, &OpenRGBDialog2::handleAboutToQuit);
+
 }
 
 OpenRGBDialog2::~OpenRGBDialog2()
@@ -538,6 +553,15 @@ OpenRGBDialog2::~OpenRGBDialog2()
 
     delete ui;
 }
+
+
+void OpenRGBDialog2::handleAboutToQuit()
+{
+    QCloseEvent* closeEvent = new QCloseEvent;
+    this->closeEvent(closeEvent);
+    delete closeEvent;
+}
+
 
 void OpenRGBDialog2::changeEvent(QEvent *event)
 {
@@ -738,6 +762,34 @@ void OpenRGBDialog2::AddSettingsPage()
     connect(this, SIGNAL(ProfileListChanged()), SettingsPage, SLOT(UpdateProfiles()));
 }
 
+void OpenRGBDialog2::AddDMXSettingsPage()
+{
+    /*-----------------------------------------------------*\
+    | Create the Settings page                              |
+    \*-----------------------------------------------------*/
+    DMXSettingsPage = new OpenRGBDMXSettingsPage();
+
+    ui->SettingsTabBar->addTab(DMXSettingsPage, "");
+
+    QString SettingsLabelString;
+
+    if(OpenRGBThemeManager::IsDarkTheme())
+    {
+        SettingsLabelString = "serial_dark.png";
+    }
+    else
+    {
+        SettingsLabelString = "serial.png";
+    }
+
+    /*-----------------------------------------------------*\
+    | Create the tab label                                  |
+    \*-----------------------------------------------------*/
+    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, tr("DMX Devices"), (char *)"DMX Devices", (char *)context);
+
+    ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
+}
+
 void OpenRGBDialog2::AddE131SettingsPage()
 {
     /*-----------------------------------------------------*\
@@ -762,6 +814,34 @@ void OpenRGBDialog2::AddE131SettingsPage()
     | Create the tab label                                  |
     \*-----------------------------------------------------*/
     TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, tr("E1.31 Devices"), (char *)"E1.31 Devices", (char *)context);
+
+    ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
+}
+
+void OpenRGBDialog2::AddKasaSmartSettingsPage()
+{
+    /*-----------------------------------------------------*\
+    | Create the Settings page                              |
+    \*-----------------------------------------------------*/
+    KasaSmartSettingsPage = new OpenRGBKasaSmartSettingsPage();
+
+    ui->SettingsTabBar->addTab(KasaSmartSettingsPage, "");
+
+    QString SettingsLabelString;
+
+    if(OpenRGBThemeManager::IsDarkTheme())
+    {
+        SettingsLabelString = "light_dark.png";
+    }
+    else
+    {
+        SettingsLabelString = "light.png";
+    }
+
+    /*-----------------------------------------------------*\
+    | Create the tab label                                  |
+    \*-----------------------------------------------------*/
+    TabLabel* SettingsTabLabel = new TabLabel(SettingsLabelString, tr("Kasa Smart Devices"), (char *)"Kasa Smart Devices", (char *)context);
 
     ui->SettingsTabBar->tabBar()->setTabButton(ui->SettingsTabBar->tabBar()->count() - 1, QTabBar::LeftSide, SettingsTabLabel);
 }

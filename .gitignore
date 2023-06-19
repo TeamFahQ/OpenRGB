@@ -147,6 +147,8 @@ OpenRGB
 openrgb
 OpenRGB-x86_64.AppImage
 60-openrgb.rules
+debian/changelog
+fedora/OpenRGB.spec
 
 # Directories
 .build/
@@ -257,4 +259,3 @@ compile_commands.json
 
 # Generated i18n files
 *.qm
-

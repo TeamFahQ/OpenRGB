@@ -15,7 +15,7 @@
 *                                                                                          *
 \******************************************************************************************/
 
-void DetectEspurnaControllers(std::vector<RGBController*> &rgb_controllers)
+void DetectEspurnaControllers()
 {
     json espurna_settings;
 
@@ -64,7 +64,7 @@ void DetectEspurnaControllers(std::vector<RGBController*> &rgb_controllers)
 
             RGBController_Espurna* rgb_controller = new RGBController_Espurna(controller);
 
-            rgb_controllers.push_back(rgb_controller);
+            ResourceManager::get()->RegisterRGBController(rgb_controller);
         }
     }
 

@@ -47,6 +47,8 @@ typedef struct
 static const gpu_pci_device device_list[] =
 {
     {NVIDIA_VEN,    NVIDIA_RTX2070S_DEV,            NVIDIA_VEN,     NVIDIA_RTX2070_FE_SUPER_SUB_DEV,            NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGBW,    "NVIDIA 2070 SUPER FE"          },
+    {NVIDIA_VEN,    NVIDIA_RTX2080_A_DEV,           NVIDIA_VEN,     NVIDIA_RTX2080_FE_SUB_DEV,                  NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGBW,    "NVIDIA 2080 FE"                },
+    {NVIDIA_VEN,    NVIDIA_RTX2080S_DEV,            NVIDIA_VEN,     NVIDIA_RTX2080S_FE_SUB_DEV,                 NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGBW,    "NVIDIA 2080 FE"                },
     {NVIDIA_VEN,    NVIDIA_RTX3060_LHR_DEV,         PNY_SUB_VEN,    PNY_RTX_3060_XLR8_REVEL_EPIC_X_SUB_DEV,     NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGB,     "PNY 3060 XLR8 REVEL EPIC-X"    },
     {NVIDIA_VEN,    NVIDIA_RTX3060_GA104_DEV,       PNY_SUB_VEN,    PNY_RTX_3060_XLR8_REVEL_EPIC_X_SUB_DEV,     NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGB,     "PNY 3060 XLR8 REVEL EPIC-X"    },
     {NVIDIA_VEN,    NVIDIA_RTX3060TI_LHR_DEV,       PNY_SUB_VEN,    PNY_RTX_3060TI_XLR8_REVEL_EPIC_X_SUB_DEV,   NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGB,     "PNY 3060TI XLR8 REVEL EPIC-X"  },
@@ -55,13 +57,17 @@ static const gpu_pci_device device_list[] =
     {NVIDIA_VEN,    NVIDIA_RTX3060TI_LHR_DEV,       NVIDIA_VEN,     NVIDIA_RTX3060TI_LHR_DEV,                   NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGBW,    "NVIDIA 3060TI LHR"             },
     {NVIDIA_VEN,    NVIDIA_RTX3080_DEV,             NVIDIA_VEN,     NVIDIA_RTX3080_FE_SUB_DEV,                  NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGBW,    "NVIDIA 3080 FE"                },
     {NVIDIA_VEN,    NVIDIA_RTX3080TI_DEV,           NVIDIA_VEN,     NVIDIA_RTX3080TI_FE_SUB_DEV,                NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGBW,    "NVIDIA 3080TI FE"              },
+    {NVIDIA_VEN,    NVIDIA_RTX3080TI_DEV,           NVIDIA_VEN,     MANLI_RTX3080TI_GALLARDO_SUB_DEV,           NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGB,     "MANLI 3080TI GALLARDO"         },
     {NVIDIA_VEN,    NVIDIA_RTX3090_DEV,             NVIDIA_VEN,     NVIDIA_RTX3090_FE_SUB_DEV,                  NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGBW,    "NVIDIA 3090 FE"                },
     {NVIDIA_VEN,    NVIDIA_RTX3090TI_DEV,           NVIDIA_VEN,     NVIDIA_RTX3090TI_FE_SUB_DEV,                NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGBW,    "NVIDIA 3090TI FE"              },
+    {NVIDIA_VEN,    NVIDIA_RTX4070_DEV,             PALIT_SUB_VEN,  PALIT_RTX4070_SUB_DEV,                      NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGB,     "Palit 4070"                    },
     {NVIDIA_VEN,    NVIDIA_RTX4080_DEV,             NVIDIA_VEN,     NVIDIA_RTX4080_FE_SUB_DEV,                  NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGBW,    "NVIDIA 4080 FE"                },
+    {NVIDIA_VEN,    NVIDIA_RTX4080_DEV,             NVIDIA_VEN,     NVIDIA_RTX4080_FE_SUB_DEV2,                 NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGBW,    "NVIDIA 4080 FE"                },
     {NVIDIA_VEN,    NVIDIA_RTX4090_DEV,             NVIDIA_VEN,     NVIDIA_RTX4090_FE_SUB_DEV,                  NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGBW,    "NVIDIA 4090 FE"                },
+    {NVIDIA_VEN,    NVIDIA_RTX4090_DEV,             NVIDIA_VEN,     NVIDIA_RTX4090_FE_SUB_DEV2,                 NVIDIA_ILLUMINATION_V1,     TREATS_RGBW_AS_RGBW,    "NVIDIA 4090 FE"                },
 };
 
-void DetectNVIDIAIllumGPUs(std::vector<RGBController*> &rgb_controllers)
+void DetectNVIDIAIllumGPUs()
 {
     static NV_PHYSICAL_GPU_HANDLE   gpu_handles[64];
     static NV_S32                   gpu_count = 0;
@@ -96,13 +102,12 @@ void DetectNVIDIAIllumGPUs(std::vector<RGBController*> &rgb_controllers)
                     {
                         case NVIDIA_ILLUMINATION_V1:
                             {
-                                NVIDIAIlluminationV1Controller*     new_controller;
-                                RGBController_NVIDIAIlluminationV1* new_rgbcontroller;
-                                nvapi_accessor*                     new_nvapi = new nvapi_accessor(gpu_handles[gpu_idx]);
-                                new_controller          = new NVIDIAIlluminationV1Controller(new_nvapi, device_list[dev_idx].treats_rgbw_as_rgb);
-                                new_rgbcontroller       = new RGBController_NVIDIAIlluminationV1(new_controller);
-                                new_rgbcontroller->name = device_list[dev_idx].name;
-                                rgb_controllers.push_back(new_rgbcontroller);
+                                nvapi_accessor*                     new_nvapi      = new nvapi_accessor(gpu_handles[gpu_idx]);
+                                NVIDIAIlluminationV1Controller*     controller     = new NVIDIAIlluminationV1Controller(new_nvapi, device_list[dev_idx].treats_rgbw_as_rgb);
+                                RGBController_NVIDIAIlluminationV1* rgb_controller = new RGBController_NVIDIAIlluminationV1(controller);
+                                rgb_controller->name                               = device_list[dev_idx].name;
+
+                                ResourceManager::get()->RegisterRGBController(rgb_controller);
                             }
                             break;
                     }

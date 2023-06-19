@@ -48,10 +48,12 @@
 #define AURA_ROG_STRIX_SCOPE_PID                0x18F8
 #define AURA_ROG_STRIX_SCOPE_RX_PID             0x1951
 #define AURA_ROG_STRIX_SCOPE_TKL_PID            0x190C
+#define AURA_ROG_STRIX_SCOPE_RX_TKL_DELUXE_PID  0x1A05
 #define AURA_ROG_STRIX_SCOPE_TKL_PNK_LTD_PID    0x1954
 #define AURA_ROG_CLAYMORE_PID                   0x184D
-#define AURA_TUF_K7_GAMING_PID                  0x18AA
+#define AURA_TUF_K1_GAMING_PID                  0x1945
 #define AURA_TUF_K3_GAMING_PID                  0x194B
+#define AURA_TUF_K7_GAMING_PID                  0x18AA
 
 /*-----------------------------------------------------------------*\
 |  MICE - defined in AsusAuraMouseDevices.h                         |
@@ -71,6 +73,7 @@
 
 #define AURA_ROG_STRIX_XG27AQ_PID               0x198C
 #define AURA_ROG_STRIX_XG27AQM_PID              0x19BB
+#define AURA_ROG_STRIX_XG279Q_PID               0x1919
 #define AURA_ROG_STRIX_XG27W_PID                0x1933
 #define AURA_ROG_PG32UQ_PID                     0x19B9
 
@@ -105,6 +108,7 @@ AuraKeyboardMappingLayoutType GetKeyboardMappingLayoutType(int pid)
             return SCOPE_RX_LAYOUT;
 
         case AURA_ROG_STRIX_SCOPE_TKL_PID:
+        case AURA_ROG_STRIX_SCOPE_RX_TKL_DELUXE_PID:
         case AURA_ROG_STRIX_SCOPE_TKL_PNK_LTD_PID:
             return SCOPE_TKL_LAYOUT;
 
@@ -186,6 +190,15 @@ void DetectAsusAuraUSBMice(hid_device_info* info, const std::string& name)
         RGBController_AuraMouse* rgb_controller             = new RGBController_AuraMouse(controller);
         rgb_controller->name                                = name;
         ResourceManager::get()->RegisterRGBController(rgb_controller);
+
+        // adding the mouse dock for the ASUS ROG Spatha X
+        if(info->product_id == AURA_ROG_SPATHA_X_2_4_PID)
+        {
+            AuraMouseController*     dock_controller            = new AuraMouseController(dev, info->path, AURA_ROG_SPATHA_X_DOCK_FAKE_PID);
+            RGBController_AuraMouse* rgb_controller_dock        = new RGBController_AuraMouse(dock_controller);
+            rgb_controller_dock->name                           = "Asus ROG Spatha X Dock";
+            ResourceManager::get()->RegisterRGBController(rgb_controller_dock);
+        }
     }
 }
 
@@ -300,12 +313,14 @@ REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Flare CoD Black Ops 4 Edition",DetectAs
 REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Scope",                        DetectAsusAuraUSBKeyboards,     AURA_USB_VID, AURA_ROG_STRIX_SCOPE_PID,                     1,  0xFF00);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Scope RX",                     DetectAsusAuraUSBKeyboards,     AURA_USB_VID, AURA_ROG_STRIX_SCOPE_RX_PID,                  1,  0xFF00);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Scope TKL",                    DetectAsusAuraUSBKeyboards,     AURA_USB_VID, AURA_ROG_STRIX_SCOPE_TKL_PID,                 1,  0xFF00);
+REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Scope RX TKL Wireless Deluxe", DetectAsusAuraUSBKeyboards,     AURA_USB_VID, AURA_ROG_STRIX_SCOPE_RX_TKL_DELUXE_PID,       1,  0xFF00);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Scope TKL PNK LTD",            DetectAsusAuraUSBKeyboards,     AURA_USB_VID, AURA_ROG_STRIX_SCOPE_TKL_PNK_LTD_PID,         1,  0xFF00);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Claymore",                           DetectAsusAuraTUFUSBKeyboard,   AURA_USB_VID, AURA_ROG_CLAYMORE_PID,                        1,  0xFF00);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Falchion (Wired)",                   DetectAsusAuraTUFUSBKeyboard,   AURA_USB_VID, AURA_ROG_FALCHION_WIRED_PID,                  1,  0xFF00);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Falchion (Wireless)",                DetectAsusAuraTUFUSBKeyboard,   AURA_USB_VID, AURA_ROG_FALCHION_WIRELESS_PID,               1,  0xFF00);
-REGISTER_HID_DETECTOR_IP("ASUS TUF Gaming K7",                          DetectAsusAuraTUFUSBKeyboard,   AURA_USB_VID, AURA_TUF_K7_GAMING_PID,                       1,  0xFF00);
+REGISTER_HID_DETECTOR_IP("ASUS TUF Gaming K1",                          DetectAsusAuraTUFUSBKeyboard,   AURA_USB_VID, AURA_TUF_K1_GAMING_PID,                       2,  0xFF00);
 REGISTER_HID_DETECTOR_IP("ASUS TUF Gaming K3",                          DetectAsusAuraTUFUSBKeyboard,   AURA_USB_VID, AURA_TUF_K3_GAMING_PID,                       1,  0xFF00);
+REGISTER_HID_DETECTOR_IP("ASUS TUF Gaming K7",                          DetectAsusAuraTUFUSBKeyboard,   AURA_USB_VID, AURA_TUF_K7_GAMING_PID,                       1,  0xFF00);
 
 /*-----------------------------------------------------------------*\
 |  MICE                                                             |
@@ -326,10 +341,12 @@ REGISTER_HID_DETECTOR_IP("Asus ROG Chakram (Wired)",                    DetectAs
 REGISTER_HID_DETECTOR_IP("Asus ROG Chakram Core",                       DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_CHAKRAM_CORE_PID,                    0,  0xFF01);
 REGISTER_HID_DETECTOR_IP("Asus ROG Chakram X USB",                      DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_CHAKRAM_X_USB_PID,                   0,  0xFF01);
 REGISTER_HID_DETECTOR_IP("Asus ROG Chakram X 2.4GHz",                   DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_CHAKRAM_X_2_4_PID,                   0,  0xFF01);
+REGISTER_HID_DETECTOR_IP("Asus ROG Spatha X USB",                       DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_SPATHA_X_USB_PID,                    0,  0xFF01);
+REGISTER_HID_DETECTOR_IP("Asus ROG Spatha X 2.4GHz",                    DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_SPATHA_X_2_4_PID,                    0,  0xFF01);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Pugio",                              DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_PUGIO_PID,                           2,  0xFF01);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Pugio II (Wired)",                   DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_PUGIO_II_WIRED_PID,                  0,  0xFF01);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Pugio II (Wireless)",                DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_PUGIO_II_WIRELESS_PID,               0,  0xFF01);
-REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Impact",                       DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_STRIX_IMPACT_PID,                    0,  0xFF01);
+REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Impact",                       DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_STRIX_IMPACT_PID,                    2,  0xFF01);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Impact II",                    DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_STRIX_IMPACT_II_PID,                 0,  0xFF01);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Impact II Gundam",             DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_STRIX_IMPACT_II_GUNDAM_PID,          0,  0xFF01);
 REGISTER_HID_DETECTOR_IP("ASUS ROG Strix Impact II Electro Punk",       DetectAsusAuraUSBMice,          AURA_USB_VID, AURA_ROG_STRIX_IMPACT_II_PUNK_PID,            0,  0xFF01);
@@ -356,6 +373,7 @@ REGISTER_HID_DETECTOR_PU("ASUS ROG Balteus Qi",                         DetectAs
 \*-----------------------------------------------------------------*/
 REGISTER_HID_DETECTOR_PU("ASUS ROG Strix XG27AQ",                       DetectAsusAuraUSBMonitor,       AURA_USB_VID, AURA_ROG_STRIX_XG27AQ_PID,                    0xFFA0, 1);
 REGISTER_HID_DETECTOR_PU("ASUS ROG Strix XG27AQM",                      DetectAsusAuraUSBMonitor,       AURA_USB_VID, AURA_ROG_STRIX_XG27AQM_PID,                   0xFFA0, 1);
+REGISTER_HID_DETECTOR_PU("ASUS ROG Strix XG279Q",                       DetectAsusAuraUSBMonitor,       AURA_USB_VID, AURA_ROG_STRIX_XG279Q_PID,                    0xFFA0, 1);
 REGISTER_HID_DETECTOR_PU("ASUS ROG Strix XG27W",                        DetectAsusAuraUSBMonitor,       AURA_USB_VID, AURA_ROG_STRIX_XG27W_PID,                     0xFFA0, 1);
 REGISTER_HID_DETECTOR_PU("ASUS ROG PG32UQ",                             DetectAsusAuraUSBMonitor,       AURA_USB_VID, AURA_ROG_PG32UQ_PID,                          0xFFA0, 1);
 

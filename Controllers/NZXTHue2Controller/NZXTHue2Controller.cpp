@@ -169,15 +169,19 @@ void NZXTHue2Controller::UpdateDeviceList()
             case 0x05: //Hue 2 strip (8 LEDs)
                 num_leds_in_device = 8;
                 break;
-            
+
             case 0x06: //Hue 2 strip (6 LEDs)
                 num_leds_in_device = 6;
                 break;
-           
+
+            case 0x08: //Hue 2 Cable Comb (14 LEDs)
+                num_leds_in_device = 14;
+                break;
+
             case 0x09: //Hue 2 Underglow (300mm) (15 LEDs)
                 num_leds_in_device = 15;
                 break;
- 
+
             case 0x0A: //Hue 2 Underglow (200mm) (10 LEDs)
                 num_leds_in_device = 10;
                 break;
@@ -193,18 +197,25 @@ void NZXTHue2Controller::UpdateDeviceList()
             case 0x10: //Kraken X3 ring
                 num_leds_in_device = 8;
                 break;
-            
+
             case 0x11: //Kraken X3 logo
                 num_leds_in_device = 1;
                 break;
-            
-            case 0x08: //Hue 2 Cable Comb (14 LEDs)
-                num_leds_in_device = 14;
+
+            case 0x14: //F140 RGB fan (140mm)
+                num_leds_in_device = 18;
+                break;
+
+            case 0x17: //F120 RGB Core fan (120mm)
+                num_leds_in_device = 8;
                 break;
 
             default:
                 break;
             }
+
+            channel_dev_ids[chan][dev] = usb_buf[start + dev];
+            channel_dev_szs[chan][dev] = num_leds_in_device;
 
             LOG_DEBUG("[NZXT Hue 2] %d: Device ID: %02X LEDs: %d", dev, usb_buf[start + dev], num_leds_in_device);
 

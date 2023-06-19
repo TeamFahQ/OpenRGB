@@ -274,9 +274,9 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QPushButton" name="ResizeButton">
+       <widget class="QPushButton" name="EditZoneButton">
         <property name="text">
-         <string>Resize</string>
+         <string>Edit</string>
         </property>
        </widget>
       </item>
@@ -400,7 +400,7 @@
  </customwidgets>
  <tabstops>
   <tabstop>ZoneBox</tabstop>
-  <tabstop>ResizeButton</tabstop>
+  <tabstop>EditZoneButton</tabstop>
   <tabstop>LEDBox</tabstop>
   <tabstop>SelectAllLEDsButton</tabstop>
   <tabstop>ApplyColorsButton</tabstop>
@@ -413,10 +413,10 @@
   <tabstop>DirectionBox</tabstop>
   <tabstop>BrightnessSlider</tabstop>
   <tabstop>RedSpinBox</tabstop>
-  <tabstop>HueSpinBox</tabstop>
   <tabstop>GreenSpinBox</tabstop>
-  <tabstop>SatSpinBox</tabstop>
   <tabstop>BlueSpinBox</tabstop>
+  <tabstop>HueSpinBox</tabstop>
+  <tabstop>SatSpinBox</tabstop>
   <tabstop>ValSpinBox</tabstop>
   <tabstop>DeviceSaveButton</tabstop>
  </tabstops>

@@ -11,7 +11,7 @@
 #define OPENRGB_PROFILE_HEADER  "OPENRGB_PROFILE"
 #define OPENRGB_PROFILE_VERSION OPENRGB_SDK_PROTOCOL_VERSION
 
-ProfileManager::ProfileManager(std::string config_dir)
+ProfileManager::ProfileManager(const filesystem::path& config_dir)
 {
     configuration_directory = config_dir;
     UpdateProfileList();
@@ -54,7 +54,8 @@ bool ProfileManager::SaveProfile(std::string profile_name, bool sizes)
         /*---------------------------------------------------------*\
         | Open an output file in binary mode                        |
         \*---------------------------------------------------------*/
-        std::ofstream controller_file(configuration_directory + filename, std::ios::out | std::ios::binary | std::ios::trunc);
+        filesystem::path profile_path = configuration_directory / filesystem::u8path(filename);
+        std::ofstream controller_file(profile_path, std::ios::out | std::ios::binary | std::ios::trunc);
 
         /*---------------------------------------------------------*\
         | Write header                                              |
@@ -98,7 +99,7 @@ bool ProfileManager::SaveProfile(std::string profile_name, bool sizes)
     }
 }
 
-void ProfileManager::SetConfigurationDirectory(std::string directory)
+void ProfileManager::SetConfigurationDirectory(const filesystem::path& directory)
 {
     configuration_directory = directory;
     UpdateProfileList();
@@ -124,18 +125,21 @@ std::vector<RGBController*> ProfileManager::LoadProfileToList
     unsigned int                controller_size;
     unsigned int                controller_offset = 0;
 
-    std::string filename = configuration_directory + profile_name;
+    filesystem::path filename = configuration_directory / filesystem::u8path(profile_name);
 
     /*---------------------------------------------------------*\
     | Determine file extension                                  |
     \*---------------------------------------------------------*/
     if(sizes)
     {
-        filename += ".ors";
+        filename.concat(".ors");
     }
     else
     {
-        filename += ((filename.substr(filename.size() - 4)==".orp") ? "" : ".orp");
+        if(filename.extension() != ".orp")
+        {
+            filename.concat(".orp");
+        }
     }
 
     /*---------------------------------------------------------*\
@@ -224,11 +228,19 @@ bool ProfileManager::LoadDeviceFromListWithOptions
         if(load_controller->location.find("HID: ") == 0)
         {
             location_check = true;
-        } 
+        }
         else if(load_controller->location.find("I2C: ") == 0)
         {
-            std::string i2c_address = load_controller->location.substr(load_controller->location.find_last_of(", ") + 2);
-            location_check = temp_controller->location.find(i2c_address) != std::string::npos;
+            std::size_t loc = load_controller->location.rfind(", ");
+            if(loc == std::string::npos)
+            {
+                location_check = false;
+            }
+            else
+            {
+                std::string i2c_address = load_controller->location.substr(loc + 2);
+                location_check = temp_controller->location.find(i2c_address) != std::string::npos;
+            }
         }
         else
         {
@@ -263,10 +275,17 @@ bool ProfileManager::LoadDeviceFromListWithOptions
                         if((temp_controller->zones[zone_idx].name       == load_controller->zones[zone_idx].name      )
                          &&(temp_controller->zones[zone_idx].type       == load_controller->zones[zone_idx].type      )
                          &&(temp_controller->zones[zone_idx].leds_min   == load_controller->zones[zone_idx].leds_min  )
-                         &&(temp_controller->zones[zone_idx].leds_max   == load_controller->zones[zone_idx].leds_max  )
-                         &&(temp_controller->zones[zone_idx].leds_count != load_controller->zones[zone_idx].leds_count))
+                         &&(temp_controller->zones[zone_idx].leds_max   == load_controller->zones[zone_idx].leds_max  ))
                         {
-                            load_controller->ResizeZone(zone_idx, temp_controller->zones[zone_idx].leds_count);
+                            if (temp_controller->zones[zone_idx].leds_count != load_controller->zones[zone_idx].leds_count)
+                            {
+                                load_controller->ResizeZone(zone_idx, temp_controller->zones[zone_idx].leds_count);
+                            }
+
+                            for(std::size_t segment_idx = 0; segment_idx < temp_controller->zones[zone_idx].segments.size(); segment_idx++)
+                            {
+                                load_controller->zones[zone_idx].segments.push_back(temp_controller->zones[zone_idx].segments[segment_idx]);
+                            }
                         }
                     }
                 }
@@ -368,9 +387,10 @@ bool ProfileManager::LoadProfileWithOptions
     \*---------------------------------------------------------*/
     for(std::size_t controller_index = 0; controller_index < controllers.size(); controller_index++)
     {
-        ret_val = LoadDeviceFromListWithOptions(temp_controllers, temp_controller_used, controllers[controller_index], load_size, load_settings);
+        bool temp_ret_val = LoadDeviceFromListWithOptions(temp_controllers, temp_controller_used, controllers[controller_index], load_size, load_settings);
         std::string current_name = controllers[controller_index]->name + " @ " + controllers[controller_index]->location;
-        LOG_INFO("Profile loading: %s for %s", ( ret_val ? "Succeeded" : "FAILED!" ), current_name.c_str());
+        LOG_INFO("Profile loading: %s for %s", ( temp_ret_val ? "Succeeded" : "FAILED!" ), current_name.c_str());
+        ret_val |= temp_ret_val;
     }
 
     /*---------------------------------------------------------*\
@@ -386,7 +406,10 @@ bool ProfileManager::LoadProfileWithOptions
 
 void ProfileManager::DeleteProfile(std::string profile_name)
 {
-    remove((configuration_directory + profile_name + ".orp").c_str());
+    filesystem::path filename = configuration_directory / profile_name;
+    filename.concat(".orp");
+
+    filesystem::remove(filename);
 
     UpdateProfileList();
 }
@@ -409,7 +432,9 @@ void ProfileManager::UpdateProfileList()
             /*---------------------------------------------------------*\
             | Open input file in binary mode                            |
             \*---------------------------------------------------------*/
-            std::ifstream profile_file(configuration_directory + filename, std::ios::in | std::ios::binary);
+            filesystem::path file_path = configuration_directory;
+            file_path.append(filename);
+            std::ifstream profile_file(file_path, std::ios::in | std::ios::binary);
 
             /*---------------------------------------------------------*\
             | Read and verify file header                               |

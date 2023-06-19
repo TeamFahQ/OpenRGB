@@ -5,6 +5,7 @@
 |  lighting controller                      |
 |                                           |
 |  Ed Kambulow (dredvard) 12/20/2020        |
+|  Shady Nawara (ShadyNawara) 01/16/2023    |
 \*-----------------------------------------*/
 
 #include "RGBController.h"
@@ -133,6 +134,7 @@ public:
                                                     );
 
     void                                        ResizeZone(int zone, int new_size);
+    void                                        SetRGSwap(bool reset);
 
 protected:
     hid_device*                         dev;
@@ -141,20 +143,21 @@ protected:
 
     void WriteRGSwap
         (
-        bool ahdr1,
-        bool ahdr0,
-        bool hdr1,
         bool hdr0,
-        bool pch = false,
-        bool io = false,
-        bool pcb = false,
-        bool chnl8 = false
+        bool hdr1,
+        bool ahdr0,
+        bool ahdr1,
+        bool pch,
+        bool io,
+        bool pcb,
+        bool chnl8
         );
 
 private:
     unsigned int  led_count;
     std::string   device_name;
     unsigned char configtable[12];
+    bool          rgswapconfig[8] = { 0 };
 
     void SetDeviceInfo();    
     void ReadConfigTables();

@@ -13,10 +13,29 @@
 #include "ProfileManager.h"
 #include "LogManager.h"
 #include "filesystem.h"
+#include "StringUtils.h"
+
+#ifdef _WIN32
+#include <codecvt>
+#include <locale>
+#endif
 
 #include <stdlib.h>
 #include <string>
 #include <hidapi/hidapi.h>
+
+const hidapi_wrapper default_wrapper =
+{
+    NULL,
+    (hidapi_wrapper_send_feature_report)        hid_send_feature_report,
+    (hidapi_wrapper_get_feature_report)         hid_get_feature_report,
+    (hidapi_wrapper_get_serial_number_string)   hid_get_serial_number_string,
+    (hidapi_wrapper_open_path)                  hid_open_path,
+    (hidapi_wrapper_enumerate)                  hid_enumerate,
+    (hidapi_wrapper_free_enumeration)           hid_free_enumeration,
+    (hidapi_wrapper_close)                      hid_close,
+    (hidapi_wrapper_error)                      hid_error
+};
 
 ResourceManager* ResourceManager::instance;
 
@@ -50,7 +69,8 @@ ResourceManager::ResourceManager()
     | Load settings from file                                                   |
     \*-------------------------------------------------------------------------*/
     settings_manager        = new SettingsManager();
-    settings_manager->LoadSettings(GetConfigurationDirectory() + "OpenRGB.json");
+
+    settings_manager->LoadSettings(GetConfigurationDirectory() / "OpenRGB.json");
 
     /*-------------------------------------------------------------------------*\
     | Configure the log manager                                                 |
@@ -144,6 +164,29 @@ void ResourceManager::RegisterRGBController(RGBController *rgb_controller)
     LOG_INFO("[%s] Registering RGB controller", rgb_controller->name.c_str());
     rgb_controllers_hw.push_back(rgb_controller);
 
+    /*-------------------------------------------------*\
+    | If the device list size has changed, call the     |
+    | device list changed callbacks                     |
+    |                                                   |
+    | TODO: If all detection is reworked to use         |
+    | RegisterRGBController, tracking of previous list  |
+    | size can be removed and profile can be loaded per |
+    | controller before adding to list                  |
+    \*-------------------------------------------------*/
+    if(rgb_controllers_hw.size() != detection_prev_size)
+    {
+        /*-------------------------------------------------*\
+        | First, load sizes for the new controllers         |
+        \*-------------------------------------------------*/
+        for(unsigned int controller_size_idx = detection_prev_size; controller_size_idx < rgb_controllers_hw.size(); controller_size_idx++)
+        {
+            profile_manager->LoadDeviceFromListWithOptions(rgb_controllers_sizes, detection_size_entry_used, rgb_controllers_hw[controller_size_idx], true, false);
+        }
+
+        UpdateDeviceList();
+    }
+    detection_prev_size = rgb_controllers_hw.size();
+
     UpdateDeviceList();
 }
 
@@ -234,6 +277,26 @@ void ResourceManager::RegisterHIDDeviceDetector(std::string name,
     block.usage         = usage;
 
     hid_device_detectors.push_back(block);
+}
+
+void ResourceManager::RegisterHIDWrappedDeviceDetector(std::string name,
+                                                       HIDWrappedDeviceDetectorFunction  detector,
+                                                       uint16_t vid,
+                                                       uint16_t pid,
+                                                       int interface,
+                                                       int usage_page,
+                                                       int usage)
+{
+    HIDWrappedDeviceDetectorBlock block;
+
+    block.name          = name;
+    block.address       = (vid << 16) | pid;
+    block.function      = detector;
+    block.interface     = interface;
+    block.usage_page    = usage_page;
+    block.usage         = usage;
+
+    hid_wrapped_device_detectors.push_back(block);
 }
 
 void ResourceManager::RegisterDynamicDetector(std::string name, DynamicDetectorFunction detector)
@@ -448,10 +511,15 @@ void ResourceManager::I2CBusListChanged()
 void ResourceManager::SetupConfigurationDirectory()
 {
     config_dir.clear();
+#ifdef _WIN32
+    const wchar_t* appdata = _wgetenv(L"APPDATA");
+    if(appdata != NULL)
+    {
+        config_dir = appdata;
+    }
+#else
     const char* xdg_config_home = getenv("XDG_CONFIG_HOME");
     const char* home            = getenv("HOME");
-    const char* appdata         = getenv("APPDATA");
-
     /*-----------------------------------------------------*\
     | Check both XDG_CONFIG_HOME and APPDATA environment    |
     | variables.  If neither exist, use current directory   |
@@ -460,22 +528,20 @@ void ResourceManager::SetupConfigurationDirectory()
     {
         config_dir = xdg_config_home;
     }
-    else if(appdata != NULL)
-    {
-        config_dir = appdata;
-    }
     else if(home != NULL)
     {
         config_dir = home;
-        config_dir = config_dir + "/.config";
+        config_dir /= ".config";
     }
+#endif
+
 
     /*-----------------------------------------------------*\
     | If a configuration directory was found, append OpenRGB|
     \*-----------------------------------------------------*/
     if(config_dir != "")
     {
-        config_dir = config_dir + "/OpenRGB/";
+        config_dir.append("OpenRGB");
 
         /*-------------------------------------------------------------------------*\
         | Create OpenRGB configuration directory if it doesn't exist                |
@@ -488,25 +554,15 @@ void ResourceManager::SetupConfigurationDirectory()
     }
 }
 
-std::string ResourceManager::GetConfigurationDirectory()
+filesystem::path ResourceManager::GetConfigurationDirectory()
 {
     return(config_dir);
 }
 
-void ResourceManager::SetConfigurationDirectory(std::string directory)
+void ResourceManager::SetConfigurationDirectory(const filesystem::path &directory)
 {
-    /*-----------------------------------------------------*\
-    | Ensure the directory string has a trailing slash      |
-    \*-----------------------------------------------------*/
-    const char separator = filesystem::path::preferred_separator;
-
-    if(directory[directory.size() - 1] != separator)
-    {
-        directory += separator;
-    }
-
     config_dir = directory;
-    settings_manager->LoadSettings(directory + "OpenRGB.json");
+    settings_manager->LoadSettings(directory / "OpenRGB.json");
     profile_manager->SetConfigurationDirectory(directory);
 
     rgb_controllers_sizes.clear();
@@ -610,7 +666,12 @@ void ResourceManager::Cleanup()
         }
     }
 
+    /*-------------------------------------------------*\
+    | Clear the hardware controllers list and set the   |
+    | previous hardware controllers list size to zero   |
+    \*-------------------------------------------------*/
     rgb_controllers_hw.clear();
+    detection_prev_size = 0;
 
     for(RGBController* rgb_controller : rgb_controllers_hw_copy)
     {
@@ -747,44 +808,6 @@ void ResourceManager::DisableDetection()
     detection_enabled = false;
 }
 
-const char* wchar_to_char(const wchar_t* pwchar)
-{
-    if (pwchar == nullptr)
-    {
-        return "";
-    }
-    // get the number of characters in the string.
-    int currentCharIndex = 0;
-    char currentChar = pwchar[currentCharIndex];
-
-    while (currentChar != '\0')
-    {
-        currentCharIndex++;
-        currentChar = pwchar[currentCharIndex];
-    }
-
-    const int charCount = currentCharIndex + 1;
-
-    // allocate a new block of memory size char (1 byte) instead of wide char (2 bytes)
-    char* filePathC = (char*)malloc(sizeof(char) * charCount);
-
-    for (int i = 0; i < charCount; i++)
-    {
-        // convert to char (1 byte)
-        char character = pwchar[i];
-
-        *filePathC = character;
-
-        filePathC += sizeof(char);
-
-    }
-    filePathC += '\0';
-
-    filePathC -= (sizeof(char) * charCount);
-
-    return filePathC;
-}
-
 void ResourceManager::DetectDevicesThreadFunction()
 {
     DetectDeviceMutex.lock();
@@ -796,18 +819,19 @@ void ResourceManager::DetectDevicesThreadFunction()
     unsigned int        hid_device_count    = 0;
     hid_device_info*    hid_devices         = NULL;
     bool                hid_safe_mode       = false;
-    unsigned int        prev_count          = 0;
-    std::vector<bool>   size_used;
 
     LOG_INFO("------------------------------------------------------");
     LOG_INFO("|               Start device detection               |");
     LOG_INFO("------------------------------------------------------");
 
-    size_used.resize(rgb_controllers_sizes.size());
+    /*-------------------------------------------------*\
+    | Reset the size entry used flags vector            |
+    \*-------------------------------------------------*/
+    detection_size_entry_used.resize(rgb_controllers_sizes.size());
 
-    for(unsigned int size_idx = 0; size_idx < size_used.size(); size_idx++)
+    for(unsigned int size_idx = 0; size_idx < detection_size_entry_used.size(); size_idx++)
     {
-        size_used[size_idx] = false;
+        detection_size_entry_used[size_idx] = false;
     }
 
     /*-------------------------------------------------*\
@@ -860,6 +884,29 @@ void ResourceManager::DetectDevicesThreadFunction()
     \*-------------------------------------------------*/
     detection_percent = 0;
 
+#ifdef __linux__
+    /*-------------------------------------------------*\
+    | Check if the udev rules exist                     |
+    \*-------------------------------------------------*/
+    bool udev_not_exist     = false;
+    bool udev_multiple      = false;
+
+    if(access("/etc/udev/rules.d/60-openrgb.rules", F_OK) != 0)
+    {
+        if(access("/usr/lib/udev/rules.d/60-openrgb.rules", F_OK) != 0)
+        {
+            udev_not_exist  = true;
+        }
+    }
+    else
+    {
+        if(access("/usr/lib/udev/rules.d/60-openrgb.rules", F_OK) == 0)
+        {
+            udev_multiple   = true;
+        }
+    }
+#endif
+
     /*-------------------------------------------------*\
     | Detect i2c interfaces                             |
     \*-------------------------------------------------*/
@@ -910,14 +957,14 @@ void ResourceManager::DetectDevicesThreadFunction()
         | If the device list size has changed, call the     |
         | device list changed callbacks                     |
         \*-------------------------------------------------*/
-        if(rgb_controllers_hw.size() != prev_count)
+        if(rgb_controllers_hw.size() != detection_prev_size)
         {
             /*-------------------------------------------------*\
             | First, load sizes for the new controllers         |
             \*-------------------------------------------------*/
-            for(unsigned int controller_size_idx = prev_count; controller_size_idx < rgb_controllers_hw.size(); controller_size_idx++)
+            for(unsigned int controller_size_idx = detection_prev_size; controller_size_idx < rgb_controllers_hw.size(); controller_size_idx++)
             {
-                profile_manager->LoadDeviceFromListWithOptions(rgb_controllers_sizes, size_used, rgb_controllers_hw[controller_size_idx], true, false);
+                profile_manager->LoadDeviceFromListWithOptions(rgb_controllers_sizes, detection_size_entry_used, rgb_controllers_hw[controller_size_idx], true, false);
             }
 
             UpdateDeviceList();
@@ -926,7 +973,7 @@ void ResourceManager::DetectDevicesThreadFunction()
         {
             LOG_DEBUG("[%s] no devices found", detection_string);
         }
-        prev_count = rgb_controllers_hw.size();
+        detection_prev_size = rgb_controllers_hw.size();
 
         LOG_TRACE("[%s] detection end", detection_string);
 
@@ -973,28 +1020,6 @@ void ResourceManager::DetectDevicesThreadFunction()
                 }
             }
         }
-
-        /*-------------------------------------------------*\
-        | If the device list size has changed, call the     |
-        | device list changed callbacks                     |
-        \*-------------------------------------------------*/
-        if(rgb_controllers_hw.size() != prev_count)
-        {
-            /*-------------------------------------------------*\
-            | First, load sizes for the new controllers         |
-            \*-------------------------------------------------*/
-            for(unsigned int controller_size_idx = prev_count; controller_size_idx < rgb_controllers_hw.size(); controller_size_idx++)
-            {
-                profile_manager->LoadDeviceFromListWithOptions(rgb_controllers_sizes, size_used, rgb_controllers_hw[controller_size_idx], true, false);
-            }
-
-            UpdateDeviceList();
-        }
-        else
-        {
-            LOG_DEBUG("[%s] no devices found", detection_string);
-        }
-        prev_count = rgb_controllers_hw.size();
 
         LOG_TRACE("[%s] detection end", detection_string);
 
@@ -1070,28 +1095,6 @@ void ResourceManager::DetectDevicesThreadFunction()
 
                         hid_device_detectors[hid_detector_idx].function(current_hid_device, hid_device_detectors[hid_detector_idx].name);
 
-                        /*-------------------------------------------------*\
-                        | If the device list size has changed, call the     |
-                        | device list changed callbacks                     |
-                        \*-------------------------------------------------*/
-                        if(rgb_controllers_hw.size() != prev_count)
-                        {
-                            /*-------------------------------------------------*\
-                            | First, load sizes for the new controllers         |
-                            \*-------------------------------------------------*/
-                            for(unsigned int controller_size_idx = prev_count; controller_size_idx < rgb_controllers_hw.size(); controller_size_idx++)
-                            {
-                                profile_manager->LoadDeviceFromListWithOptions(rgb_controllers_sizes, size_used, rgb_controllers_hw[controller_size_idx], true, false);
-                            }
-
-                            UpdateDeviceList();
-                        }
-                        else
-                        {
-                            LOG_DEBUG("[%s] no devices found", detection_string);
-                        }
-                        prev_count = rgb_controllers_hw.size();
-
                         LOG_TRACE("[%s] detection end", detection_string);
                     }
                 }
@@ -1114,8 +1117,8 @@ void ResourceManager::DetectDevicesThreadFunction()
         {
             if(LogManager::get()->getLoglevel() >= LL_DEBUG)
             {
-                const char* manu_name = wchar_to_char(current_hid_device->manufacturer_string);
-                const char* prod_name = wchar_to_char(current_hid_device->product_string);
+                const char* manu_name = StringUtils::wchar_to_char(current_hid_device->manufacturer_string);
+                const char* prod_name = StringUtils::wchar_to_char(current_hid_device->product_string);
                 LOG_DEBUG("[%04X:%04X U=%04X P=0x%04X I=%d] %-25s - %s", current_hid_device->vendor_id, current_hid_device->product_id, current_hid_device->usage, current_hid_device->usage_page, current_hid_device->interface_number, manu_name, prod_name);
             }
             detection_string = "";
@@ -1162,15 +1165,49 @@ void ResourceManager::DetectDevicesThreadFunction()
                         DetectionProgressChanged();
 
                         hid_device_detectors[hid_detector_idx].function(current_hid_device, hid_device_detectors[hid_detector_idx].name);
+                    }
+                }
+            }
 
-                        if(rgb_controllers_hw.size() != prev_count)
-                        {
-                            LOG_VERBOSE("[%s] successfully added", detection_string);
-                        }
-                        else
-                        {
-                            LOG_INFO("[%s] is not initialized", detection_string);
-                        }
+            /*-----------------------------------------------------------------------------*\
+            | Loop through all available wrapped HID detectors.  If all required            |
+            | information matches, run the detector                                         |
+            \*-----------------------------------------------------------------------------*/
+            for(unsigned int hid_detector_idx = 0; hid_detector_idx < hid_wrapped_device_detectors.size() && detection_is_required.load(); hid_detector_idx++)
+            {
+                if(( (     hid_wrapped_device_detectors[hid_detector_idx].address    == addr                                 ) )
+#ifdef USE_HID_USAGE
+                && ( (     hid_wrapped_device_detectors[hid_detector_idx].usage_page == HID_USAGE_PAGE_ANY                   )
+                  || (     hid_wrapped_device_detectors[hid_detector_idx].usage_page == current_hid_device->usage_page       ) )
+                && ( (     hid_wrapped_device_detectors[hid_detector_idx].usage      == HID_USAGE_ANY                        )
+                  || (     hid_wrapped_device_detectors[hid_detector_idx].usage      == current_hid_device->usage            ) )
+                && ( (     hid_wrapped_device_detectors[hid_detector_idx].interface  == HID_INTERFACE_ANY                    )
+                  || (     hid_wrapped_device_detectors[hid_detector_idx].interface  == current_hid_device->interface_number ) )
+#else
+                && ( (     hid_wrapped_device_detectors[hid_detector_idx].interface  == HID_INTERFACE_ANY                    )
+                  || (     hid_wrapped_device_detectors[hid_detector_idx].interface  == current_hid_device->interface_number ) )
+#endif
+                )
+                {
+                    detection_string = hid_wrapped_device_detectors[hid_detector_idx].name.c_str();
+
+                    /*-------------------------------------------------*\
+                    | Check if this detector is enabled or needs to be  |
+                    | added to the settings list                        |
+                    \*-------------------------------------------------*/
+                    bool this_device_enabled = true;
+                    if(detector_settings.contains("detectors") && detector_settings["detectors"].contains(detection_string))
+                    {
+                        this_device_enabled = detector_settings["detectors"][detection_string];
+                    }
+
+                    LOG_DEBUG("[%s] is %s", detection_string, ((this_device_enabled == true) ? "enabled" : "disabled"));
+
+                    if(this_device_enabled)
+                    {
+                        DetectionProgressChanged();
+
+                        hid_wrapped_device_detectors[hid_detector_idx].function(default_wrapper, current_hid_device, hid_wrapped_device_detectors[hid_detector_idx].name);
                     }
                 }
             }
@@ -1195,6 +1232,127 @@ void ResourceManager::DetectDevicesThreadFunction()
         \*-------------------------------------------------*/
         hid_free_enumeration(hid_devices);
     }
+
+    /*-------------------------------------------------*\
+    | Detect HID devices                                |
+    |                                                   |
+    | Reset current device pointer to first device      |
+    \*-------------------------------------------------*/
+#ifdef __linux__
+    LOG_INFO("------------------------------------------------------");
+    LOG_INFO("|            Detecting libusb HID devices            |");
+    LOG_INFO("------------------------------------------------------");
+
+    void *         dyn_handle = NULL;
+    hidapi_wrapper wrapper;
+
+    /*-------------------------------------------------*\
+    | Load the libhidapi-libusb library                 |
+    \*-------------------------------------------------*/
+#ifdef __GLIBC__
+    if((dyn_handle = dlopen("libhidapi-libusb.so", RTLD_NOW | RTLD_NODELETE | RTLD_DEEPBIND)))
+#else
+    if(dyn_handle = dlopen("libhidapi-libusb.so", RTLD_NOW | RTLD_NODELETE ))
+#endif
+    {
+        /*-------------------------------------------------*\
+        | Create a wrapper with the libusb functions        |
+        \*-------------------------------------------------*/
+        wrapper =
+        {
+            .dyn_handle                     = dyn_handle,
+            .hid_send_feature_report        = (hidapi_wrapper_send_feature_report)          dlsym(dyn_handle,"hid_send_feature_report"),
+            .hid_get_feature_report         = (hidapi_wrapper_get_feature_report)           dlsym(dyn_handle,"hid_get_feature_report"),
+            .hid_get_serial_number_string   = (hidapi_wrapper_get_serial_number_string)     dlsym(dyn_handle,"hid_get_serial_number_string"),
+            .hid_open_path                  = (hidapi_wrapper_open_path)                    dlsym(dyn_handle,"hid_open_path"),
+            .hid_enumerate                  = (hidapi_wrapper_enumerate)                    dlsym(dyn_handle,"hid_enumerate"),
+            .hid_free_enumeration           = (hidapi_wrapper_free_enumeration)             dlsym(dyn_handle,"hid_free_enumeration"),
+            .hid_close                      = (hidapi_wrapper_close)                        dlsym(dyn_handle,"hid_close"),
+            .hid_error                      = (hidapi_wrapper_error)                        dlsym(dyn_handle,"hid_free_enumeration")
+        };
+
+        hid_devices = wrapper.hid_enumerate(0, 0);
+
+        current_hid_device = hid_devices;
+
+        /*-------------------------------------------------*\
+        | Iterate through all devices in list and run       |
+        | detectors                                         |
+        \*-------------------------------------------------*/
+        hid_device_count = 0;
+
+        while(current_hid_device)
+        {
+            if(LogManager::get()->getLoglevel() >= LL_DEBUG)
+            {
+                const char* manu_name = StringUtils::wchar_to_char(current_hid_device->manufacturer_string);
+                const char* prod_name = StringUtils::wchar_to_char(current_hid_device->product_string);
+                LOG_DEBUG("[%04X:%04X U=%04X P=0x%04X I=%d] %-25s - %s", current_hid_device->vendor_id, current_hid_device->product_id, current_hid_device->usage, current_hid_device->usage_page, current_hid_device->interface_number, manu_name, prod_name);
+            }
+            detection_string = "";
+            DetectionProgressChanged();
+
+            unsigned int addr = (current_hid_device->vendor_id << 16) | current_hid_device->product_id;
+
+            /*-----------------------------------------------------------------------------*\
+            | Loop through all available wrapped HID detectors.  If all required            |
+            | information matches, run the detector                                         |
+            \*-----------------------------------------------------------------------------*/
+            for(unsigned int hid_detector_idx = 0; hid_detector_idx < hid_wrapped_device_detectors.size() && detection_is_required.load(); hid_detector_idx++)
+            {
+                if(( (     hid_wrapped_device_detectors[hid_detector_idx].address    == addr                                 ) )
+                && ( (     hid_wrapped_device_detectors[hid_detector_idx].usage_page == HID_USAGE_PAGE_ANY                   )
+                    || (     hid_wrapped_device_detectors[hid_detector_idx].usage_page == current_hid_device->usage_page       ) )
+                && ( (     hid_wrapped_device_detectors[hid_detector_idx].usage      == HID_USAGE_ANY                        )
+                    || (     hid_wrapped_device_detectors[hid_detector_idx].usage      == current_hid_device->usage            ) )
+                && ( (     hid_wrapped_device_detectors[hid_detector_idx].interface  == HID_INTERFACE_ANY                    )
+                    || (     hid_wrapped_device_detectors[hid_detector_idx].interface  == current_hid_device->interface_number ) )
+                )
+                {
+                    detection_string = hid_wrapped_device_detectors[hid_detector_idx].name.c_str();
+
+                    /*-------------------------------------------------*\
+                    | Check if this detector is enabled or needs to be  |
+                    | added to the settings list                        |
+                    \*-------------------------------------------------*/
+                    bool this_device_enabled = true;
+                    if(detector_settings.contains("detectors") && detector_settings["detectors"].contains(detection_string))
+                    {
+                        this_device_enabled = detector_settings["detectors"][detection_string];
+                    }
+
+                    LOG_DEBUG("[%s] is %s", detection_string, ((this_device_enabled == true) ? "enabled" : "disabled"));
+
+                    if(this_device_enabled)
+                    {
+                        DetectionProgressChanged();
+
+                        hid_wrapped_device_detectors[hid_detector_idx].function(wrapper, current_hid_device, hid_wrapped_device_detectors[hid_detector_idx].name);
+                    }
+                }
+            }
+
+            /*-------------------------------------------------*\
+            | Update detection percent                          |
+            \*-------------------------------------------------*/
+            hid_device_count++;
+
+            percent = (i2c_device_detectors.size() + i2c_pci_device_detectors.size() + hid_device_count) / percent_denominator;
+
+            detection_percent = percent * 100.0f;
+
+            /*-------------------------------------------------*\
+            | Move on to the next HID device                    |
+            \*-------------------------------------------------*/
+            current_hid_device = current_hid_device->next;
+        }
+
+        /*-------------------------------------------------*\
+        | Done using the device list, free it               |
+        \*-------------------------------------------------*/
+        wrapper.hid_free_enumeration(hid_devices);
+    }
+#endif
 
     /*-------------------------------------------------*\
     | Detect other devices                              |
@@ -1222,30 +1380,8 @@ void ResourceManager::DetectDevicesThreadFunction()
         {
             DetectionProgressChanged();
 
-            device_detectors[detector_idx](rgb_controllers_hw);
+            device_detectors[detector_idx]();
         }
-
-        /*-------------------------------------------------*\
-        | If the device list size has changed, call the     |
-        | device list changed callbacks                     |
-        \*-------------------------------------------------*/
-        if(rgb_controllers_hw.size() != prev_count)
-        {
-            /*-------------------------------------------------*\
-            | First, load sizes for the new controllers         |
-            \*-------------------------------------------------*/
-            for(unsigned int controller_size_idx = prev_count; controller_size_idx < rgb_controllers_hw.size(); controller_size_idx++)
-            {
-                profile_manager->LoadDeviceFromListWithOptions(rgb_controllers_sizes, size_used, rgb_controllers_hw[controller_size_idx], true, false);
-            }
-
-            UpdateDeviceList();
-        }
-        else
-        {
-            LOG_DEBUG("[%s] no devices found", detection_string);
-        }
-        prev_count = rgb_controllers_hw.size();
 
         LOG_TRACE("[%s] detection end", detection_string);
 
@@ -1281,27 +1417,59 @@ void ResourceManager::DetectDevicesThreadFunction()
     LOG_INFO("|                Detection completed                 |");
     LOG_INFO("------------------------------------------------------");
 
+#ifdef __linux__
+    /*-------------------------------------------------*\
+    | If the udev rules file is not installed, show a   |
+    | dialog                                            |
+    \*-------------------------------------------------*/
+    if(udev_not_exist)
+    {
+        const char* message =  "<h2>WARNING:</h2>"
+                                "<p>The OpenRGB udev rules are not installed.</p>"
+                                "<p>Most devices will not be available unless running OpenRGB as root.</p>"
+                                "<p>If using AppImage, Flatpak, or self-compiled versions of OpenRGB you must install the udev rules manually</p>"
+                                "<p>See <a href='https://openrgb.org/udev'>https://openrgb.org/udev</a> to install the udev rules manually</p>";
+
+        LOG_DIALOG("%s", message);
+    }
+
+    /*-------------------------------------------------*\
+    | If multiple udev rules files are installed, show  |
+    | a dialog                                          |
+    \*-------------------------------------------------*/
+    if(udev_multiple)
+    {
+        const char* message =  "<h2>WARNING:</h2>"
+                                "<p>Multiple OpenRGB udev rules are installed.</p>"
+                                "<p>The udev rules file 60-openrgb.rules is installed in both /etc/udev/rules.d and /usr/lib/udev/rules.d.</p>"
+                                "<p>Multiple udev rules files can conflict, it is recommended to remove one of them.</p>";
+
+        LOG_DIALOG("%s", message);
+    }
+
+#endif
+
     /*-------------------------------------------------*\
     | If any i2c interfaces failed to detect due to an  |
     | error condition, show a dialog                    |
     \*-------------------------------------------------*/
     if(i2c_interface_fail)
     {
-        const char* i2c_message =   "<h2>WARNING:</h2>"
-                                    "<p>One or more I2C/SMBus interfaces failed to initialize.</p>"
-                                    "<p>RGB DRAM modules and some motherboards' onboard RGB lighting will not be available without I2C/SMBus.</p>"
+        const char* message =   "<h2>WARNING:</h2>"
+                                "<p>One or more I2C/SMBus interfaces failed to initialize.</p>"
+                                "<p>RGB DRAM modules and some motherboards' onboard RGB lighting will not be available without I2C/SMBus.</p>"
 #ifdef _WIN32
-                                    "<p>On Windows, this is usually caused by a failure to load the WinRing0 driver.  "
-                                    "You must run OpenRGB as administrator at least once to allow WinRing0 to set up.</p>"
+                                "<p>On Windows, this is usually caused by a failure to load the WinRing0 driver.  "
+                                "You must run OpenRGB as administrator at least once to allow WinRing0 to set up.</p>"
 #endif
 #ifdef __linux__
-                                    "<p>On Linux, this is usually because the i2c-dev module is not loaded.  "
-                                    "You must load the i2c-dev module along with the correct i2c driver for your motherboard.  "
-                                    "This is usually i2c-piix4 for AMD systems and i2c-i801 for Intel systems.</p>"
+                                "<p>On Linux, this is usually because the i2c-dev module is not loaded.  "
+                                "You must load the i2c-dev module along with the correct i2c driver for your motherboard.  "
+                                "This is usually i2c-piix4 for AMD systems and i2c-i801 for Intel systems.</p>"
 #endif
-                                    "<p>See <a href='https://help.openrgb.org/'>help.openrgb.org</a> for additional troubleshooting steps if you keep seeing this message.<br></p>";
+                                "<p>See <a href='https://help.openrgb.org/'>help.openrgb.org</a> for additional troubleshooting steps if you keep seeing this message.<br></p>";
 
-        LOG_DIALOG("%s", i2c_message);
+        LOG_DIALOG("%s", message);
     }
 }
 
@@ -1370,6 +1538,21 @@ void ResourceManager::UpdateDetectorSettings()
     }
 
     /*-------------------------------------------------*\
+    | Loop through all HID wrapped detectors and see if |
+    | any need to be saved to the settings              |
+    \*-------------------------------------------------*/
+    for(unsigned int hid_wrapped_detector_idx = 0; hid_wrapped_detector_idx < hid_wrapped_device_detectors.size(); hid_wrapped_detector_idx++)
+    {
+        detection_string = hid_wrapped_device_detectors[hid_wrapped_detector_idx].name.c_str();
+
+        if(!(detector_settings.contains("detectors") && detector_settings["detectors"].contains(detection_string)))
+        {
+            detector_settings["detectors"][detection_string] = true;
+            save_settings = true;
+        }
+    }
+
+    /*-------------------------------------------------*\
     | Loop through remaining detectors and see if any   |
     | need to be saved to the settings                  |
     \*-------------------------------------------------*/
@@ -1395,6 +1578,11 @@ void ResourceManager::UpdateDetectorSettings()
         }
     }
 
+    /*-------------------------------------------------*\
+    | If there were any setting changes that need to be |
+    | saved, set the settings in the settings manager   |
+    | and save them.                                    |
+    \*-------------------------------------------------*/
     if(save_settings)
     {
         LOG_INFO("Saving detector settings");

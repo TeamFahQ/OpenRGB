@@ -1,9 +1,3 @@
-#include <vector>
-#include <cstring>
-#include <string>
-#include <tuple>
-#include <iostream>
-#include "OpenRGB.h"
 #include "AutoStart.h"
 #include "filesystem.h"
 #include "ProfileManager.h"
@@ -15,11 +9,18 @@
 #include "LogManager.h"
 #include "Colors.h"
 
+#include <vector>
+#include <cstring>
+#include <string>
+#include <tuple>
+#include <iostream>
+
 /*-------------------------------------------------------------*\
 | Quirk for MSVC; which doesn't support this case-insensitive   |
 | function                                                      |
 \*-------------------------------------------------------------*/
 #ifdef _WIN32
+#include <shellapi.h>
     #define strcasecmp strcmpi
 #endif
 
@@ -43,14 +44,14 @@ enum
 struct DeviceOptions
 {
     int             device;
-    int             zone        = -1;
+    int             zone            = -1;
     std::vector<std::tuple<unsigned char, unsigned char, unsigned char>> colors;
     std::string     mode;
     unsigned int    brightness;
     unsigned int    size;
-    bool            random_colors;
-    bool            hasSize;
-    bool            hasOption;
+    bool            random_colors   = false;
+    bool            hasSize         = false;
+    bool            hasOption       = false;
 };
 
 struct ServerOptions
@@ -68,8 +69,8 @@ struct Options
     | allDeviceOptions shall be applied to all available devices|
     | except in the case that a profile was loaded.             |
     \*---------------------------------------------------------*/
-    bool                        hasDevice;
-    bool                        profile_loaded;
+    bool                        hasDevice        = false;
+    bool                        profile_loaded  = false;
     DeviceOptions               allDeviceOptions;
     ServerOptions               servOpts;
 };
@@ -640,30 +641,47 @@ bool OptionZone(std::vector<DeviceOptions>* current_devices, std::string argumen
     return found;
 }
 
-bool OptionColor(std::vector<DeviceOptions>* current_devices, std::string argument, Options* /*options*/)
+bool CheckColor(std::string argument, DeviceOptions* currentDevOpts)
 {
-    bool found = false;
-
-    for(size_t i = 0; i < current_devices->size(); i++)
+    if(ParseColors(argument, currentDevOpts))
     {
-        DeviceOptions* currentDevOpts = &current_devices->at(i);
+        currentDevOpts->hasOption = true;
+        return true;
+    }
+    else
+    {
+        std::cout << "Error: Invalid color value: " + argument << std::endl;
+        return false;
+    }
+}
 
-        if(ParseColors(argument, currentDevOpts))
+bool OptionColor(std::vector<DeviceOptions>* current_devices, std::string argument, Options* options)
+{
+    /*---------------------------------------------------------*\
+    | If a device is not selected  i.e. size() == 0             |
+    |   then add color to allDeviceOptions                      |
+    \*---------------------------------------------------------*/
+    bool found                      = false;
+    DeviceOptions* currentDevOpts   = &options->allDeviceOptions;
+
+    if(current_devices->size() == 0)
+    {
+        found = CheckColor(argument, currentDevOpts);
+    }
+    else
+    {
+        for(size_t i = 0; i < current_devices->size(); i++)
         {
-            currentDevOpts->hasOption = true;
-            found = true;
-        }
-        else
-        {
-            std::cout << "Error: Invalid color value: " + argument << std::endl;
-            return false;
+            currentDevOpts = &current_devices->at(i);
+
+            found = CheckColor(argument, currentDevOpts);
         }
     }
 
     return found;
 }
 
-bool OptionMode(std::vector<DeviceOptions>* current_devices, std::string argument, Options* /*options*/)
+bool OptionMode(std::vector<DeviceOptions>* current_devices, std::string argument, Options* options)
 {
     if(argument.size() == 0)
     {
@@ -671,21 +689,35 @@ bool OptionMode(std::vector<DeviceOptions>* current_devices, std::string argumen
         return false;
     }
 
-    bool found = false;
+    /*---------------------------------------------------------*\
+    | If a device is not selected  i.e. size() == 0             |
+    |   then add mode to allDeviceOptions                       |
+    \*---------------------------------------------------------*/
+    bool found                      = false;
+    DeviceOptions* currentDevOpts   = &options->allDeviceOptions;
 
-    for(size_t i = 0; i < current_devices->size(); i++)
+    if(current_devices->size() == 0)
     {
-        DeviceOptions* currentDevOpts = &current_devices->at(i);
-
         currentDevOpts->mode = argument;
         currentDevOpts->hasOption = true;
         found = true;
+    }
+    else
+    {
+        for(size_t i = 0; i < current_devices->size(); i++)
+        {
+            currentDevOpts = &current_devices->at(i);
+
+            currentDevOpts->mode = argument;
+            currentDevOpts->hasOption = true;
+            found = true;
+        }
     }
 
     return found;
 }
 
-bool OptionBrightness(std::vector<DeviceOptions>* current_devices, std::string argument, Options* /*options*/)
+bool OptionBrightness(std::vector<DeviceOptions>* current_devices, std::string argument, Options* options)
 {
     if(argument.size() == 0)
     {
@@ -693,15 +725,29 @@ bool OptionBrightness(std::vector<DeviceOptions>* current_devices, std::string a
         return false;
     }
 
-    bool found = false;
+    /*---------------------------------------------------------*\
+    | If a device is not selected  i.e. size() == 0             |
+    |   then add brightness to allDeviceOptions                 |
+    \*---------------------------------------------------------*/
+    bool found                      = false;
+    DeviceOptions* currentDevOpts   = &options->allDeviceOptions;
 
-    for(size_t i = 0; i < current_devices->size(); i++)
+    if(current_devices->size() == 0)
     {
-        DeviceOptions* currentDevOpts   = &current_devices->at(i);
-
-        currentDevOpts->brightness      = std::min(std::max(std::stoi(argument), 0),(int)brightness_percentage);
-        currentDevOpts->hasOption       = true;
+        currentDevOpts->brightness  = std::min(std::max(std::stoi(argument), 0),(int)brightness_percentage);
+        currentDevOpts->hasOption   = true;
         found = true;
+    }
+    else
+    {
+        for(size_t i = 0; i < current_devices->size(); i++)
+        {
+            DeviceOptions* currentDevOpts   = &current_devices->at(i);
+
+            currentDevOpts->brightness      = std::min(std::max(std::stoi(argument), 0),(int)brightness_percentage);
+            currentDevOpts->hasOption       = true;
+            found = true;
+        }
     }
 
     return found;
@@ -804,10 +850,16 @@ int ProcessOptions(int argc, char* argv[], Options* options, std::vector<RGBCont
     options->hasDevice = false;
     options->profile_loaded = false;
 
+#ifdef _WIN32
+    int fake_argc;
+    wchar_t** argvw = CommandLineToArgvW(GetCommandLineW(), &fake_argc);
+#endif
+
     while(arg_index < argc)
     {
         std::string option   = argv[arg_index];
         std::string argument = "";
+        filesystem::path arg_path;
 
         /*---------------------------------------------------------*\
         | Handle options that take an argument                      |
@@ -815,6 +867,11 @@ int ProcessOptions(int argc, char* argv[], Options* options, std::vector<RGBCont
         if(arg_index + 1 < argc)
         {
             argument = argv[arg_index + 1];
+#ifdef _WIN32
+            arg_path = argvw[arg_index + 1];
+#else
+            arg_path = argument;
+#endif
         }
 
         /*---------------------------------------------------------*\
@@ -915,7 +972,7 @@ int ProcessOptions(int argc, char* argv[], Options* options, std::vector<RGBCont
         \*---------------------------------------------------------*/
         else if(option == "--profile" || option == "-p")
         {
-            options->profile_loaded = OptionProfile(argument, rgb_controllers);
+            options->profile_loaded = OptionProfile(arg_path.generic_u8string(), rgb_controllers);
 
             arg_index++;
         }
@@ -925,7 +982,7 @@ int ProcessOptions(int argc, char* argv[], Options* options, std::vector<RGBCont
         \*---------------------------------------------------------*/
         else if(option == "--save-profile" || option == "-sp")
         {
-            OptionSaveProfile(argument);
+            OptionSaveProfile(arg_path.generic_u8string());
 
             arg_index++;
         }
@@ -1034,7 +1091,7 @@ void ApplyOptions(DeviceOptions& options, std::vector<RGBController *>& rgb_cont
     |   supports that colour mode then swich to it before       |
     |   evaluating if a colour needs to be set                  |
     \*---------------------------------------------------------*/
-    if((options.brightness > 0) && (device->modes[mode].flags & MODE_FLAG_HAS_BRIGHTNESS))
+    if((device->modes[mode].flags & MODE_FLAG_HAS_BRIGHTNESS))
     {
         unsigned int new_brightness     = device->modes[mode].brightness_max - device->modes[mode].brightness_min;
         new_brightness                 *= options.brightness;
@@ -1137,6 +1194,11 @@ unsigned int cli_pre_detection(int argc, char* argv[])
     bool            server_start = false;
     bool            print_help   = false;
 
+#ifdef _WIN32
+    int fake_argc;
+    wchar_t** argvw = CommandLineToArgvW(GetCommandLineW(), &fake_argc);
+#endif
+
     while(arg_index < argc)
     {
         std::string option   = argv[arg_index];
@@ -1168,15 +1230,20 @@ unsigned int cli_pre_detection(int argc, char* argv[])
         {
             cfg_args+= 2;
             arg_index++;
+#ifdef _WIN32
+            filesystem::path config_path(argvw[arg_index]);
+#else
+            filesystem::path config_path(argument);
+#endif
 
-            if(filesystem::is_directory(argument))
+            if(filesystem::is_directory(config_path))
             {
-                ResourceManager::get()->SetConfigurationDirectory(argument);
-                LOG_INFO("Setting config directory to %s",argument.c_str());
+                ResourceManager::get()->SetConfigurationDirectory(config_path);
+                LOG_INFO("Setting config directory to %s",argument.c_str()); // TODO: Use config_path in logs somehow
             }
             else
             {
-                LOG_ERROR("'%s' is not a valid directory",argument.c_str());
+                LOG_ERROR("'%s' is not a valid directory",argument.c_str()); // TODO: Use config_path in logs somehow
                 print_help = true;
                 break;
             }

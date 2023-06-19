@@ -66,10 +66,14 @@ void MSIGPUv2Controller::SetRGB3V2(unsigned char red, unsigned char green, unsig
     MSIGPUBlockWrite(MSI_GPU_V2_REG_COLOR_BLOCK3_BASE, &buffer[0], sizeof(buffer));
 }
 
-
 void MSIGPUv2Controller::SetMode(unsigned char mode)
 {
     MSIGPURegisterWrite(MSI_GPU_V2_REG_MODE, mode);
+}
+
+void MSIGPUv2Controller::Save()
+{
+    MSIGPURegisterWrite(MSI_GPU_V2_REG_SAVE, 0x00);
 }
 
 unsigned char MSIGPUv2Controller::MSIGPURegisterRead(unsigned char reg)

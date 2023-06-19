@@ -1,5 +1,6 @@
 #ifdef _WIN32
 
+#include "AsusTUFLaptopController.h"
 #include "RGBController_AsusTUFLaptopWMI.h"
 
 #include "acpiwmi.h"
@@ -7,7 +8,7 @@
 #include "wmi.h"
 #include <string>
 
-static void DetectAsusTUFLaptopWMIControllers(std::vector<RGBController*>&)
+static void DetectAsusTUFLaptopWMIControllers()
 {
     // Try to retrieve ProductID / Device name from WMI; Possibly can be rewritten to use wmi.cpp
     // IF you encounter false detection ( e.g. if your laptop keyboard backlight uses USB interface
@@ -29,6 +30,7 @@ static void DetectAsusTUFLaptopWMIControllers(std::vector<RGBController*>&)
         return;
     }
     std::string& name = systemProduct[0]["Name"];
+
     if(name.find("TUF Gaming") == name.npos)
     {
         return;
@@ -36,7 +38,9 @@ static void DetectAsusTUFLaptopWMIControllers(std::vector<RGBController*>&)
 
     if(AsWMI_Open())
     {
-        RGBController* new_controller = new RGBController_AsusTUFLaptopWMI();
+        AsusTUFLaptopController* asus_wmi_controller = new AsusTUFLaptopController();
+        RGBController* new_controller                = new RGBController_AsusTUFLaptopWMI(asus_wmi_controller);
+
         ResourceManager::get()->RegisterRGBController(new_controller);
         // Success! No more if's
     }
